@@ -1,0 +1,47 @@
+<div class="content-container">
+  <div class="content-area">
+    <ng-content></ng-content>
+
+    <div class="clr-row">
+    <div class="clr-col-12">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Желание</th>
+        <th>Цена</th>
+        <th>Приоритет</th>
+        <th>.</th>
+        <th>.</th>
+        <th>Ред.</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of wishes">
+        <td style="width: 50%"> {{item.name}} </td>
+        <td style="width: 10%"> 100 000 </td>
+        <td > {{item.priority}} </td>
+        <td style="width: 5%">  <clr-icon shape="upload" (click)="up($event, item)"></clr-icon> </td>
+        <td style="width: 5%"> <clr-icon shape="download" (click)="down($event, item)"></clr-icon> </td>
+        <td > <clr-icon shape="edit" (click)="down($event, item)"></clr-icon> </td>
+      </tr>
+      <td style="width: 50%"> ИТОГО </td>
+      <td style="width: 10%"> 100 000 </td>
+      <td > - </td>
+      <td style="width: 5%">  - </td>
+      <td style="width: 5%"> - </td>
+      <td > <i class="fas fa-arrow-up"></i> </td>
+      <tr>
+      </tr>
+      </tbody>
+    </table>
+    </div>
+    </div>
+
+    <clr-button (_click)="test()"> T E S T </clr-button>
+    <button class="btn btn-primary" (click)="test()">Primary</button>
+    <span class="label label-info">{{testData}}</span>
+
+
+  </div>
+  <app-sidebar class="sidenav"></app-sidebar>
+</div>

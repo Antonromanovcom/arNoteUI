@@ -1,0 +1,13 @@
+{
+  "userList":
+  [{
+    "name": "Bob",
+    "priority": 1
+  },{
+    "name": "Tom",
+    "priority": 2
+  },{
+    "name": "Alice",
+    "priority": 3
+  }]
+}
