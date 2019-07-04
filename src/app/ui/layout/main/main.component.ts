@@ -66,5 +66,12 @@ export class MainComponent implements OnInit {
     });
 
 
+    this.httpService.getData(this.testJson).subscribe(data => {
+      this.wishes = data['list'];
+      console.log( this.wishes);
+//      this.wishes.sort((a, b) => a.priority - b.priority);
+    });
+
+
   }
 }
