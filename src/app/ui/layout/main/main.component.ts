@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {catchError} from 'rxjs/operators';
 import {BehaviorSubject, throwError, timer} from 'rxjs';
 
@@ -22,10 +22,10 @@ export class MainComponent implements OnInit {
   wishes: Wish[] = [];
   // po: Array<number> = [1, 2, 3, 4, 5];
 
-  form: FormGroup;
+ // form: FormGroup;
 
 
- /* form = this.fb.group({
+  form = this.fb.group({
     name: ['', [
       Validators.required,
     Validators.maxLength(160),
@@ -34,7 +34,7 @@ export class MainComponent implements OnInit {
   //    Validators.required,
   //    Validators.maxLength(250),
     ]],
-   /!* url: ['', [
+   /* url: ['', [
       Validators.required,
       Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/),
     ]],
@@ -47,26 +47,26 @@ export class MainComponent implements OnInit {
     ]],
     password: ['', [
       Validators.maxLength(250),
-    ]],*!/
-  });*/
+    ]],*/
+  });
 
 
- /* constructor(private httpService: HttpService, private fb: FormBuilder) {
-  }*/
+  constructor(private httpService: HttpService, private fb: FormBuilder) {
+  }
 
-  constructor(private httpService: HttpService, private formBuilder: FormBuilder) {
+  /*constructor(private httpService: HttpService, private formBuilder: FormBuilder) {
     this.form = this.formBuilder.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
-  }
+  }*/
 
 
-  submit() {
+ /* submit() {
     if (this.form.valid) {
       console.log(this.form.value);
     }
-  }
+  }*/
 
   ngOnInit() {
 
@@ -75,10 +75,10 @@ export class MainComponent implements OnInit {
       this.wishes.sort((a, b) => a.priority - b.priority);
     });
 
-   /* this.form.patchValue({
+    this.form.patchValue({
       name: '2212',
       description: '2212',
-    });*/
+    });
   }
 
   up(event: any, item: Wish) {

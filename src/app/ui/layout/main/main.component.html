@@ -42,13 +42,13 @@
     <button class="btn btn-primary" (click)="test()">Primary</button>
     <span class="label label-info">{{testData}}</span>
 
-   <!-- <clr-modal [(clrModalOpen)]="isEdit">
+    <clr-modal [(clrModalOpen)]="isEdit">
       <h3 class="modal-title">{{isEditableTransacion ? 'Редактировать сервис' : 'Добавить сервис'}}</h3>
       <div class="modal-body">
         <form clrForm [formGroup]="form">
-          &lt;!&ndash;<clr-input-container>
+          <clr-input-container>
             <label #label for="name" class="input-label clr-col-12">Имя</label>
-            <input type="text"
+           <!-- <input type="text"
                    clrInput
                    formControlName="name"
                    id="name"
@@ -57,20 +57,30 @@
                    (focus)="activeInput($event)"
                    (blur)="inActiveInput($event)"
                    (ngModelChange)="setActiveInput($event, 'name')"
-                   (paste)="trimInput($event, 'name')">
-            &lt;!&ndash;<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>&ndash;&gt;
-            <clr-control-error>This field is required!</clr-control-error>
-          </clr-input-container>&ndash;&gt;
+                   (paste)="trimInput($event, 'name')">-->
 
-          <clr-input-container>
+            <input type="text"
+                   clrInput
+                   formControlName="name"
+                   id="name"
+                   name="name"
+                   autocomplete="off">
+
+
+
+            <!--<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>-->
+            <clr-control-error>This field is required!</clr-control-error>
+          </clr-input-container>
+
+         <!-- <clr-input-container>
             <label>Full name</label>
             <input placeholder="Full name" clrInput [(ngModel)]="exampleThree" name="name" required />
           &lt;!&ndash;  <clr-control-helper>Helper text</clr-control-helper>
             <clr-control-error>This field is required!</clr-control-error>&ndash;&gt;
-          </clr-input-container>
+          </clr-input-container>-->
 
 
-         &lt;!&ndash; <clr-input-container>
+         <!-- <clr-input-container>
             <label #label for="description" class="input-label clr-col-12">Описание</label>
             <input type="text"
                    clrInput
@@ -142,30 +152,30 @@
                    (blur)="inActiveInput($event)"
                    (ngModelChange)="setActiveInput($event, 'password')"
                    (paste)="trimInput($event, 'password')"
-            >&ndash;&gt;
-          &lt;!&ndash;</clr-input-container>&ndash;&gt;
+            >-->
+          <!--</clr-input-container>-->
         </form>
-        &lt;!&ndash;<clr-checkbox-wrapper>&ndash;&gt;
-          &lt;!&ndash;<input type="checkbox" clrCheckbox [(ngModel)]="enabled"  name="options" />&ndash;&gt;
-          &lt;!&ndash;<label>Включен</label>&ndash;&gt;
-        &lt;!&ndash;</clr-checkbox-wrapper>&ndash;&gt;
-        &lt;!&ndash;<button type="button" [clrLoading]="isLoading$ | async" [disabled]="!canSubmit()" (click)="addEditService()"&ndash;&gt;
-                &lt;!&ndash;class="btn btn-primary mt-1">Сохранить</button>&ndash;&gt;
+        <!--<clr-checkbox-wrapper>-->
+          <!--<input type="checkbox" clrCheckbox [(ngModel)]="enabled"  name="options" />-->
+          <!--<label>Включен</label>-->
+        <!--</clr-checkbox-wrapper>-->
+        <!--<button type="button" [clrLoading]="isLoading$ | async" [disabled]="!canSubmit()" (click)="addEditService()"-->
+                <!--class="btn btn-primary mt-1">Сохранить</button>-->
       </div>
-    </clr-modal>-->
+    </clr-modal>
 
 
-    <h1>Login</h1>
+   <!-- <h1>Login</h1>
 
     <form clrForm [formGroup]="form" (ngSubmit)="submit()">
       <clr-input-container>
         <label>Email</label>
         <input clrInput formControlName="email" type="email" />
-        <!--<clr-control-error *clrIfError="required">Email Required</clr-control-error>-->
+        &lt;!&ndash;<clr-control-error *clrIfError="required">Email Required</clr-control-error>&ndash;&gt;
       </clr-input-container>
 
       <button class="btn">Login</button>
-    </form>
+    </form>-->
 
 
 
