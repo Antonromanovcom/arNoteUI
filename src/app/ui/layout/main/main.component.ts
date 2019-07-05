@@ -2,8 +2,6 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, Validators} from '@angular/forms';
-import {catchError} from 'rxjs/operators';
-import {BehaviorSubject, throwError, timer} from 'rxjs';
 
 
 @Component({
@@ -15,8 +13,8 @@ import {BehaviorSubject, throwError, timer} from 'rxjs';
 export class MainComponent implements OnInit {
 
   localJson = 'assets/data.json';
-  testJson = 'http://localhost:8080/rest/users/testrefs';
-  updateWish = 'http://localhost:8080/rest/users/update';
+  apiUrl = 'http://localhost:8080/rest/wishes';
+  // updateWish = 'http://localhost:8080/rest/users/update';
   testData = '';
   isEdit = false;
   isEditMode = false;
@@ -58,10 +56,7 @@ export class MainComponent implements OnInit {
        this.wishes.sort((a, b) => a.priority - b.priority);
      });*/
 
-    this.httpService.getData(this.testJson).subscribe(data => {
-      this.wishes = data['list'];
-      console.log(this.wishes);
-    });
+    this.getWishes();
 
 
   }
@@ -85,7 +80,14 @@ export class MainComponent implements OnInit {
     this.wishes.sort((a, b) => a.priority - b.priority);
   }
 
-  openEditWish(event: any, item: Wish) {
+  getWishes() {
+    this.httpService.getData(this.apiUrl).subscribe(data => {
+      this.wishes = data['list'];
+      console.log(this.wishes);
+    });
+  }
+
+  openEditWish(event: any, item: Wish, isedit: number) {
 
     /* this.httpService.getData(this.testJson).subscribe(data => {
        console.log(data);
@@ -97,30 +99,37 @@ export class MainComponent implements OnInit {
        this.wishes = data['list'];
        console.log( this.wishes);
      });*/
-    this.isEdit = true;
 
-    this.form.patchValue({
-      id: item.id,
-      name: item.wish,
-      description: item.description,
-      url: item.url,
-      priority: item.priority,
-      price: item.price,
-    });
+    if (isedit === 1) {
+      this.isEdit = true;
+      this.isEditMode = true;
 
+      this.form.patchValue({
+        id: item.id,
+        name: item.wish,
+        description: item.description,
+        url: item.url,
+        priority: item.priority,
+        price: item.price,
+      });
+
+    } else {
+      this.isEdit = true;
+      this.isEditMode = false;
+
+      this.form.patchValue({
+        id: 1,
+        name: '',
+        description: 'какое-то описание',
+        url: '',
+        priority: 1,
+        price: 0,
+      });
+
+    }
   }
 
   addEditService() {
-
-    const w = {
-      id: this.form.value.id,
-      name: this.form.value.name,
-      description: this.form.value.description,
-      url: this.form.value.url,
-      priority: this.form.value.priority,
-      price: this.form.value.price,
-    };
-
 
     const wish = new Wish(this.form.value.id,
       this.form.value.name,
@@ -130,12 +139,28 @@ export class MainComponent implements OnInit {
       this.form.value.description,
       this.form.value.url);
 
+    // todo: обрабатывать ошибки
 
-    this.httpService.updateWish(wish, this.updateWish)
-      .subscribe(hero => console.log(hero));
+    if (this.isEditMode) {
+
+      this.httpService.updateWish(wish, this.apiUrl)
+        .subscribe(hero => {
+          console.log(hero);
+          this.isEdit = false;
+        });
+
+    } else {
+      this.httpService.sendData(wish, this.apiUrl)
+        .subscribe(hero => {
+
+          console.log('ADD MODE');
+          console.log(hero);
+
+          this.isEdit = false;
+        });
+    }
 
 
-//    if (!this.isEditMode) {
     //   this.producersService.addTransaction(params).subscribe(() => {
     //    this.isEdit = false;
     //     this.getTransactions();
@@ -146,6 +171,23 @@ export class MainComponent implements OnInit {
     //    this.getTransactions();
     //    });
     // }
+  }
+
+  tempAdd() {
+
+    const wish = new Wish(this.form.value.id,
+      this.form.value.name,
+      this.form.value.price,
+      this.form.value.priority,
+      false,
+      this.form.value.description,
+      this.form.value.url);
+
+    // todo: определять добавление или редактировани
+    // todo: обрабатывать ошибки
+
+    /*this.httpService.sendData(wish, this.updateWish)
+      .subscribe(hero => console.log(hero));*/
   }
 
 
