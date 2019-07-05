@@ -1,6 +1,7 @@
 <div class="content-container">
   <div class="content-area">
-    <ng-content></ng-content>
+    <ng-content>
+    </ng-content>
 
     <div class="clr-row">
     <div class="clr-col-12">
@@ -41,7 +42,134 @@
     <button class="btn btn-primary" (click)="test()">Primary</button>
     <span class="label label-info">{{testData}}</span>
 
+   <!-- <clr-modal [(clrModalOpen)]="isEdit">
+      <h3 class="modal-title">{{isEditableTransacion ? 'Редактировать сервис' : 'Добавить сервис'}}</h3>
+      <div class="modal-body">
+        <form clrForm [formGroup]="form">
+          &lt;!&ndash;<clr-input-container>
+            <label #label for="name" class="input-label clr-col-12">Имя</label>
+            <input type="text"
+                   clrInput
+                   formControlName="name"
+                   id="name"
+                   name="name"
+                   autocomplete="off"
+                   (focus)="activeInput($event)"
+                   (blur)="inActiveInput($event)"
+                   (ngModelChange)="setActiveInput($event, 'name')"
+                   (paste)="trimInput($event, 'name')">
+            &lt;!&ndash;<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>&ndash;&gt;
+            <clr-control-error>This field is required!</clr-control-error>
+          </clr-input-container>&ndash;&gt;
+
+          <clr-input-container>
+            <label>Full name</label>
+            <input placeholder="Full name" clrInput [(ngModel)]="exampleThree" name="name" required />
+          &lt;!&ndash;  <clr-control-helper>Helper text</clr-control-helper>
+            <clr-control-error>This field is required!</clr-control-error>&ndash;&gt;
+          </clr-input-container>
+
+
+         &lt;!&ndash; <clr-input-container>
+            <label #label for="description" class="input-label clr-col-12">Описание</label>
+            <input type="text"
+                   clrInput
+                   formControlName="description"
+                   id="description"
+                   name="description"
+                   autocomplete="off"
+                   (focus)="activeInput($event)"
+                   (blur)="inActiveInput($event)"
+                   (ngModelChange)="setActiveInput($event, 'description')"
+                   (paste)="trimInput($event, 'description')"
+            >
+            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+          </clr-input-container>
+          <clr-input-container>
+            <label #label for="url" class="input-label clr-col-12">URL</label>
+            <input type="url"
+                   clrInput
+                   formControlName="url"
+                   id="url"
+                   name="url"
+                   autocomplete="off"
+                   (focus)="activeInput($event)"
+                   (blur)="inActiveInput($event)"
+                   (ngModelChange)="setActiveInput($event, 'url')"
+                   (paste)="trimInput($event, 'url')"
+            >
+            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+            <clr-control-error *clrIfError="'pattern'">Некорректный форма url</clr-control-error>
+          </clr-input-container>
+          <clr-input-container>
+            <label #label for="connectorClass" class="input-label clr-col-12">Класс коннектора</label>
+            <input type="text"
+                   clrInput
+                   formControlName="connectorClass"
+                   id="connectorClass"
+                   name="connectorClass"
+                   autocomplete="off"
+                   (focus)="activeInput($event)"
+                   (blur)="inActiveInput($event)"
+                   (ngModelChange)="setActiveInput($event, 'connectorClass')"
+                   (paste)="trimInput($event, 'connectorClass')"
+            >
+            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+          </clr-input-container>
+          <clr-input-container>
+            <label #label for="username" class="input-label clr-col-12">Имя пользователя</label>
+            <input type="text"
+                   clrInput
+                   formControlName="username"
+                   id="username"
+                   name="username"
+                   autocomplete="off"
+                   (focus)="activeInput($event)"
+                   (blur)="inActiveInput($event)"
+                   (ngModelChange)="setActiveInput($event, 'username')"
+                   (paste)="trimInput($event, 'username')"
+            >
+          </clr-input-container>
+          <clr-input-container>
+            <label #label for="password" class="input-label clr-col-12">Пароль</label>
+            <input type="text"
+                   clrInput
+                   formControlName="password"
+                   id="password"
+                   name="password"
+                   autocomplete="off"
+                   (focus)="activeInput($event)"
+                   (blur)="inActiveInput($event)"
+                   (ngModelChange)="setActiveInput($event, 'password')"
+                   (paste)="trimInput($event, 'password')"
+            >&ndash;&gt;
+          &lt;!&ndash;</clr-input-container>&ndash;&gt;
+        </form>
+        &lt;!&ndash;<clr-checkbox-wrapper>&ndash;&gt;
+          &lt;!&ndash;<input type="checkbox" clrCheckbox [(ngModel)]="enabled"  name="options" />&ndash;&gt;
+          &lt;!&ndash;<label>Включен</label>&ndash;&gt;
+        &lt;!&ndash;</clr-checkbox-wrapper>&ndash;&gt;
+        &lt;!&ndash;<button type="button" [clrLoading]="isLoading$ | async" [disabled]="!canSubmit()" (click)="addEditService()"&ndash;&gt;
+                &lt;!&ndash;class="btn btn-primary mt-1">Сохранить</button>&ndash;&gt;
+      </div>
+    </clr-modal>-->
+
+
+    <h1>Login</h1>
+
+    <form clrForm [formGroup]="form" (ngSubmit)="submit()">
+      <clr-input-container>
+        <label>Email</label>
+        <input clrInput formControlName="email" type="email" />
+        <!--<clr-control-error *clrIfError="required">Email Required</clr-control-error>-->
+      </clr-input-container>
+
+      <button class="btn">Login</button>
+    </form>
+
+
 
   </div>
+
   <app-sidebar class="sidenav"></app-sidebar>
 </div>

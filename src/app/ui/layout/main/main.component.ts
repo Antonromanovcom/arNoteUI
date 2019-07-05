@@ -1,25 +1,71 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
-import {map} from 'rxjs/operators';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {catchError} from 'rxjs/operators';
+import {BehaviorSubject, throwError, timer} from 'rxjs';
 
 
 @Component({
   selector: 'app-main',
   templateUrl: 'main.component.html',
   providers: [HttpService],
-  styleUrls:['./main.component.css']
+  styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
 
   localJson = 'assets/data.json';
   testJson = 'http://localhost:8080/rest/users/testrefs';
   testData = '';
+  isEdit = false;
 
   wishes: Wish[] = [];
-  po: Array<number> = [1, 2, 3, 4, 5];
+  // po: Array<number> = [1, 2, 3, 4, 5];
 
-  constructor(private httpService: HttpService) {
+  form: FormGroup;
+
+
+ /* form = this.fb.group({
+    name: ['', [
+      Validators.required,
+    Validators.maxLength(160),
+    ]],
+    description: ['', [
+  //    Validators.required,
+  //    Validators.maxLength(250),
+    ]],
+   /!* url: ['', [
+      Validators.required,
+      Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/),
+    ]],
+    connectorClass: ['', [
+      Validators.required,
+      Validators.maxLength(250),
+    ]],
+    username: ['', [
+      Validators.maxLength(250),
+    ]],
+    password: ['', [
+      Validators.maxLength(250),
+    ]],*!/
+  });*/
+
+
+ /* constructor(private httpService: HttpService, private fb: FormBuilder) {
+  }*/
+
+  constructor(private httpService: HttpService, private formBuilder: FormBuilder) {
+    this.form = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
+
+
+  submit() {
+    if (this.form.valid) {
+      console.log(this.form.value);
+    }
   }
 
   ngOnInit() {
@@ -28,6 +74,11 @@ export class MainComponent implements OnInit {
       this.wishes = data['userList'];
       this.wishes.sort((a, b) => a.priority - b.priority);
     });
+
+   /* this.form.patchValue({
+      name: '2212',
+      description: '2212',
+    });*/
   }
 
   up(event: any, item: Wish) {
@@ -71,6 +122,8 @@ export class MainComponent implements OnInit {
       console.log( this.wishes);
 //      this.wishes.sort((a, b) => a.priority - b.priority);
     });
+
+    this.isEdit = true;
 
 
   }
