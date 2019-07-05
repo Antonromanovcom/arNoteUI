@@ -1,20 +1,12 @@
 
-.content-container {
-  background: #0c5460;
-}
-
 ::ng-deep clr-icon:hover {
   background:#53ea93;
 }
 
 
-.can-badge::ng-deep:hover {
-  background:#53ea93;
-}
-
-.btn-primary:hover {
-  background:#53ea93;
-}
+/*.btn-primary:hover {*/
+  /*background:#53ea93;*/
+/*}*/
 
 
 
