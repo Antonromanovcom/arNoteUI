@@ -48,25 +48,12 @@
         <form clrForm [formGroup]="form">
           <clr-input-container>
             <label #label for="name" class="input-label clr-col-12">Имя</label>
-           <!-- <input type="text"
-                   clrInput
-                   formControlName="name"
-                   id="name"
-                   name="name"
-                   autocomplete="off"
-                   (focus)="activeInput($event)"
-                   (blur)="inActiveInput($event)"
-                   (ngModelChange)="setActiveInput($event, 'name')"
-                   (paste)="trimInput($event, 'name')">-->
-
             <input type="text"
                    clrInput
                    formControlName="name"
                    id="name"
                    name="name"
                    autocomplete="off">
-
-
 
             <!--<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>-->
             <clr-control-error>This field is required!</clr-control-error>

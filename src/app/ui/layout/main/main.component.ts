@@ -18,36 +18,31 @@ export class MainComponent implements OnInit {
   testJson = 'http://localhost:8080/rest/users/testrefs';
   testData = '';
   isEdit = false;
-
   wishes: Wish[] = [];
-  // po: Array<number> = [1, 2, 3, 4, 5];
-
- // form: FormGroup;
-
 
   form = this.fb.group({
+    id: ['', [
+    ]],
     name: ['', [
       Validators.required,
     Validators.maxLength(160),
     ]],
     description: ['', [
-  //    Validators.required,
-  //    Validators.maxLength(250),
+      Validators.required,
+      Validators.maxLength(1024),
     ]],
-   /* url: ['', [
+    url: ['', [
       Validators.required,
       Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/),
     ]],
-    connectorClass: ['', [
+    priority: ['', [
       Validators.required,
-      Validators.maxLength(250),
+      Validators.pattern(/^[0-9]+$/)
     ]],
-    username: ['', [
-      Validators.maxLength(250),
-    ]],
-    password: ['', [
-      Validators.maxLength(250),
-    ]],*/
+    price: ['', [
+      Validators.required,
+      Validators.pattern(/^[0-9]+$/)
+    ]]
   });
 
 
@@ -122,9 +117,8 @@ export class MainComponent implements OnInit {
       console.log( this.wishes);
 //      this.wishes.sort((a, b) => a.priority - b.priority);
     });
-
     this.isEdit = true;
-
-
   }
+
+
 }
