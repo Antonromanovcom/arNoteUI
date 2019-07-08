@@ -13,7 +13,8 @@ import {FormBuilder, Validators} from '@angular/forms';
 export class MainComponent implements OnInit {
 
   localJson = 'assets/data.json';
-  apiUrl = 'http://localhost:8080/rest/wishes';
+  _apiUrl = 'http://localhost:8080/rest/wishes';
+  apiUrl = '/rest/wishes';
   // updateWish = 'http://localhost:8080/rest/users/update';
   testData = '';
   isEdit = false;
