@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, Validators} from '@angular/forms';
+import {throwError, timer} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 
 
 @Component({
@@ -15,8 +17,14 @@ export class MainComponent implements OnInit {
   localJson = 'assets/data.json';
   _apiUrl = 'http://localhost:8080/rest/wishes';
   apiUrl = '/rest/wishes';
-  // updateWish = 'http://localhost:8080/rest/users/update';
-  testData = '';
+  apiGetSumm = '/rest/wishes/summ';
+  _apiGetSumm = 'http://localhost:8080/rest/wishes/summ';
+  error: any;
+  result: any;
+
+
+  summAll = 0;
+  summPriority = 0;
   isEdit = false;
   isEditMode = false;
   wishes: Wish[] = [];
@@ -28,12 +36,12 @@ export class MainComponent implements OnInit {
       Validators.maxLength(160),
     ]],
     description: ['', [
-      Validators.required,
-      Validators.maxLength(1024),
+      //   Validators.required,
+      //   Validators.maxLength(1024),
     ]],
     url: ['', [
-      Validators.required,
-      Validators.pattern(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/),
+      // Validators.required,
+      // Validators.maxLength(1024),
     ]],
     priority: ['', [
       Validators.required,
@@ -51,15 +59,7 @@ export class MainComponent implements OnInit {
 
 
   ngOnInit() {
-
-    /* this.httpService.getData(this.localJson).subscribe(data => {
-       this.wishes = data['userList'];
-       this.wishes.sort((a, b) => a.priority - b.priority);
-     });*/
-
     this.getWishes();
-
-
   }
 
   up(event: any, item: Wish) {
@@ -71,7 +71,6 @@ export class MainComponent implements OnInit {
     return this.wishes.reduce((a, b) => a.priority > b.priority ? a : b);
   }
 
-
   down(event: any, item: Wish) {
 
     item.priority = item.priority - 1;
@@ -82,24 +81,51 @@ export class MainComponent implements OnInit {
   }
 
   getWishes() {
-    this.httpService.getData(this.apiUrl).subscribe(data => {
+    this.httpService.getData(this.apiUrl).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить желания!');
+      })
+    ).subscribe(data => {
       this.wishes = data['list'];
       console.log(this.wishes);
     });
+
+    this.httpService.getData(this.apiGetSumm).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно посчитать итоговые стоимости!');
+      })
+    ).subscribe(data => {
+      this.summAll = data.all;
+      this.summPriority = data.priority;
+    });
+  }
+
+  deleteWish() {
+    this.httpService.deleteWish(this.form.value.id, this.apiUrl).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно удалить желание!');
+      })
+    )
+      .subscribe(res => {
+        // console.log(res);
+        // this.isEdit = false;
+        this.showAlert('Желание с id [' + this.form.value.id + '] успешно удалено!', 'ADD MODE', res);
+      });
+  }
+
+
+  errorHandler(err, message: string) {
+    this.isEdit = false;
+    this.error = message;
+    console.log(err);
+    timer(4000).subscribe(() => {
+      this.error = null;
+    });
+
+    return throwError(err);
   }
 
   openEditWish(event: any, item: Wish, isedit: number) {
-
-    /* this.httpService.getData(this.testJson).subscribe(data => {
-       console.log(data);
-       this.testData = data[0];
-     });*/
-
-
-    /* this.httpService.getData(this.testJson).subscribe(data => {
-       this.wishes = data['list'];
-       console.log( this.wishes);
-     });*/
 
     if (isedit === 1) {
       this.isEdit = true;
@@ -130,6 +156,17 @@ export class MainComponent implements OnInit {
     }
   }
 
+  showAlert(text: string, mode: string, result: any) {
+    console.log(mode);
+    console.log(result);
+
+    this.isEdit = false;
+    this.result = text;
+    timer(4000).subscribe(() => {
+      this.result = null;
+    });
+  }
+
   addEditService() {
 
     const wish = new Wish(this.form.value.id,
@@ -140,56 +177,44 @@ export class MainComponent implements OnInit {
       this.form.value.description,
       this.form.value.url);
 
-    // todo: обрабатывать ошибки
-
     if (this.isEditMode) {
 
-      this.httpService.updateWish(wish, this.apiUrl)
-        .subscribe(hero => {
-          console.log(hero);
-          this.isEdit = false;
+      this.httpService.updateWish(wish, this.apiUrl).pipe(
+        catchError(err => {
+          return this.errorHandler(err, 'Невозможно обновить желание!');
+        })
+      ).subscribe(hero => {
+          // console.log(hero);
+          // this.isEdit = false;
+        this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
         });
 
     } else {
-      this.httpService.sendData(wish, this.apiUrl)
-        .subscribe(hero => {
+      this.httpService.sendData(wish, this.apiUrl).pipe(
+       catchError(err => {
 
-          console.log('ADD MODE');
-          console.log(hero);
+         /*this.isEdit = false;
+         this.error = 'Невозможно добавить желание!';
+         console.log(err);
+         timer(4000).subscribe(() => {
+           this.error = null;
+         });*/
 
-          this.isEdit = false;
-        });
+         return this.errorHandler(err, 'Невозможно добавить желание!');
+       })
+    ).subscribe(hero => {
+
+        this.showAlert('Желание успешно добавлено!', 'ADD MODE', hero);
+
+        /*console.log('ADD MODE');
+        console.log(hero);
+
+        this.isEdit = false;
+        this.result = 'Желание с id [' + wish.id + '] успешно добавлено!';
+        timer(4000).subscribe(() => {
+          this.result = null;
+        });*/
+      });
     }
-
-
-    //   this.producersService.addTransaction(params).subscribe(() => {
-    //    this.isEdit = false;
-    //     this.getTransactions();
-    //    });
-    //  } else {
-    //   this.producersService.updateTransaction(params).subscribe(() => {
-    //  this.isEdit = false;
-    //    this.getTransactions();
-    //    });
-    // }
   }
-
-  tempAdd() {
-
-    const wish = new Wish(this.form.value.id,
-      this.form.value.name,
-      this.form.value.price,
-      this.form.value.priority,
-      false,
-      this.form.value.description,
-      this.form.value.url);
-
-    // todo: определять добавление или редактировани
-    // todo: обрабатывать ошибки
-
-    /*this.httpService.sendData(wish, this.updateWish)
-      .subscribe(hero => console.log(hero));*/
-  }
-
-
 }

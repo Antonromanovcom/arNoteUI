@@ -1,46 +1,80 @@
 <div class="content-container">
+  <!--<div class="clr-break-row">-->
+  <!--<div class="col-4">-->
   <div class="content-area">
     <ng-content>
     </ng-content>
 
+    <clr-alert [clrAlertType]="'success'" *ngIf="result">
+      <clr-alert-item>
+        <span class="alert-text">
+            {{result}}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+
+    <clr-alert [clrAlertType]="'danger'" *ngIf="error">
+      <clr-alert-item>
+        <span class="alert-text">
+            {{error}}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+
     <div class="clr-row">
-    <div class="clr-col-12">
-    <table class="table">
-      <thead>
-      <tr>
-        <th>Желание</th>
-        <th>Цена</th>
-        <th>Приоритет</th>
-        <th>.</th>
-        <th>.</th>
-        <th>Ред.</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let item of wishes">
-        <td style="width: 50%"> {{item.wish}} </td>
-        <td style="width: 10%"> {{item.price}} </td>
-        <td > {{item.priority}} </td>
-        <td style="width: 5%">  <clr-icon shape="upload" (click)="up($event, item)"></clr-icon> </td>
-        <td style="width: 5%"> <clr-icon shape="download" (click)="down($event, item)"></clr-icon> </td>
-        <td > <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon> </td>
-      </tr>
-      <td style="width: 50%"> ИТОГО </td>
-      <td style="width: 10%"> 100 000 </td>
-      <td > - </td>
-      <td style="width: 5%">  - </td>
-      <td style="width: 5%"> - </td>
-      <td > <i class="fas fa-arrow-up"></i> </td>
-      <tr>
-      </tr>
-      </tbody>
-    </table>
-    </div>
+      <div class="clr-col-12">
+        <table class="table">
+          <thead>
+          <tr>
+            <th>Желание</th>
+            <th>Цена</th>
+            <th>Приоритет</th>
+            <th>.</th>
+            <th>.</th>
+            <th>Ред.</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of wishes">
+            <td style="width: 50%"> {{item.wish}}</td>
+            <td style="width: 10%"> {{item.price}}</td>
+            <td class="my_priority_table"> {{item.priority}}</td>
+            <td style="width: 5%">
+              <clr-icon shape="upload" (click)="up($event, item)"></clr-icon>
+            </td>
+            <td style="width: 5%">
+              <clr-icon shape="download" (click)="down($event, item)"></clr-icon>
+            </td>
+            <td>
+              <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon>
+            </td>
+          </tr>
+          <tr class="sumallrow">
+            <td style="width: 50%"><strong> ИТОГО </strong></td>
+            <td style="width: 10%"><strong> {{summAll}} </strong></td>
+            <td> -</td>
+            <td style="width: 5%"> -</td>
+            <td style="width: 5%"> -</td>
+            <td> -</td>
+
+          </tr>
+          <tr class="sumpriorrow">
+            <td style="width: 50%"><strong> ИТОГО (PRIOR) </strong></td>
+            <td style="width: 10%"><strong> {{summPriority}} </strong></td>
+            <td> -</td>
+            <td style="width: 5%"> -</td>
+            <td style="width: 5%"> -</td>
+            <td> -</td>
+
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
-    <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить </button>
-    <button class="btn btn-secondary" (click)="getWishes()"> Обновить </button>
-    <span class="label label-info">{{testData}}</span>
+    <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
+    <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
+
 
     <clr-modal [(clrModalOpen)]="isEdit">
       <h3 class="modal-title">{{isEditableTransacion ? 'Редактировать сервис' : 'Добавить сервис'}}</h3>
@@ -53,7 +87,8 @@
           <clr-input-container>
 
             <label #label for="id" class="input-label clr-col-12">id</label>
-            <input type="id" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required size="50">
+            <input type="id" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required
+                   size="50">
           </clr-input-container>
 
           <!--ПОЛЕ ИМЯ-->
@@ -82,7 +117,7 @@
                    id="description"
                    name="description"
                    autocomplete="off" required size="100">
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+            <!--<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>-->
           </clr-input-container>
 
           <!--ПОЛЕ URL-->
@@ -95,8 +130,8 @@
                    id="url"
                    name="url"
                    autocomplete="off" required size="100">
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-            <clr-control-error *clrIfError="'pattern'">Некорректный форма url</clr-control-error>
+            <!--<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>-->
+            <!--<clr-control-error *clrIfError="'pattern'">Некорректный форма url</clr-control-error>-->
           </clr-input-container>
 
           <!--ПОЛЕ PRIORITY-->
@@ -124,30 +159,21 @@
                    autocomplete="off">
           </clr-input-container>
         </form>
-        <!--<clr-checkbox-wrapper>-->
-          <!--<input type="checkbox" clrCheckbox [(ngModel)]="enabled"  name="options" />-->
-          <!--<label>Включен</label>-->
-        <!--</clr-checkbox-wrapper>-->
-        <button type="button" (click)="addEditService()" class="btn btn-primary mt-1">Сохранить</button>
+
+        <div class="row">
+          <button type="button" (click)="addEditService()" class="btn btn-primary mt-1">Сохранить</button>
+          <button type="button" (click)="deleteWish()" *ngIf="isEditMode" class="btn btn-danger mt-1">Удалить</button>
+        </div>
+
       </div>
     </clr-modal>
 
 
-   <!-- <h1>Login</h1>
-
-    <form clrForm [formGroup]="form" (ngSubmit)="submit()">
-      <clr-input-container>
-        <label>Email</label>
-        <input clrInput formControlName="email" type="email" />
-        &lt;!&ndash;<clr-control-error *clrIfError="required">Email Required</clr-control-error>&ndash;&gt;
-      </clr-input-container>
-
-      <button class="btn">Login</button>
-    </form>-->
-
-
-
   </div>
+  <!--</div>-->
 
+  <!--<div class="col-4">-->
   <app-sidebar class="sidenav"></app-sidebar>
+  <!--</div>-->
+  <!--</div>-->
 </div>

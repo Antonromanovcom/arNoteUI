@@ -36,6 +36,17 @@ export class HttpService {
     return this.http.put<Wish>(url, wish, httpOptions);
   }
 
+  public deleteWish(id: string, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+
+    return this.http.delete(url + '/' + id, httpOptions);
+  }
+
 
    // 'assets/data/test.json'
 }
