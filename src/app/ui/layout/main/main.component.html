@@ -52,7 +52,7 @@
           <tr class="sumallrow">
             <td style="width: 50%"><strong> ИТОГО </strong></td>
             <td style="width: 10%"><strong> {{summAll}} </strong></td>
-            <td> -</td>
+            <td> Реализ-ция: {{periodAll}} </td>
             <td style="width: 5%"> -</td>
             <td style="width: 5%"> -</td>
             <td> -</td>
@@ -61,7 +61,7 @@
           <tr class="sumpriorrow">
             <td style="width: 50%"><strong> ИТОГО (PRIOR) </strong></td>
             <td style="width: 10%"><strong> {{summPriority}} </strong></td>
-            <td> -</td>
+            <td> Реализ-ция: {{periodPriority}} </td>
             <td style="width: 5%"> -</td>
             <td style="width: 5%"> -</td>
             <td> -</td>
@@ -74,10 +74,20 @@
 
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
+    <clr-dropdown>
+      <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+        Фильтры
+        <clr-icon shape="caret down"></clr-icon>
+      </button>
+      <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
+        <label class="dropdown-header">Фильтры</label>
+        <a *ngFor="let item of filters" (click)="changeFilter(item)"  clrDropdownItem>{{item}}</a>
+      </clr-dropdown-menu>
+    </clr-dropdown>
 
 
     <clr-modal [(clrModalOpen)]="isEdit">
-      <h3 class="modal-title">{{isEditableTransacion ? 'Редактировать сервис' : 'Добавить сервис'}}</h3>
+      <h3 class="modal-title">{{isEditMode ? 'Редактировать сервис' : 'Добавить сервис'}}</h3>
       <div class="modal-body">
         <form clrForm [formGroup]="form">
 

@@ -14,20 +14,33 @@ import {catchError} from 'rxjs/operators';
 })
 export class MainComponent implements OnInit {
 
-  localJson = 'assets/data.json';
-  _apiUrl = 'http://localhost:8080/rest/wishes';
-  apiUrl = '/rest/wishes';
-  apiGetSumm = '/rest/wishes/summ';
-  _apiGetSumm = 'http://localhost:8080/rest/wishes/summ';
-  error: any;
-  result: any;
+  // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
 
+  localJson = 'assets/data.json'; // временный локальный json для тестирования
+  _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
+  apiUrl = '/rest/wishes/all'; // все желания // основная ссылка на api
 
-  summAll = 0;
-  summPriority = 0;
-  isEdit = false;
-  isEditMode = false;
-  wishes: Wish[] = [];
+  priorityWishesUrl = '/rest/wishes/priority'; // приоритетные желания
+  _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
+
+  allWishesUrl = '/rest/wishes/all'; // все желания
+  _allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
+
+  apiGetSumm = '/rest/wishes/summ'; // ссылка для получения сумм
+  _apiGetSumm = 'http://localhost:8080/rest/wishes/summ'; // ссылка для получения сумм
+
+  error: any; // отображение ошибок
+  result: any; // отображение результатов в алертах
+  summAll = 0; // отображение сум по всем желаниям
+  summPriority = 0; // отображение сум по приоритетным желаниям
+  periodAll = 0; // период реализации для всего
+  periodPriority = 0; // период реализации для приоритетного
+
+  isEdit = false; // режим редактирования для отображения / или чтобы спрятать модальное окно
+  isEditMode = false; // редактировать или добавить
+  wishes: Wish[] = []; // контейнер желаний
+  filters = ['Все', 'Приоритет']; // фильтры
+
 
   form = this.fb.group({
     id: ['', []],
@@ -36,12 +49,10 @@ export class MainComponent implements OnInit {
       Validators.maxLength(160),
     ]],
     description: ['', [
-      //   Validators.required,
-      //   Validators.maxLength(1024),
+
     ]],
     url: ['', [
-      // Validators.required,
-      // Validators.maxLength(1024),
+
     ]],
     priority: ['', [
       Validators.required,
@@ -59,6 +70,16 @@ export class MainComponent implements OnInit {
 
 
   ngOnInit() {
+    this.getWishes();
+  }
+
+  changeFilter(item: string) {
+
+    if (item === 'Все') {
+      this.apiUrl = this.allWishesUrl;
+    } else {
+      this.apiUrl = this.priorityWishesUrl;
+    }
     this.getWishes();
   }
 
@@ -97,6 +118,9 @@ export class MainComponent implements OnInit {
     ).subscribe(data => {
       this.summAll = data.all;
       this.summPriority = data.priority;
+      this.periodAll = data.allPeriodForImplementation;
+      this.periodPriority = data.priorityPeriodForImplementation;
+      console.log('Sal: ' + data.lastSalary);
     });
   }
 
@@ -184,25 +208,25 @@ export class MainComponent implements OnInit {
           return this.errorHandler(err, 'Невозможно обновить желание!');
         })
       ).subscribe(hero => {
-          // console.log(hero);
-          // this.isEdit = false;
+        // console.log(hero);
+        // this.isEdit = false;
         this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
-        });
+      });
 
     } else {
       this.httpService.sendData(wish, this.apiUrl).pipe(
-       catchError(err => {
+        catchError(err => {
 
-         /*this.isEdit = false;
-         this.error = 'Невозможно добавить желание!';
-         console.log(err);
-         timer(4000).subscribe(() => {
-           this.error = null;
-         });*/
+          /*this.isEdit = false;
+          this.error = 'Невозможно добавить желание!';
+          console.log(err);
+          timer(4000).subscribe(() => {
+            this.error = null;
+          });*/
 
-         return this.errorHandler(err, 'Невозможно добавить желание!');
-       })
-    ).subscribe(hero => {
+          return this.errorHandler(err, 'Невозможно добавить желание!');
+        })
+      ).subscribe(hero => {
 
         this.showAlert('Желание успешно добавлено!', 'ADD MODE', hero);
 
