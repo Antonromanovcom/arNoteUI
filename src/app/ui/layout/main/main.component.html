@@ -74,6 +74,8 @@
 
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
+    <button class="btn btn-secondary" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
+    <button class="btn btn-secondary" (click)="openParseCsv($event)"> Парсинг csv</button>
     <clr-dropdown>
       <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
         Фильтры
@@ -173,6 +175,71 @@
         <div class="row">
           <button type="button" (click)="addEditService()" class="btn btn-primary mt-1">Сохранить</button>
           <button type="button" (click)="deleteWish()" *ngIf="isEditMode" class="btn btn-danger mt-1">Удалить</button>
+        </div>
+
+      </div>
+    </clr-modal>
+
+    <clr-modal [(clrModalOpen)]="isSalaryAdd">
+      <h3 class="modal-title">Добавить зарплату</h3>
+      <div class="modal-body">
+        <form clrForm [formGroup]="salaryForm">
+
+          <!--ПОЛЕ SALARY-->
+
+          <clr-input-container>
+
+            <label #label for="salary" class="input-label clr-col-12">Зарплата</label>
+            <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required
+                   size="100">
+          </clr-input-container>
+
+          <!--ПОЛЕ RESIDUAL SALARY-->
+
+          <clr-input-container>
+
+            <label #label for="residualSalary" class="input-label clr-col-12">Остаточная зарплата</label>
+            <input type="text" clrInput formControlName="residualSalary" id="residualSalary" name="residualSalary" autocomplete="off" required
+                   size="100">
+          </clr-input-container>
+
+
+        </form>
+
+        <div class="row">
+          <button type="button" (click)="addSalary()" class="btn btn-primary mt-1">Добавить</button>
+        </div>
+
+      </div>
+    </clr-modal>
+
+    <clr-modal [(clrModalOpen)]="isCsvParse">
+      <h3 class="modal-title">Парсинг csv-файла</h3>
+      <div class="modal-body">
+        <form clrForm [formGroup]="csvForm">
+
+
+          <!--ПОЛЕ FILE-->
+
+          <clr-input-container>
+
+            <label #label for="csvfile" class="input-label clr-col-12">Укажите csv-файл</label>
+            <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off" required
+                   size="100">
+          </clr-input-container>
+
+          <form [formGroup] = "uploadForm" (ngSubmit)="onSubmit()">
+
+          <input type="file" name="profile" (change)="onFileSelect($event)" />
+            <div>
+              <button type="submit">Upload</button>
+            </div>
+          </form>
+
+        </form>
+
+        <div class="row">
+          <button type="button" (click)="sendCsvFile()" class="btn btn-primary mt-1">Парсить</button>
         </div>
 
       </div>

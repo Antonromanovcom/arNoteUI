@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
-import {FormBuilder, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
 import {catchError} from 'rxjs/operators';
+import {Salary} from '../../../dto/salary';
 
 
 @Component({
@@ -18,16 +19,18 @@ export class MainComponent implements OnInit {
 
   localJson = 'assets/data.json'; // временный локальный json для тестирования
   _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
-  apiUrl = '/rest/wishes/all'; // все желания // основная ссылка на api
+  myBaseUrl = '/rest/wishes';
+  apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
 
-  priorityWishesUrl = '/rest/wishes/priority'; // приоритетные желания
+  priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
   _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
 
-  allWishesUrl = '/rest/wishes/all'; // все желания
+  allWishesUrl = this.myBaseUrl + '/all'; // все желания
   _allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
 
-  apiGetSumm = '/rest/wishes/summ'; // ссылка для получения сумм
+  apiGetSumm = this.myBaseUrl + '/summ'; // ссылка для получения сумм
   _apiGetSumm = 'http://localhost:8080/rest/wishes/summ'; // ссылка для получения сумм
+  apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
 
   error: any; // отображение ошибок
   result: any; // отображение результатов в алертах
@@ -37,9 +40,12 @@ export class MainComponent implements OnInit {
   periodPriority = 0; // период реализации для приоритетного
 
   isEdit = false; // режим редактирования для отображения / или чтобы спрятать модальное окно
+  isSalaryAdd = false; // режим добавления зп
   isEditMode = false; // редактировать или добавить
+  isCsvParse = false; // отправить на парсинг csv
   wishes: Wish[] = []; // контейнер желаний
   filters = ['Все', 'Приоритет']; // фильтры
+  uploadForm: FormGroup;
 
 
   form = this.fb.group({
@@ -64,6 +70,23 @@ export class MainComponent implements OnInit {
     ]]
   });
 
+  salaryForm = this.fb.group({
+    salary: ['', [
+      Validators.required,
+      Validators.pattern(/^[0-9]+$/)
+    ]],
+    residualSalary: ['', [
+      Validators.required,
+      Validators.pattern(/^[0-9]+$/)
+    ]]
+  });
+
+  csvForm = this.fb.group({
+    csvfile: ['', [
+     /* Validators.required,
+      Validators.pattern(/^[0-9]+$/)*/
+    ]]
+  });
 
   constructor(private httpService: HttpService, private fb: FormBuilder) {
   }
@@ -71,6 +94,10 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.getWishes();
+
+    this.uploadForm = this.fb.group({
+      profile: ['']
+    });
   }
 
   changeFilter(item: string) {
@@ -125,14 +152,12 @@ export class MainComponent implements OnInit {
   }
 
   deleteWish() {
-    this.httpService.deleteWish(this.form.value.id, this.apiUrl).pipe(
+    this.httpService.deleteWish(this.form.value.id, this.myBaseUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно удалить желание!');
       })
     )
       .subscribe(res => {
-        // console.log(res);
-        // this.isEdit = false;
         this.showAlert('Желание с id [' + this.form.value.id + '] успешно удалено!', 'ADD MODE', res);
       });
   }
@@ -140,6 +165,7 @@ export class MainComponent implements OnInit {
 
   errorHandler(err, message: string) {
     this.isEdit = false;
+    this.isSalaryAdd = false;
     this.error = message;
     console.log(err);
     timer(4000).subscribe(() => {
@@ -149,6 +175,13 @@ export class MainComponent implements OnInit {
     return throwError(err);
   }
 
+  /**
+   * Редактировать желание (или удалить).
+   *
+   * @param event
+   * @param {Wish} item
+   * @param {number} isedit
+   */
   openEditWish(event: any, item: Wish, isedit: number) {
 
     if (isedit === 1) {
@@ -180,15 +213,107 @@ export class MainComponent implements OnInit {
     }
   }
 
+
+  onFileSelect(event) {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.uploadForm.get('profile').setValue(file);
+    }
+  }
+
+  onSubmit() {
+    const formData = new FormData();
+    formData.append('csvfile', this.uploadForm.get('profile').value);
+    console.log(this.uploadForm.get('profile').value);
+    this.httpService.sendFile(formData, '/testxlsx').subscribe(hero => {
+
+      console.log(hero);
+    });
+
+  }
+
+
+  openParseCsv(event: any) {
+
+      this.isCsvParse = true;
+
+
+     /* this.form.patchValue({
+        id: item.id,
+        name: item.wish,
+        description: item.description,
+        url: item.url,
+        priority: item.priority,
+        price: item.price,
+      });*/
+  }
+
+
+
+
+
+  sendCsvFile() {
+
+    let reader = new FileReader();
+    //if (event.target.files && event.target.files.length > 0) {
+    // let file = event.target.files[0];
+    let file = this.csvForm.value.csvfile;
+    //reader.readAsDataURL(file);
+    reader.readAsArrayBuffer(file)
+    console.log(file.name);
+    /*reader.onload = () => {
+      this.form.get('avatar').setValue({
+        filename: file.name,
+        filetype: file.type,
+        value: reader.result.split(',')[1]
+      })*/
+    // };
+   //   }
+
+    this.isCsvParse = false;
+  }
+
+
+  openAddSalaryModal(event: any) {
+
+    this.isSalaryAdd = true;
+    this.isEditMode = false;
+    this.isEditMode = false;
+
+    this.salaryForm.patchValue({
+      salary: 1,
+      residualSalary: 1
+    });
+  }
+
   showAlert(text: string, mode: string, result: any) {
     console.log(mode);
     console.log(result);
 
     this.isEdit = false;
+    this.isSalaryAdd = false;
     this.result = text;
     timer(4000).subscribe(() => {
       this.result = null;
     });
+  }
+
+  addSalary() {
+    const salary = new Salary(this.salaryForm.value.salary,
+      this.salaryForm.value.residualSalary);
+
+    console.log(salary);
+
+    this.httpService.sendSalary(salary, this.apiSalary).pipe(
+      catchError(err => {
+
+        return this.errorHandler(err, 'Невозможно добавить зарплату!');
+      })
+    ).subscribe(hero => {
+
+      this.showAlert('Зарплата успешно обновлена!', 'ADD MODE', hero);
+    });
+
   }
 
   addEditService() {
@@ -203,41 +328,25 @@ export class MainComponent implements OnInit {
 
     if (this.isEditMode) {
 
-      this.httpService.updateWish(wish, this.apiUrl).pipe(
+      this.httpService.updateWish(wish, this.myBaseUrl).pipe(
         catchError(err => {
           return this.errorHandler(err, 'Невозможно обновить желание!');
         })
       ).subscribe(hero => {
-        // console.log(hero);
-        // this.isEdit = false;
+
         this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
       });
 
     } else {
-      this.httpService.sendData(wish, this.apiUrl).pipe(
+      this.httpService.sendData(wish, this.myBaseUrl).pipe(
         catchError(err => {
 
-          /*this.isEdit = false;
-          this.error = 'Невозможно добавить желание!';
-          console.log(err);
-          timer(4000).subscribe(() => {
-            this.error = null;
-          });*/
 
           return this.errorHandler(err, 'Невозможно добавить желание!');
         })
       ).subscribe(hero => {
 
         this.showAlert('Желание успешно добавлено!', 'ADD MODE', hero);
-
-        /*console.log('ADD MODE');
-        console.log(hero);
-
-        this.isEdit = false;
-        this.result = 'Желание с id [' + wish.id + '] успешно добавлено!';
-        timer(4000).subscribe(() => {
-          this.result = null;
-        });*/
       });
     }
   }

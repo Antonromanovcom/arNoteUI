@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Wish} from '../dto/wish';
+import {Salary} from '../dto/salary';
 
 
 @Injectable()
@@ -23,6 +24,31 @@ export class HttpService {
     };
 
     return this.http.post<Wish>(url, wish, httpOptions);
+  }
+
+
+  public sendFile(formData: FormData, url: string): Observable<any> {
+
+    /*const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };*/
+
+
+    return this.http.post<any>(url, formData);
+
+  }
+
+  public sendSalary(salary: Salary, url: string): Observable<Salary> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+
+    return this.http.post<Salary>(url, salary, httpOptions);
   }
 
   public updateWish(wish: Wish, url: string): Observable<Wish> {
