@@ -18,15 +18,16 @@ export class MainComponent implements OnInit {
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
 
   localJson = 'assets/data.json'; // временный локальный json для тестирования
-  _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
-  myBaseUrl = '/rest/wishes';
-  apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
+  apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
+  //_myBaseUrl = '/rest/wishes';
+  myBaseUrl = 'http://localhost:8080/rest/wishes';
+  _apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
 
-  priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
-  _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
+  _priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
+  priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
 
-  allWishesUrl = this.myBaseUrl + '/all'; // все желания
-  _allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
+  _allWishesUrl = this.myBaseUrl + '/all'; // все желания
+  allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
 
   apiGetSumm = this.myBaseUrl + '/summ'; // ссылка для получения сумм
   _apiGetSumm = 'http://localhost:8080/rest/wishes/summ'; // ссылка для получения сумм
@@ -129,6 +130,7 @@ export class MainComponent implements OnInit {
   }
 
   getWishes() {
+    console.log(this.apiUrl);
     this.httpService.getData(this.apiUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
