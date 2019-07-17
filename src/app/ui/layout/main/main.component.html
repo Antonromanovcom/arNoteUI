@@ -21,7 +21,7 @@
       </clr-alert-item>
     </clr-alert>
 
-    <!--<div class="clr-row">-->
+    <div class="clr-row">
       <!--<div class="clr-col-12">-->
         <!--<table class="table">
           <thead>
@@ -56,7 +56,6 @@
             <td style="width: 5%"> -</td>
             <td style="width: 5%"> -</td>
             <td> -</td>
-
           </tr>
           <tr class="sumpriorrow">
             <td style="width: 50%"><strong> ИТОГО (PRIOR) </strong></td>
@@ -70,24 +69,45 @@
           </tbody>
         </table>-->
 
+        <!--<clr-datagrid class="datagrid-compact">-->
         <clr-datagrid>
-          <clr-dg-column>Name</clr-dg-column>
+          <clr-dg-column>Желание</clr-dg-column>
+          <clr-dg-column>Цена</clr-dg-column>
+          <clr-dg-column class="hidden-md-down">Приоритет</clr-dg-column>
+          <clr-dg-column class="hidden-md-down">.</clr-dg-column>
+          <clr-dg-column class="hidden-md-down">.</clr-dg-column>
+          <clr-dg-column>Ред.</clr-dg-column>
+
           <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
-            <clr-dg-cell>{{item.wish}}</clr-dg-cell>
+            <clr-dg-cell  style="width: 50%">{{item.wish}}</clr-dg-cell>
+            <clr-dg-cell style="width: 15%; text-align: center">{{item.price}}</clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="width: 15%; text-align: center">{{item.priority}}</clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center"><clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon></clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center"><clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon></clr-dg-cell>
+            <clr-dg-cell style="width: 5%; text-align: center"> <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon></clr-dg-cell>
+
           </clr-dg-row>
 
-          <!--<clr-dg-footer>{{wishes.length}} users-->
           <clr-dg-footer>
+
+            <span class="label label-danger">ИТОГО<span class="badge badge-orange">{{summAll}} руб.</span></span>
+            <span class="label label-danger">Реализация<span class="badge badge-danger">{{periodAll}} мес.</span></span>
+
+            <span class="label label-success">ИТОГО (PRIOR)<span class="badge badge-orange">{{summPriority}} руб.</span></span>
+            <span class="label label-success">Реализация<span class="badge badge-success">{{periodPriority}} мес.</span></span>
+
+
             <clr-dg-pagination #pagination [clrDgPageSize]="10">
-              <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15]">Users per page</clr-dg-page-size>
+              <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15]">  Users per page</clr-dg-page-size>
               {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of {{pagination.totalItems}} users
             </clr-dg-pagination>
+
           </clr-dg-footer>
         </clr-datagrid>
 
 
       <!--</div>-->
-    <!--</div>-->
+    </div>
 
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>

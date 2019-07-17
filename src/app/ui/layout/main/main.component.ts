@@ -18,20 +18,19 @@ export class MainComponent implements OnInit {
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
 
   localJson = 'assets/data.json'; // временный локальный json для тестирования
-  apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
-  //_myBaseUrl = '/rest/wishes';
-  myBaseUrl = 'http://localhost:8080/rest/wishes';
-  _apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
-
-  _priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
-  priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
-
-  _allWishesUrl = this.myBaseUrl + '/all'; // все желания
-  allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
-
+  _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
+  myBaseUrl = '/rest/wishes';
+  _myBaseUrl = 'http://localhost:8080/rest/wishes';
+  apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
+  priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
+  _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
+  allWishesUrl = this.myBaseUrl + '/all'; // все желания
+  _allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
   apiGetSumm = this.myBaseUrl + '/summ'; // ссылка для получения сумм
   _apiGetSumm = 'http://localhost:8080/rest/wishes/summ'; // ссылка для получения сумм
   apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
+  parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
+  changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
 
   error: any; // отображение ошибок
   result: any; // отображение результатов в алертах
@@ -55,12 +54,8 @@ export class MainComponent implements OnInit {
       Validators.required,
       Validators.maxLength(160),
     ]],
-    description: ['', [
-
-    ]],
-    url: ['', [
-
-    ]],
+    description: ['', []],
+    url: ['', []],
     priority: ['', [
       Validators.required,
       Validators.pattern(/^[0-9]+$/)
@@ -83,10 +78,7 @@ export class MainComponent implements OnInit {
   });
 
   csvForm = this.fb.group({
-    csvfile: ['', [
-     /* Validators.required,
-      Validators.pattern(/^[0-9]+$/)*/
-    ]]
+    csvfile: ['', []]
   });
 
   constructor(private httpService: HttpService, private fb: FormBuilder) {
@@ -164,7 +156,6 @@ export class MainComponent implements OnInit {
       });
   }
 
-
   errorHandler(err, message: string) {
     this.isEdit = false;
     this.isSalaryAdd = false;
@@ -227,40 +218,40 @@ export class MainComponent implements OnInit {
     const formData = new FormData();
     formData.append('csvfile', this.uploadForm.get('profile').value);
     console.log(this.uploadForm.get('profile').value);
-    this.httpService.sendFile(formData, '/testxlsx').subscribe(hero => {
+    this.httpService.sendFile(formData, this.parseUrl).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно спарсить файл !');
+      })
+    ).subscribe(res => {
 
-      console.log(hero);
+      console.log(res);
+      this.showAlert('Парсинг выполнен! Добавлено: ' + res.itemsAdded + ' желаний!', 'PARSE MODE', res);
     });
 
   }
 
-
   openParseCsv(event: any) {
 
-      this.isCsvParse = true;
+    this.isCsvParse = true;
 
 
-     /* this.form.patchValue({
-        id: item.id,
-        name: item.wish,
-        description: item.description,
-        url: item.url,
-        priority: item.priority,
-        price: item.price,
-      });*/
+    /* this.form.patchValue({
+       id: item.id,
+       name: item.wish,
+       description: item.description,
+       url: item.url,
+       priority: item.priority,
+       price: item.price,
+     });*/
   }
-
-
-
-
 
   sendCsvFile() {
 
     let reader = new FileReader();
-    //if (event.target.files && event.target.files.length > 0) {
+    // if (event.target.files && event.target.files.length > 0) {
     // let file = event.target.files[0];
     let file = this.csvForm.value.csvfile;
-    //reader.readAsDataURL(file);
+    // reader.readAsDataURL(file);
     reader.readAsArrayBuffer(file)
     console.log(file.name);
     /*reader.onload = () => {
@@ -270,11 +261,10 @@ export class MainComponent implements OnInit {
         value: reader.result.split(',')[1]
       })*/
     // };
-   //   }
+    //   }
 
     this.isCsvParse = false;
   }
-
 
   openAddSalaryModal(event: any) {
 
@@ -294,6 +284,7 @@ export class MainComponent implements OnInit {
 
     this.isEdit = false;
     this.isSalaryAdd = false;
+    this.isCsvParse = false;
     this.result = text;
     timer(4000).subscribe(() => {
       this.result = null;
@@ -351,5 +342,20 @@ export class MainComponent implements OnInit {
         this.showAlert('Желание успешно добавлено!', 'ADD MODE', hero);
       });
     }
+  }
+
+  changePriority(item: Wish, move: string) {
+
+    console.log('change priority');
+    console.log('URL ->' + this.changePriorityUrl + '/' + item.id + '/' + move);
+    this.httpService.getData(this.changePriorityUrl + '/' + item.id + '/' + move).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно изменить приоритет!');
+      })
+    ).subscribe(res => {
+      console.log(res);
+      this.showAlert('Приоритет успешно изменен на - ' + res.priority, 'ADD MODE', res);
+      this.getWishes();
+    });
   }
 }

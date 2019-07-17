@@ -1,6 +1,10 @@
 
 ::ng-deep clr-icon:hover {
-  background:#53ea93;
+  /*background:#53ea93;*/
+  -webkit-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  transform: scale(1.2);
+
 }
 
 .sumallrow {
@@ -14,6 +18,12 @@
   color: #ffdb51;
 
 }
+
+/*::ng-deep .datagrid .datagrid-column.rj .datagrid-column-title {*/
+  /*text-align: right;*/
+/*}*/
+
+
 
 
   @media screen and (max-width: 500px){
