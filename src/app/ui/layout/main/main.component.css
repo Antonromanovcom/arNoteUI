@@ -13,11 +13,21 @@
 
 }
 
+::ng-deep  .main-container {
+  /*background-color: #ea1e2c;*/
+  /*height: 100%;*/
+}
+
 .sumpriorrow {
   background-color: #299834;
   color: #ffdb51;
 
 }
+
+#bottomdiv{
+  /*height:100%*/
+}
+
 
 /*::ng-deep .datagrid .datagrid-column.rj .datagrid-column-title {*/
   /*text-align: right;*/

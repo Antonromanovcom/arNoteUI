@@ -19,8 +19,8 @@ export class MainComponent implements OnInit {
 
   localJson = 'assets/data.json'; // временный локальный json для тестирования
   _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
-  myBaseUrl = '/rest/wishes';
-  _myBaseUrl = 'http://localhost:8080/rest/wishes';
+  _myBaseUrl = '/rest/wishes';
+  myBaseUrl = 'http://localhost:8080/rest/wishes';
   apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
   priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
   _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания

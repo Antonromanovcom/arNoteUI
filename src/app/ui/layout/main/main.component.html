@@ -1,9 +1,9 @@
+
 <div class="content-container">
   <!--<div class="clr-break-row">-->
   <!--<div class="col-4">-->
   <div class="content-area">
-    <ng-content>
-    </ng-content>
+    <!--<ng-content></ng-content>-->
 
     <clr-alert [clrAlertType]="'success'" *ngIf="result">
       <clr-alert-item>
@@ -22,52 +22,7 @@
     </clr-alert>
 
     <div class="clr-row">
-      <!--<div class="clr-col-12">-->
-        <!--<table class="table">
-          <thead>
-          <tr>
-            <th>Желание</th>
-            <th>Цена</th>
-            <th>Приоритет</th>
-            <th>.</th>
-            <th>.</th>
-            <th>Ред.</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let item of wishes">
-            <td style="width: 50%"> {{item.wish}}</td>
-            <td style="width: 10%"> {{item.price}}</td>
-            <td class="my_priority_table"> {{item.priority}}</td>
-            <td style="width: 5%">
-              <clr-icon shape="upload" (click)="up($event, item)"></clr-icon>
-            </td>
-            <td style="width: 5%">
-              <clr-icon shape="download" (click)="down($event, item)"></clr-icon>
-            </td>
-            <td>
-              <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon>
-            </td>
-          </tr>
-          <tr class="sumallrow">
-            <td style="width: 50%"><strong> ИТОГО </strong></td>
-            <td style="width: 10%"><strong> {{summAll}} </strong></td>
-            <td> Реализ-ция: {{periodAll}} </td>
-            <td style="width: 5%"> -</td>
-            <td style="width: 5%"> -</td>
-            <td> -</td>
-          </tr>
-          <tr class="sumpriorrow">
-            <td style="width: 50%"><strong> ИТОГО (PRIOR) </strong></td>
-            <td style="width: 10%"><strong> {{summPriority}} </strong></td>
-            <td> Реализ-ция: {{periodPriority}} </td>
-            <td style="width: 5%"> -</td>
-            <td style="width: 5%"> -</td>
-            <td> -</td>
-
-          </tr>
-          </tbody>
-        </table>-->
+      <div class="col-lg-8">
 
         <!--<clr-datagrid class="datagrid-compact">-->
         <clr-datagrid>
@@ -79,9 +34,9 @@
           <clr-dg-column>Ред.</clr-dg-column>
 
           <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
-            <clr-dg-cell  style="width: 50%">{{item.wish}}</clr-dg-cell>
-            <clr-dg-cell style="width: 15%; text-align: center">{{item.price}}</clr-dg-cell>
-            <clr-dg-cell class="hidden-md-down" style="width: 15%; text-align: center">{{item.priority}}</clr-dg-cell>
+            <clr-dg-cell  style="width: 80%">{{item.wish}}</clr-dg-cell>
+            <clr-dg-cell style="width: 20%; text-align: center">{{item.price}}</clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="width: 5%; text-align: center">{{item.priority}}</clr-dg-cell>
             <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center"><clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon></clr-dg-cell>
             <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center"><clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon></clr-dg-cell>
             <clr-dg-cell style="width: 5%; text-align: center"> <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon></clr-dg-cell>
@@ -97,8 +52,8 @@
             <span class="label label-success">Реализация<span class="badge badge-success">{{periodPriority}} мес.</span></span>
 
 
-            <clr-dg-pagination #pagination [clrDgPageSize]="10">
-              <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15]">  Users per page</clr-dg-page-size>
+            <clr-dg-pagination #pagination [clrDgPageSize]="30">
+              <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]">  Users per page</clr-dg-page-size>
               {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of {{pagination.totalItems}} users
             </clr-dg-pagination>
 
@@ -106,7 +61,7 @@
         </clr-datagrid>
 
 
-      <!--</div>-->
+      </div>
     </div>
 
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
@@ -123,6 +78,8 @@
         <a *ngFor="let item of filters" (click)="changeFilter(item)"  clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
+
+
 
 
     <clr-modal [(clrModalOpen)]="isEdit">
@@ -288,6 +245,7 @@
 
   <!--<div class="col-4">-->
   <app-sidebar class="sidenav"></app-sidebar>
+
   <!--</div>-->
   <!--</div>-->
 </div>
