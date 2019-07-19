@@ -3,8 +3,9 @@ import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
-import {catchError} from 'rxjs/operators';
+import {catchError, map} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
+import {HttpHeaders, HttpParams} from '@angular/common/http';
 
 
 @Component({
@@ -87,6 +88,7 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.getWishes();
+    window.sessionStorage.removeItem('token');
 
     this.uploadForm = this.fb.group({
       profile: ['']
@@ -168,13 +170,6 @@ export class MainComponent implements OnInit {
     return throwError(err);
   }
 
-  /**
-   * Редактировать желание (или удалить).
-   *
-   * @param event
-   * @param {Wish} item
-   * @param {number} isedit
-   */
   openEditWish(event: any, item: Wish, isedit: number) {
 
     if (isedit === 1) {
@@ -358,4 +353,41 @@ export class MainComponent implements OnInit {
       this.getWishes();
     });
   }
+
+
+// ЛОГИН и АВТОРИЗАЦИЯ
+
+  login() {
+
+    const body = new HttpParams()
+      .set('username', 'tom')
+      .set('password', '123');
+    // .set('grant_type', 'password');
+
+
+    this.httpService.login(body.toString())
+      /*.pipe(
+      map(
+        res => {
+          console.log(res);
+
+          window.sessionStorage.setItem('token', JSON.stringify(res));
+          // console.log('token -> ' +  window.sessionStorage.getItem('token'));
+
+          console.log(res.headers.get('Authorization'));
+
+          // let myHeader = res.headers.get('Authorization');
+          // console.log('token 2 -> ' +  myHeader);
+
+          /!* let header: HttpHeaders = res.headers;
+           console.log('t' + header.get('Authorization'));
+           console.log('t' + header);*!/
+        }
+      )
+    )*/
+      .subscribe();
+
+
+  }
+
 }
