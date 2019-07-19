@@ -3,7 +3,7 @@ import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
-import {catchError, map} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
 import {HttpHeaders, HttpParams} from '@angular/common/http';
 
@@ -362,32 +362,14 @@ export class MainComponent implements OnInit {
     const body = new HttpParams()
       .set('username', 'tom')
       .set('password', '123');
-    // .set('grant_type', 'password');
 
-
-    this.httpService.login(body.toString())
-      /*.pipe(
-      map(
-        res => {
-          console.log(res);
-
-          window.sessionStorage.setItem('token', JSON.stringify(res));
-          // console.log('token -> ' +  window.sessionStorage.getItem('token'));
-
-          console.log(res.headers.get('Authorization'));
-
-          // let myHeader = res.headers.get('Authorization');
-          // console.log('token 2 -> ' +  myHeader);
-
-          /!* let header: HttpHeaders = res.headers;
-           console.log('t' + header.get('Authorization'));
-           console.log('t' + header);*!/
-        }
-      )
-    )*/
-      .subscribe();
-
-
+    this.httpService.login(body.toString()).pipe(
+      tap(resp => {
+        console.log('heaeder', resp.headers.get('Authorization'));
+        sessionStorage.setItem('token', resp.headers.get('Authorization'));
+        localStorage.setItem('token', resp.headers.get('Authorization'));
+        console.log('storage', localStorage.getItem('token'));
+      })).subscribe();
   }
 
 }
