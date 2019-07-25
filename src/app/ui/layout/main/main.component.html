@@ -79,6 +79,16 @@
         <a *ngFor="let item of filters" (click)="changeFilter(item)"  clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
+    <clr-dropdown>
+      <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+        Залогиниться как...
+        <clr-icon shape="caret down"></clr-icon>
+      </button>
+      <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
+        <label class="dropdown-header">Залогиниться как</label>
+        <a *ngFor="let item of templogins" (click)="changeLogin(item)"  clrDropdownItem>{{item}}</a>
+      </clr-dropdown-menu>
+    </clr-dropdown>
 
 
 

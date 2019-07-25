@@ -6,6 +6,7 @@ import {Observable} from 'rxjs';
   providedIn: 'root'
 })*/
 
+// export class BasicAuthHtppInterceptorService  {
 @Injectable()
 export class BasicAuthHtppInterceptorService implements HttpInterceptor {
   constructor() { }
@@ -21,6 +22,8 @@ export class BasicAuthHtppInterceptorService implements HttpInterceptor {
         headers: req.headers.set('Authorization', idToken)
       });
       return next.handle(cloned);
+    } else {
+      return next.handle(req);
     }
   }
 

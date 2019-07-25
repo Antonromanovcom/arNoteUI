@@ -46,6 +46,7 @@ export class MainComponent implements OnInit {
   isCsvParse = false; // отправить на парсинг csv
   wishes: Wish[] = []; // контейнер желаний
   filters = ['Все', 'Приоритет']; // фильтры
+  templogins = ['Антон', 'Женя', 'Настя']; // фильтры
   uploadForm: FormGroup;
 
 
@@ -87,8 +88,8 @@ export class MainComponent implements OnInit {
 
 
   ngOnInit() {
-    this.getWishes();
-    window.sessionStorage.removeItem('token');
+    // this.getWishes();
+  //  window.sessionStorage.removeItem('token');
 
     this.uploadForm = this.fb.group({
       profile: ['']
@@ -357,19 +358,48 @@ export class MainComponent implements OnInit {
 
 // ЛОГИН и АВТОРИЗАЦИЯ
 
-  login() {
+  login(login: string, pwd: string) {
 
     const body = new HttpParams()
-      .set('username', 'tom')
-      .set('password', '123');
+      .set('username', login)
+      .set('password', pwd);
 
-    this.httpService.login(body.toString()).pipe(
+    this.httpService.login(body.toString())
+      /*.pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно залогиниться!!');
+      }))*/
+      .pipe(
       tap(resp => {
-        console.log('heaeder', resp.headers.get('Authorization'));
+        console.log('header', resp.headers.get('Authorization'));
         sessionStorage.setItem('token', resp.headers.get('Authorization'));
         localStorage.setItem('token', resp.headers.get('Authorization'));
         console.log('storage', localStorage.getItem('token'));
-      })).subscribe();
+      }))
+      .subscribe();
+  }
+
+  logout() {
+    console.log('unauthorize');
+    localStorage.removeItem('token');
+  }
+
+  changeLogin(item: string) {
+
+    // 'Антон', 'Женя', 'Настя'
+
+  //  this.logout();
+
+    if (item === 'Антон') {
+
+      this.login('anton', '123');
+    } else if (item === 'Женя') {
+      this.login('eugene', '123');
+    } else {
+      this.login('nastya', '123');
+    }
+
+   // this.getWishes();
   }
 
 }
