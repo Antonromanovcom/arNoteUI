@@ -51,18 +51,9 @@ export class MainComponent implements OnInit {
   filters = ['Все', 'Приоритет']; // фильтры
   templogins = ['Антон', 'Женя', 'Настя']; // фильтры
   uploadForm: FormGroup;
-  // goals = [];
-  goals: any;
-
 
   private subscription: Subscription;
-  private subscription2: Subscription;
-  private subscription3: Subscription;
-
-  isOdd: boolean;
-  myNumber: number;
   globalError: ErrorType;
-
 
   form = this.fb.group({
     id: ['', []],
@@ -103,35 +94,15 @@ export class MainComponent implements OnInit {
 
   }
 
-  // getHeroes(): void {
-  //   this.commonService.getGoals()
-  //     .subscribe(heroes => this.goals = heroes);
-  // }
-
-  // temp() {
-  //   this.goals.push('bbbb');
-  //   console.log('goals - ' + this.goals);
-  //   this.commonService.changeGoal(this.goals);
-  // }
-
   ngOnInit() {
     this.getWishes();
-    //  window.sessionStorage.removeItem('token');
+
     this.uploadForm = this.fb.group({
       profile: ['']
     });
 
-    // this.commonService.goal.subscribe(value => {
-    //   this.goals = value;
-    //   console.log("Subscription got", value);
-    // });
-   // this.getHeroes();
 
-    // this.subscription = this.commonService.isOdd$.subscribe(isOdd => this.isOdd = isOdd);
-    // this.subscription2 = this.commonService.myNumber$.subscribe(myNumber => this.myNumber = myNumber);
-
-
-    this.subscription3 = this.commonService.error$.subscribe(error => {
+    this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
 
         this.globalError = new ErrorType();
@@ -150,29 +121,6 @@ export class MainComponent implements OnInit {
 
       }
     });
-    //
-
-
-
-    // this.goals = this.commonService.goal;
-    // this.commonService.goal.subscribe(res => {
-    //   this.goals = res;
-    //   console.log(res);
-    //   console.log(this.goals);
-    // });
-
-
-
-    // this.subscription = this.commonService.notifyObservable$.subscribe((res) => {
-    //
-    //   console.log('fvsfvsdfv');
-    //
-    //   if (res.hasOwnProperty('option') && res.option === 'onSubmit') {
-    //     console.log('П И З Д Е Ц !!!!!' + res.value);
-    //     // perform your other action from here
-    //   }
-    // });
-
   }
 
   changeFilter(item: string) {
@@ -304,28 +252,19 @@ export class MainComponent implements OnInit {
 
   }
 
+  // Открыть диалог выбора csv-файла для парсинга на сервере.
   openParseCsv(event: any) {
     this.isCsvParse = true;
   }
 
+
+  // Добавить в Мультипар-форму подгруженый csv-файл
   sendCsvFile() {
 
-    let reader = new FileReader();
-    // if (event.target.files && event.target.files.length > 0) {
-    // let file = event.target.files[0];
-    let file = this.csvForm.value.csvfile;
-    // reader.readAsDataURL(file);
+    const reader = new FileReader();
+    const file = this.csvForm.value.csvfile;
     reader.readAsArrayBuffer(file)
     console.log(file.name);
-    /*reader.onload = () => {
-      this.form.get('avatar').setValue({
-        filename: file.name,
-        filetype: file.type,
-        value: reader.result.split(',')[1]
-      })*/
-    // };
-    //   }
-
     this.isCsvParse = false;
   }
 

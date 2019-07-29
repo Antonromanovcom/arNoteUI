@@ -5,7 +5,7 @@ import {HttpParams} from '@angular/common/http';
 import {AuthService} from '../../../service/auth.service';
 import {throwError, timer} from 'rxjs';
 import {CommonService} from '../../../service/common.service';
-import {arError, ErrorType} from '../../../error-handling/error.type';
+import {ErrorType} from '../../../error-handling/error.type';
 
 
 @Component({
@@ -32,22 +32,7 @@ export class HeaderComponent implements OnInit {
   constructor(private commonService: CommonService, private authService: AuthService, private fb: FormBuilder) {
   }
 
-  // testit() {
-  //   this.goals.push('bbbb');
-  //   console.log('goals - ' + this.goals);
-  //   this.commonService.changeGoal(this.goals);
-  // }
-
   ngOnInit() {
-
-    // this.commonService.goal.subscribe(res => this.goals = res);
-
-    // this.goals.push('aaaaaaaaaa');
-    // console.log('goals - ' + this.goals);
-    // this.commonService.changeGoal(this.goals);
-
-    // this.commonService.changeGoal(this.goals);
-
   }
 
   showLoginForm(item: string) {
@@ -58,27 +43,10 @@ export class HeaderComponent implements OnInit {
   errorHandler(err, message: string) {
 
     this.isLogin = false;
-
-    console.log('errorHandler - ' + err);
-
-    // this.commonService.notifyOther({option: 'onSubmit', value: 'From header'});
-    // this.goals.push('bbbb');
-    // console.log('goals - ' + this.goals);
-
     let errorType = new ErrorType();
-    // errorType.errorType2 = 'wwwwwww';
     errorType.errorType2 = errorType.WRONG_LOGIN;
-    // errorType.setErrorType = arError.WRONG_CREDENTIALS;
-
-    // if (errorType.getErrorType === arError.Value2) {
     console.log('Val 1 - ' + errorType.errorType2);
-    // } else {
-    //   console.log('Val 2 - ' + errorType.getErrorType);
-    // }
-
-    // this.commonService.changeGoal(this.goals);
     this.commonService.pushError(errorType);
-
     return throwError(err);
   }
 
@@ -87,10 +55,6 @@ export class HeaderComponent implements OnInit {
     const body = new HttpParams()
       .set('username', this.loginForm.value.login)
       .set('password', this.loginForm.value.password);
-
-    // this.goals.push('aaaaaaaaaa');
-    // console.log('goals - ' + this.goals);
-    // // this.commonService.changeGoal(this.goals);
 
     this.authService.login(body.toString())
       .pipe(
@@ -111,6 +75,4 @@ export class HeaderComponent implements OnInit {
 
 
   }
-
-
 }
