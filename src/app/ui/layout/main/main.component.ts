@@ -55,7 +55,9 @@ export class MainComponent implements OnInit {
 
 
   private subscription: Subscription;
+  private subscription2: Subscription;
   isOdd: boolean;
+  myNumber: number;
 
 
   form = this.fb.group({
@@ -122,6 +124,7 @@ export class MainComponent implements OnInit {
    // this.getHeroes();
 
     this.subscription = this.commonService.isOdd$.subscribe(isOdd => this.isOdd = isOdd);
+    this.subscription2 = this.commonService.myNumber$.subscribe(myNumber => this.myNumber = myNumber);
 
 
 

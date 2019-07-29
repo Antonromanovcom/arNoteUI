@@ -1,4 +1,3 @@
-
 <div class="content-container">
   <!--<div class="clr-break-row">-->
   <!--<div class="col-4">-->
@@ -34,12 +33,18 @@
           <clr-dg-column>Ред.</clr-dg-column>
 
           <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
-            <clr-dg-cell  style="width: 80%">{{item.wish}}</clr-dg-cell>
+            <clr-dg-cell style="width: 80%">{{item.wish}}</clr-dg-cell>
             <clr-dg-cell style="width: 20%; text-align: center">{{item.price}}</clr-dg-cell>
             <clr-dg-cell class="hidden-md-down" style="width: 5%; text-align: center">{{item.priority}}</clr-dg-cell>
-            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center"><clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon></clr-dg-cell>
-            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center"><clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon></clr-dg-cell>
-            <clr-dg-cell style="width: 5%; text-align: center"> <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon></clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center">
+              <clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon>
+            </clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center">
+              <clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon>
+            </clr-dg-cell>
+            <clr-dg-cell style="width: 5%; text-align: center">
+              <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon>
+            </clr-dg-cell>
 
           </clr-dg-row>
 
@@ -53,7 +58,7 @@
 
 
             <clr-dg-pagination #pagination [clrDgPageSize]="30">
-              <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]">  Users per page</clr-dg-page-size>
+              <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]"> Users per page</clr-dg-page-size>
               {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} of {{pagination.totalItems}} users
             </clr-dg-pagination>
 
@@ -63,9 +68,10 @@
 
       </div>
     </div>
-<div>{{goals}}</div>
+    <div>{{goals}}</div>
     <div>{{subscription}}</div>
     <div>{{isOdd}}</div>
+    <div>{{myNumber}}</div>
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
     <button class="btn btn-secondary" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
@@ -78,7 +84,7 @@
       </button>
       <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
         <label class="dropdown-header">Фильтры</label>
-        <a *ngFor="let item of filters" (click)="changeFilter(item)"  clrDropdownItem>{{item}}</a>
+        <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
     <clr-dropdown>
@@ -88,7 +94,7 @@
       </button>
       <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
         <label class="dropdown-header">Залогиниться как</label>
-        <a *ngFor="let item of templogins" (click)="changeLogin(item)"  clrDropdownItem>{{item}}</a>
+        <a *ngFor="let item of templogins" (click)="changeLogin(item)" clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
 
@@ -204,7 +210,8 @@
           <clr-input-container>
 
             <label #label for="residualSalary" class="input-label clr-col-12">Остаточная зарплата</label>
-            <input type="text" clrInput formControlName="residualSalary" id="residualSalary" name="residualSalary" autocomplete="off" required
+            <input type="text" clrInput formControlName="residualSalary" id="residualSalary" name="residualSalary"
+                   autocomplete="off" required
                    size="100">
           </clr-input-container>
 
@@ -229,13 +236,14 @@
           <clr-input-container>
 
             <label #label for="csvfile" class="input-label clr-col-12">Укажите csv-файл</label>
-            <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off" required
+            <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off"
+                   required
                    size="100">
           </clr-input-container>
 
-          <form [formGroup] = "uploadForm" (ngSubmit)="onSubmit()">
+          <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
 
-          <input type="file" name="profile" (change)="onFileSelect($event)" />
+            <input type="file" name="profile" (change)="onFileSelect($event)"/>
             <div>
               <button type="submit">Upload</button>
             </div>

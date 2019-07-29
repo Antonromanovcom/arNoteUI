@@ -15,6 +15,7 @@ export class CommonService {
    private loggedIn: boolean = null;
   private myNumberValue = 0;
   private isOddValue = false;
+
   private myNumber: BehaviorSubject<number> = new BehaviorSubject<number>(this.myNumberValue);
   myNumber$: Observable<number> = this.myNumber.asObservable();
   private isOdd: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
