@@ -1,27 +1,19 @@
 export enum arError {
-  Value1,
+  WRONG_CREDENTIALS,
   Value2
 }
 
 export class ErrorType {
-  // error: number;
-  // nom: string;
-  // prenom: string;
-  // dateCretation: Date;
-  private status: arError;
+  private errorType: arError;
 
-
-
-
-
-  get getStatus(): arError {
-    return this.status;
+  get getErrorType(): arError {
+    return this.errorType;
   }
 
 
 
 
-  set setStatus(value: arError) {
-    this.status = value;
+  set setErrorType(value: arError) {
+    this.errorType = value;
   }
 }

@@ -67,12 +67,12 @@ export class HeaderComponent implements OnInit {
     // console.log('goals - ' + this.goals);
 
     let errorType = new ErrorType();
-    errorType.setStatus = arError.Value1;
+    errorType.setErrorType = arError.WRONG_CREDENTIALS;
 
-    if (errorType.getStatus === arError.Value2) {
-      console.log('Val 1 - ' + errorType.getStatus);
+    if (errorType.getErrorType === arError.Value2) {
+      console.log('Val 1 - ' + errorType.getErrorType);
     } else {
-      console.log('Val 2 - ' + errorType.getStatus);
+      console.log('Val 2 - ' + errorType.getErrorType);
     }
 
     this.commonService.changeGoal(this.goals);

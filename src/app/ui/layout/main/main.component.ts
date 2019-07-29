@@ -99,12 +99,12 @@ export class MainComponent implements OnInit {
 
   }
 
-  getHeroes(): void {
-    this.commonService.getGoals()
-      .subscribe(heroes => this.goals = heroes);
-  }
+  // getHeroes(): void {
+  //   this.commonService.getGoals()
+  //     .subscribe(heroes => this.goals = heroes);
+  // }
 
-  temp(){
+  temp() {
     this.goals.push('bbbb');
     console.log('goals - ' + this.goals);
     this.commonService.changeGoal(this.goals);
@@ -117,10 +117,10 @@ export class MainComponent implements OnInit {
       profile: ['']
     });
 
-    this.commonService.goal.subscribe(value => {
-      this.goals = value;
-      console.log("Subscription got", value);
-    });
+    // this.commonService.goal.subscribe(value => {
+    //   this.goals = value;
+    //   console.log("Subscription got", value);
+    // });
    // this.getHeroes();
 
     this.subscription = this.commonService.isOdd$.subscribe(isOdd => this.isOdd = isOdd);
