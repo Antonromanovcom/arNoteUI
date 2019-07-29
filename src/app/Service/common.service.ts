@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {Wish} from '../dto/wish';
+import {Wish} from '../DTO/wish';
 
 
 @Injectable({
@@ -12,19 +11,19 @@ export class CommonService {
 
   private notify = new Subject<any>();
 
-   private loggedIn: boolean = null;
+  private loggedIn: boolean = null;
   private myNumberValue = 0;
   private isOddValue = false;
 
   private myNumber: BehaviorSubject<number> = new BehaviorSubject<number>(this.myNumberValue);
   myNumber$: Observable<number> = this.myNumber.asObservable();
   private isOdd: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  isOdd$:  Observable<boolean> = this.isOdd.asObservable();
+  isOdd$: Observable<boolean> = this.isOdd.asObservable();
 
   private goals = new BehaviorSubject<any>(['The initial goal', 'Another silly life goal']);
   goal = this.goals.asObservable();
-   filters = ['Все', 'Приоритет']; // фильтры
-   heroes: Wish[];
+  filters = ['Все', 'Приоритет']; // фильтры
+  heroes: Wish[];
 
 
   constructor() {
@@ -49,23 +48,20 @@ export class CommonService {
 
 
   changeGoal(goal) {
-     console.log('cs: ' + goal);
+    console.log('cs: ' + goal);
     // this.filters.push('12222');
     this.goals.next(goal);
     this.increaseNumber();
-   // console.log('cs2: ' + this.filters);
+    // console.log('cs2: ' + this.filters);
     // this.goals.next(this.filters);
     // this.filters.next(this.filters);
-  //
+    //
   }
 
 
-
-
-
-   getGoals(): Observable<string[]> {
-     return of(this.filters);
-   }
+  getGoals(): Observable<string[]> {
+    return of(this.filters);
+  }
 
 
 }

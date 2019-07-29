@@ -5,8 +5,8 @@ import { UiModule } from './ui/ui.module';
 import { ClarityModule } from '@clr/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
-import { AppRoutingModule } from './app-routing/app-routing.module';
-import {CommonService} from './service/common.service';
+import { AppRoutingModule } from './App-Routing/app-routing.module';
+import {CommonService} from './Service/common.service';
 
 
 

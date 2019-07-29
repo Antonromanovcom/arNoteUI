@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpParams} from '@angular/common/http';
-import {AuthService} from '../../../service/auth.service';
+import {AuthService} from '../../../Service/auth.service';
 import {throwError, timer} from 'rxjs';
-import {CommonService} from '../../../service/common.service';
+import {CommonService} from '../../../Service/common.service';
 
 @Component({
   selector: 'app-header',
@@ -52,12 +52,17 @@ export class HeaderComponent implements OnInit {
   }
 
   errorHandler(err, message: string) {
+
     // this.isEdit = false;
     // this.isSalaryAdd = false;
     // this.error = message;
 
     console.log('errorHandler - ' + err);
     // this.commonService.notifyOther({option: 'onSubmit', value: 'From header'});
+    // this.goals.push('bbbb');
+    // console.log('goals - ' + this.goals);
+
+    this.commonService.changeGoal(this.goals);
 
     return throwError(err);
   }

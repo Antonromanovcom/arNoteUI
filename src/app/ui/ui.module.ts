@@ -10,8 +10,8 @@ import { ClarityModule } from '@clr/angular';
 import { MainComponent } from './layout/main/main.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditComponent } from './layout/edit/edit.component';
-import {BasicAuthHtppInterceptorService} from '../service/basicauthhtppInterceptorservice';
-import {CommonService} from '../service/common.service';
+import {BasicAuthHtppInterceptorService} from '../Service/basicauthhtppInterceptorservice';
+import {CommonService} from '../Service/common.service';
 
 
 @NgModule({
