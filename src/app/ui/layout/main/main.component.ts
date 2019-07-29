@@ -3,9 +3,11 @@ import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
+import { Subscription } from 'rxjs/Subscription';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
 import {HttpHeaders, HttpParams} from '@angular/common/http';
+import {CommonService} from '../../../service/common.service';
 
 
 @Component({
@@ -48,6 +50,12 @@ export class MainComponent implements OnInit {
   filters = ['Все', 'Приоритет']; // фильтры
   templogins = ['Антон', 'Женя', 'Настя']; // фильтры
   uploadForm: FormGroup;
+  // goals = [];
+  goals: any;
+
+
+  private subscription: Subscription;
+  isOdd: boolean;
 
 
   form = this.fb.group({
@@ -83,17 +91,60 @@ export class MainComponent implements OnInit {
     csvfile: ['', []]
   });
 
-  constructor(private httpService: HttpService, private fb: FormBuilder) {
+  constructor( private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder) {
+
+
+
   }
 
+  getHeroes(): void {
+    this.commonService.getGoals()
+      .subscribe(heroes => this.goals = heroes);
+  }
+
+  temp(){
+    this.goals.push('bbbb');
+    console.log('goals - ' + this.goals);
+    this.commonService.changeGoal(this.goals);
+  }
 
   ngOnInit() {
-    // this.getWishes();
-  //  window.sessionStorage.removeItem('token');
-
+    this.getWishes();
+    //  window.sessionStorage.removeItem('token');
     this.uploadForm = this.fb.group({
       profile: ['']
     });
+
+    this.commonService.goal.subscribe(value => {
+      this.goals = value;
+      console.log("Subscription got", value);
+    });
+   // this.getHeroes();
+
+    this.subscription = this.commonService.isOdd$.subscribe(isOdd => this.isOdd = isOdd);
+
+
+
+
+    // this.goals = this.commonService.goal;
+    // this.commonService.goal.subscribe(res => {
+    //   this.goals = res;
+    //   console.log(res);
+    //   console.log(this.goals);
+    // });
+
+
+
+    // this.subscription = this.commonService.notifyObservable$.subscribe((res) => {
+    //
+    //   console.log('fvsfvsdfv');
+    //
+    //   if (res.hasOwnProperty('option') && res.option === 'onSubmit') {
+    //     console.log('П И З Д Е Ц !!!!!' + res.value);
+    //     // perform your other action from here
+    //   }
+    // });
+
   }
 
   changeFilter(item: string) {
@@ -219,7 +270,6 @@ export class MainComponent implements OnInit {
         return this.errorHandler(err, 'Невозможно спарсить файл !');
       })
     ).subscribe(res => {
-
       console.log(res);
       this.showAlert('Парсинг выполнен! Добавлено: ' + res.itemsAdded + ' желаний!', 'PARSE MODE', res);
     });
@@ -227,18 +277,7 @@ export class MainComponent implements OnInit {
   }
 
   openParseCsv(event: any) {
-
     this.isCsvParse = true;
-
-
-    /* this.form.patchValue({
-       id: item.id,
-       name: item.wish,
-       description: item.description,
-       url: item.url,
-       priority: item.priority,
-       price: item.price,
-     });*/
   }
 
   sendCsvFile() {
@@ -365,17 +404,17 @@ export class MainComponent implements OnInit {
       .set('password', pwd);
 
     this.httpService.login(body.toString())
-      /*.pipe(
-      catchError(err => {
-        return this.errorHandler(err, 'Невозможно залогиниться!!');
-      }))*/
+    /*.pipe(
+    catchError(err => {
+      return this.errorHandler(err, 'Невозможно залогиниться!!');
+    }))*/
       .pipe(
-      tap(resp => {
-        console.log('header', resp.headers.get('Authorization'));
-        sessionStorage.setItem('token', resp.headers.get('Authorization'));
-        localStorage.setItem('token', resp.headers.get('Authorization'));
-        console.log('storage', localStorage.getItem('token'));
-      }))
+        tap(resp => {
+          console.log('header', resp.headers.get('Authorization'));
+          sessionStorage.setItem('token', resp.headers.get('Authorization'));
+          localStorage.setItem('token', resp.headers.get('Authorization'));
+          console.log('storage', localStorage.getItem('token'));
+        }))
       .subscribe();
   }
 
@@ -386,10 +425,6 @@ export class MainComponent implements OnInit {
 
   changeLogin(item: string) {
 
-    // 'Антон', 'Женя', 'Настя'
-
-  //  this.logout();
-
     if (item === 'Антон') {
 
       this.login('anton', '123');
@@ -399,7 +434,7 @@ export class MainComponent implements OnInit {
       this.login('nastya', '123');
     }
 
-   // this.getWishes();
+    this.getWishes();
   }
 
 }

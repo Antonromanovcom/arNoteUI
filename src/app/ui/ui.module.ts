@@ -11,6 +11,7 @@ import { MainComponent } from './layout/main/main.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditComponent } from './layout/edit/edit.component';
 import {BasicAuthHtppInterceptorService} from '../service/basicauthhtppInterceptorservice';
+import {CommonService} from '../service/common.service';
 
 
 @NgModule({
@@ -25,8 +26,7 @@ import {BasicAuthHtppInterceptorService} from '../service/basicauthhtppIntercept
     ClarityModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthHtppInterceptorService, multi: true },
-
+    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthHtppInterceptorService, multi: true }
   ],
   exports: [LayoutComponent]
 })

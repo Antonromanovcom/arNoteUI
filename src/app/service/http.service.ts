@@ -68,7 +68,7 @@ export class HttpService {
   public login(loginPayload): Observable<HttpResponse<Object>> {
   // public login(loginPayload): Observable<any> {
 
-   // console.log('loginPayload ->' + loginPayload);
+   console.log('loginPayload ->' + loginPayload);
 
     const headers = {
       'Content-type': 'application/x-www-form-urlencoded'
@@ -83,13 +83,11 @@ export class HttpService {
     /*return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?username=tom&password=123', {observe: 'response'}).pipe(
       tap(resp => console.log('heaeder', resp.headers.get('Authorization'))));*/
 
-    return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?username=anton&password=123', {observe: 'response'});
+    // return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?username=anton&password=123', {observe: 'response'});
+    return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?' + loginPayload, {observe: 'response'});
     // return this.http.get('http://localhost:8080/login?username=anton&password=123');
 
   }
-
-
-
 
 
    // 'assets/data/test.json'

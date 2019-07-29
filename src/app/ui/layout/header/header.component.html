@@ -1,0 +1,96 @@
+<header class="header-1">
+  <div class="branding">
+    <a class="nav-link">
+      <clr-icon shape="shield"></clr-icon>
+      <span class="title">Angular CLI</span>
+    </a>
+  </div>
+  <div class="header-nav">
+    <a class="active nav-link nav-icon">
+      <clr-icon shape="home"></clr-icon>
+    </a>
+    <!--<a class=" nav-link nav-icon">-->
+      <!--<clr-icon shape="cog"></clr-icon>-->
+    <!--</a>-->
+  </div>
+  <!--<form class="search">-->
+    <!--<label for="search_input">-->
+      <!--<input id="search_input" type="text" placeholder="Search for keywords...">-->
+    <!--</label>-->
+  <!--</form>-->
+  <div class="header-actions">
+    <clr-dropdown class="dropdown bottom-right">
+      <button class="nav-icon" clrDropdownToggle>
+        <clr-icon shape="user"></clr-icon>
+        <clr-icon shape="caret down"></clr-icon>
+      </button>
+      <button class="btn btn-primary" (click)="testit()"> Добавить</button>
+      <div class="dropdown-menu">
+        <label class="dropdown-header">Залогиниться как</label>
+        <a *ngFor="let item of loginDropDownMenu" (click)="showLoginForm(item)"  clrDropdownItem>{{item}}</a>
+        <!--<a clrDropdownItem onclick="showLoginForm()">Войти</a>-->
+        <!--<a clrDropdownItem>О пользователе</a>-->
+        <!--<a clrDropdownItem>Выйти</a>-->
+      </div>
+    </clr-dropdown>
+    <!--<clr-dropdown>-->
+      <!--<button type="button" class="btn btn-outline-primary" clrDropdownTrigger>-->
+        <!--Залогиниться как...-->
+        <!--<clr-icon shape="caret down"></clr-icon>-->
+      <!--</button>-->
+      <!--<clr-dropdown-menu clrPosition="top-left" *clrIfOpen>-->
+        <!--<label class="dropdown-header">Залогиниться как</label>-->
+        <!--<a *ngFor="let item of templogins" (click)="changeLogin(item)"  clrDropdownItem>{{item}}</a>-->
+      <!--</clr-dropdown-menu>-->
+    <!--</clr-dropdown>-->
+  </div>
+</header>
+<!--<nav class="subnav">-->
+  <!--<ul class="nav">-->
+    <!--<li class="nav-item">-->
+      <!--<a class="nav-link active" href="#">Dashboard</a>-->
+    <!--</li>-->
+    <!--<li class="nav-item">-->
+      <!--<a class="nav-link" href="#">Projects</a>-->
+    <!--</li>-->
+    <!--<li class="nav-item">-->
+      <!--<a class="nav-link" href="#">Reports</a>-->
+    <!--</li>-->
+    <!--<li class="nav-item">-->
+      <!--<a class="nav-link" href="#">Users</a>-->
+    <!--</li>-->
+  <!--</ul>-->
+<!--</nav>-->
+
+<clr-modal [(clrModalOpen)]="isLogin">
+  <h3 class="modal-title">Войти</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="loginForm">
+
+      <!--ПОЛЕ ЛОГИН-->
+
+      <clr-input-container>
+
+        <label #label for="login" class="input-label clr-col-12">Логин</label>
+        <input type="text" clrInput formControlName="login" id="login" name="login" autocomplete="off" required
+               size="100">
+      </clr-input-container>
+
+      <!--ПОЛЕ ПАРОЛЬ-->
+
+      <clr-input-container>
+
+        <label #label for="password" class="input-label clr-col-12">Пароль</label>
+        <input type="password" clrInput formControlName="password" id="password" name="password" autocomplete="off" required
+               size="100">
+      </clr-input-container>
+
+
+    </form>
+
+    <div class="row">
+      <button type="button" (click)="sendLogin()" class="btn btn-primary mt-1">Добавить</button>
+    </div>
+
+  </div>
+</clr-modal>

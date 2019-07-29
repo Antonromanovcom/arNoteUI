@@ -1,4 +1,6 @@
 import {Component, OnInit} from '@angular/core';
+import {CommonService} from '../../service/common.service';
+import {HttpService} from '../../service/http.service';
 
 @Component({
   selector: 'app-layout',
@@ -12,7 +14,8 @@ import {Component, OnInit} from '@angular/core';
 
 <clr-main-container>
 <clr-header class="header">
-<h1> Выход</h1>
+<!--<h1> Выход</h1>-->
+  <app-header></app-header>
 </clr-header>
 <div class="content-container">
 <div class="content-area">
@@ -24,7 +27,8 @@ import {Component, OnInit} from '@angular/core';
 </div>
 </div>
 </clr-main-container>`,
-  styles: []
+  styles: [],
+  providers: [CommonService]
 })
 export class LayoutComponent implements OnInit {
 

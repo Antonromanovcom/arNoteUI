@@ -63,12 +63,14 @@
 
       </div>
     </div>
-
+<div>{{goals}}</div>
+    <div>{{subscription}}</div>
+    <div>{{isOdd}}</div>
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
     <button class="btn btn-secondary" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
     <button class="btn btn-secondary" (click)="openParseCsv($event)"> Парсинг csv</button>
-    <button class="btn btn-secondary" (click)="login()"> Логин </button>
+    <!--<button class="btn btn-secondary" (click)="login()"> Логин </button>-->
     <clr-dropdown>
       <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
         Фильтры
@@ -89,8 +91,6 @@
         <a *ngFor="let item of templogins" (click)="changeLogin(item)"  clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
-
-
 
 
     <clr-modal [(clrModalOpen)]="isEdit">
