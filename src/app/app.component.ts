@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {CommonService} from './Service/common.service';
+import {CommonService} from './service/common.service';
 
 
 @Component({

@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpParams} from '@angular/common/http';
-import {AuthService} from '../../../Service/auth.service';
+import {AuthService} from '../../../service/auth.service';
 import {throwError, timer} from 'rxjs';
-import {CommonService} from '../../../Service/common.service';
+import {CommonService} from '../../../service/common.service';
+import {arError, ErrorType} from '../../../error-handling/error.type';
+
+
 
 @Component({
   selector: 'app-header',
@@ -58,9 +61,19 @@ export class HeaderComponent implements OnInit {
     // this.error = message;
 
     console.log('errorHandler - ' + err);
+
     // this.commonService.notifyOther({option: 'onSubmit', value: 'From header'});
     // this.goals.push('bbbb');
     // console.log('goals - ' + this.goals);
+
+    let errorType = new ErrorType();
+    errorType.setStatus = arError.Value1;
+
+    if (errorType.getStatus === arError.Value2) {
+      console.log('Val 1 - ' + errorType.getStatus);
+    } else {
+      console.log('Val 2 - ' + errorType.getStatus);
+    }
 
     this.commonService.changeGoal(this.goals);
 

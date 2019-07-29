@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {Wish} from '../DTO/wish';
-import {Salary} from '../DTO/salary';
+import {Wish} from '../dto/wish';
+import {Salary} from '../dto/salary';
 import {map, tap} from 'rxjs/operators';
 
 

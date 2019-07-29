@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
-import {Wish} from '../DTO/wish';
+import {Wish} from '../dto/wish';
 
 
 @Injectable({

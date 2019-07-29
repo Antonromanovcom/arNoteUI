@@ -1,13 +1,13 @@
 import {Component, OnInit} from '@angular/core';
-import {HttpService} from '../../../Service/http.service';
-import {Wish} from '../../../DTO/wish';
+import {HttpService} from '../../../service/http.service';
+import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
 import { Subscription } from 'rxjs/Subscription';
 import {catchError, map, tap} from 'rxjs/operators';
-import {Salary} from '../../../DTO/salary';
+import {Salary} from '../../../dto/salary';
 import {HttpHeaders, HttpParams} from '@angular/common/http';
-import {CommonService} from '../../../Service/common.service';
+import {CommonService} from '../../../service/common.service';
 
 
 @Component({
