@@ -8,6 +8,7 @@ import {catchError, map, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
 import {HttpHeaders, HttpParams} from '@angular/common/http';
 import {CommonService} from '../../../service/common.service';
+import {ErrorType} from '../../../error-handling/error.type';
 
 
 @Component({
@@ -56,8 +57,11 @@ export class MainComponent implements OnInit {
 
   private subscription: Subscription;
   private subscription2: Subscription;
+  private subscription3: Subscription;
+
   isOdd: boolean;
   myNumber: number;
+  globalError: ErrorType;
 
 
   form = this.fb.group({
@@ -104,11 +108,11 @@ export class MainComponent implements OnInit {
   //     .subscribe(heroes => this.goals = heroes);
   // }
 
-  temp() {
-    this.goals.push('bbbb');
-    console.log('goals - ' + this.goals);
-    this.commonService.changeGoal(this.goals);
-  }
+  // temp() {
+  //   this.goals.push('bbbb');
+  //   console.log('goals - ' + this.goals);
+  //   this.commonService.changeGoal(this.goals);
+  // }
 
   ngOnInit() {
     this.getWishes();
@@ -123,9 +127,23 @@ export class MainComponent implements OnInit {
     // });
    // this.getHeroes();
 
-    this.subscription = this.commonService.isOdd$.subscribe(isOdd => this.isOdd = isOdd);
-    this.subscription2 = this.commonService.myNumber$.subscribe(myNumber => this.myNumber = myNumber);
+    // this.subscription = this.commonService.isOdd$.subscribe(isOdd => this.isOdd = isOdd);
+    // this.subscription2 = this.commonService.myNumber$.subscribe(myNumber => this.myNumber = myNumber);
 
+
+    this.subscription3 = this.commonService.error$.subscribe(error => {
+      if (error == null) {
+
+        this.globalError = new ErrorType();
+        this.globalError.errorType2 = 'NO ERRORS';
+
+      } else {
+
+        this.globalError = error;
+
+      }
+    });
+    //
 
 
 

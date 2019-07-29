@@ -4,16 +4,32 @@ export enum arError {
 }
 
 export class ErrorType {
-  private errorType: arError;
+  // private errorType: arError;
+   errorType2: string;
+  // public static d = 'vffdvfdfv';
 
-  get getErrorType(): arError {
-    return this.errorType;
-  }
+  // get getErrorType2(): string {
+  //   return this.errorType2;
+  // }
+
+ /* getErrorTypeString(): string {
+
+    if (this.errorType === arError.Value2) {
+      return 'Неверно указаны логин/пароль';
+      // } else {
+      //   console.log('Val 2 - ' + errorType.getErrorType);
+      // }
+    }
 
 
+}*/
 
 
-  set setErrorType(value: arError) {
-    this.errorType = value;
-  }
+  // set errorType2(value: string) {
+  //   this.errorType2 = value;
+  // }
+
+  /*set setErrorType2(value: string) {
+    this.errorType2 = value;
+  }*/
 }

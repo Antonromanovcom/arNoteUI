@@ -68,10 +68,13 @@
 
       </div>
     </div>
-    <div>{{goals}}</div>
-    <div>{{subscription}}</div>
-    <div>{{isOdd}}</div>
-    <div>{{myNumber}}</div>
+
+    <!--<div>{{goals}}</div>-->
+    <!--<div>{{subscription}}</div>-->
+    <!--<div>{{isOdd}}</div>-->
+    <!--<div>{{myNumber}}</div>-->
+    <div>{{globalError.errorType2}}</div>
+
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
     <button class="btn btn-secondary" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
