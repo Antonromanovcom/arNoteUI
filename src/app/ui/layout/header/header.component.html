@@ -24,13 +24,15 @@
         <clr-icon shape="user"></clr-icon>
         <clr-icon shape="caret down"></clr-icon>
       </button>
-      <button class="btn btn-primary" (click)="testit()"> Добавить</button>
+
       <div class="dropdown-menu">
-        <label class="dropdown-header">Залогиниться как</label>
-        <a *ngFor="let item of loginDropDownMenu" (click)="showLoginForm(item)"  clrDropdownItem>{{item}}</a>
+        <label class="dropdown-header">Меню пользователя</label>
+        <a *ngFor="let item of loginDropDownMenu" (click)="loginIconHandler(item)"  clrDropdownItem>{{item}}</a>
+
         <!--<a clrDropdownItem onclick="showLoginForm()">Войти</a>-->
         <!--<a clrDropdownItem>О пользователе</a>-->
         <!--<a clrDropdownItem>Выйти</a>-->
+
       </div>
     </clr-dropdown>
     <!--<clr-dropdown>-->
@@ -89,7 +91,7 @@
     </form>
 
     <div class="row">
-      <button type="button" (click)="sendLogin()" class="btn btn-primary mt-1">Добавить</button>
+      <button type="button" (click)="sendLogin()" class="btn btn-primary mt-1">Войти</button>
     </div>
 
   </div>

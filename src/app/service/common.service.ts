@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {ErrorType} from '../error-handling/error.type';
+import {MessageCode} from './message.code';
 
 
 @Injectable({
@@ -8,17 +8,17 @@ import {ErrorType} from '../error-handling/error.type';
 })
 export class CommonService {
 
-  private error: ErrorType;
+  private error: MessageCode;
 
-  private errorSubsciber: BehaviorSubject<ErrorType> = new BehaviorSubject<ErrorType>(this.error);
-  error$: Observable<ErrorType> = this.errorSubsciber.asObservable();
+  private errorSubsciber: BehaviorSubject<MessageCode> = new BehaviorSubject<MessageCode>(this.error);
+  error$: Observable<MessageCode> = this.errorSubsciber.asObservable();
 
   constructor() {
   }
 
 
-  pushError(error: ErrorType) {
-    console.log('Incoming Error: ' + error.errorType2);
+  pushError(error: MessageCode) {
+    console.log('Incoming Error: ' + error.messageType);
     this.errorSubsciber.next(error);
   }
 }

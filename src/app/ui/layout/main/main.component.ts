@@ -3,12 +3,12 @@ import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
-import { Subscription } from 'rxjs/Subscription';
+import {Subscription} from 'rxjs/Subscription';
 import {catchError, map, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
 import {HttpHeaders, HttpParams} from '@angular/common/http';
 import {CommonService} from '../../../service/common.service';
-import {ErrorType} from '../../../error-handling/error.type';
+import {MessageCode} from '../../../service/message.code';
 
 
 @Component({
@@ -53,7 +53,7 @@ export class MainComponent implements OnInit {
   uploadForm: FormGroup;
 
   private subscription: Subscription;
-  globalError: ErrorType;
+  globalError: MessageCode;
 
   form = this.fb.group({
     id: ['', []],
@@ -88,8 +88,7 @@ export class MainComponent implements OnInit {
     csvfile: ['', []]
   });
 
-  constructor( private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder) {
-
+  constructor(private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder) {
 
 
   }
@@ -105,20 +104,25 @@ export class MainComponent implements OnInit {
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
 
-        this.globalError = new ErrorType();
-        this.globalError.errorType2 = 'NO ERRORS';
+        this.globalError = new MessageCode();
+        this.globalError.messageType = 'NO ERRORS';
 
       } else {
 
         this.globalError = error;
         this.isEdit = false;
         this.isSalaryAdd = false;
-        this.error = error.errorType2;
 
-        timer(4000).subscribe(() => {
-          this.error = null;
-        });
+        if (this.globalError.messageType === this.globalError.AUTH_LOGIN_OK) {
+          this.getWishes();
+        } else {
 
+          this.error = error.messageType;
+
+          timer(4000).subscribe(() => {
+            this.error = null;
+          });
+        }
       }
     });
   }

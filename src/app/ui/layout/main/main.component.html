@@ -70,7 +70,7 @@
     </div>
 
 
-    <!--<div>{{globalError.errorType2}}</div>-->
+    <!--<div>{{globalError.messageType}}</div>-->
 
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
@@ -87,7 +87,8 @@
         <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
-    <clr-dropdown>
+
+    <!--<clr-dropdown>
       <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
         Залогиниться как...
         <clr-icon shape="caret down"></clr-icon>
@@ -96,7 +97,7 @@
         <label class="dropdown-header">Залогиниться как</label>
         <a *ngFor="let item of templogins" (click)="changeLogin(item)" clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
-    </clr-dropdown>
+    </clr-dropdown>-->
 
 
     <clr-modal [(clrModalOpen)]="isEdit">
