@@ -5,24 +5,29 @@ export enum arError {
 
 export class ErrorType {
   // private errorType: arError;
-   errorType2: string;
-  // public static d = 'vffdvfdfv';
+  errorType2: string;
+
+  // ===================================================
+// ====================  КОДЫ   ОШИБОК ===============
+// ===================================================
+
+  WRONG_LOGIN = 'Ошибка аутентификации! Не верные логин и/или проль!';
 
   // get getErrorType2(): string {
   //   return this.errorType2;
   // }
 
- /* getErrorTypeString(): string {
+  /* getErrorTypeString(): string {
 
-    if (this.errorType === arError.Value2) {
-      return 'Неверно указаны логин/пароль';
-      // } else {
-      //   console.log('Val 2 - ' + errorType.getErrorType);
-      // }
-    }
+     if (this.errorType === arError.Value2) {
+       return 'Неверно указаны логин/пароль';
+       // } else {
+       //   console.log('Val 2 - ' + errorType.getErrorType);
+       // }
+     }
 
 
-}*/
+ }*/
 
 
   // set errorType2(value: string) {

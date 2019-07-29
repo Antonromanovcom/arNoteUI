@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpParams} from '@angular/common/http';
@@ -6,7 +6,6 @@ import {AuthService} from '../../../service/auth.service';
 import {throwError, timer} from 'rxjs';
 import {CommonService} from '../../../service/common.service';
 import {arError, ErrorType} from '../../../error-handling/error.type';
-
 
 
 @Component({
@@ -30,7 +29,8 @@ export class HeaderComponent implements OnInit {
     ]]
   });
 
-  constructor(private commonService: CommonService, private authService: AuthService, private fb: FormBuilder) { }
+  constructor(private commonService: CommonService, private authService: AuthService, private fb: FormBuilder) {
+  }
 
   // testit() {
   //   this.goals.push('bbbb');
@@ -49,6 +49,7 @@ export class HeaderComponent implements OnInit {
     // this.commonService.changeGoal(this.goals);
 
   }
+
   showLoginForm(item: string) {
     console.log(item);
     this.isLogin = true;
@@ -56,9 +57,7 @@ export class HeaderComponent implements OnInit {
 
   errorHandler(err, message: string) {
 
-    // this.isEdit = false;
-    // this.isSalaryAdd = false;
-    // this.error = message;
+    this.isLogin = false;
 
     console.log('errorHandler - ' + err);
 
@@ -67,11 +66,12 @@ export class HeaderComponent implements OnInit {
     // console.log('goals - ' + this.goals);
 
     let errorType = new ErrorType();
-    errorType.errorType2 = 'wwwwwww';
+    // errorType.errorType2 = 'wwwwwww';
+    errorType.errorType2 = errorType.WRONG_LOGIN;
     // errorType.setErrorType = arError.WRONG_CREDENTIALS;
 
     // if (errorType.getErrorType === arError.Value2) {
-    //   console.log('Val 1 - ' + errorType.getErrorType);
+    console.log('Val 1 - ' + errorType.errorType2);
     // } else {
     //   console.log('Val 2 - ' + errorType.getErrorType);
     // }
@@ -93,12 +93,12 @@ export class HeaderComponent implements OnInit {
     // // this.commonService.changeGoal(this.goals);
 
     this.authService.login(body.toString())
-    .pipe(
-    catchError(err => {
-      // return this.errorHandler(err, 'Невозможно залогиниться!!');
-      console.log('gjnvkjvnkjfln !!!!!!!!!!!!!!!!');
-      return this.errorHandler(err, 'Невозможно залогиниться!!');
-    }))
+      .pipe(
+        catchError(err => {
+          // return this.errorHandler(err, 'Невозможно залогиниться!!');
+          console.log('gjnvkjvnkjfln !!!!!!!!!!!!!!!!');
+          return this.errorHandler(err, 'Невозможно залогиниться!!');
+        }))
       .pipe(
         tap(resp => {
           console.log('header', resp.headers.get('Authorization'));
@@ -108,7 +108,6 @@ export class HeaderComponent implements OnInit {
           this.isLogin = false;
         }))
       .subscribe();
-
 
 
   }

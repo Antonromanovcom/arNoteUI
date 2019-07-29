@@ -140,6 +140,13 @@ export class MainComponent implements OnInit {
       } else {
 
         this.globalError = error;
+        this.isEdit = false;
+        this.isSalaryAdd = false;
+        this.error = error.errorType2;
+
+        timer(4000).subscribe(() => {
+          this.error = null;
+        });
 
       }
     });
@@ -183,9 +190,9 @@ export class MainComponent implements OnInit {
     this.wishes.sort((a, b) => a.priority - b.priority);
   }
 
-  findMax() {
-    return this.wishes.reduce((a, b) => a.priority > b.priority ? a : b);
-  }
+  // findMax() {
+  //   return this.wishes.reduce((a, b) => a.priority > b.priority ? a : b);
+  // }
 
   down(event: any, item: Wish) {
 
