@@ -6,6 +6,7 @@ import {AuthService} from '../../../service/auth.service';
 import {throwError, timer} from 'rxjs';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
+import {Router} from '@angular/router';
 
 
 @Component({
@@ -28,7 +29,7 @@ export class HeaderComponent implements OnInit {
     ]]
   });
 
-  constructor(private commonService: CommonService, private authService: AuthService, private fb: FormBuilder) {
+  constructor(private commonService: CommonService, private authService: AuthService, private fb: FormBuilder, public router: Router) {
   }
 
   ngOnInit() {
@@ -49,7 +50,9 @@ export class HeaderComponent implements OnInit {
       this.isLogin = true;
     } else if (item === 'Выйти') {
       console.log('unauthorize');
+      this.loginDropDownMenu = ['Зарегистрироваться', 'Войти', 'Выйти'];
       localStorage.removeItem('token');
+      this.router.navigate(['401']);
 
       // TODO: ПЕРЕБРОС НА СТРАНИЦУ НЕ ЗАЛОГИНЕННЫХ ЮЗЕРОВ
 
@@ -93,10 +96,15 @@ export class HeaderComponent implements OnInit {
       .pipe(
         tap(resp => {
           console.log('header', resp.headers.get('Authorization'));
-          // sessionStorage.setItem('token', resp.headers.get('Authorization'));
+          localStorage.removeItem('token');
           localStorage.setItem('token', resp.headers.get('Authorization'));
           console.log('storage', localStorage.getItem('token'));
           this.isLogin = false;
+
+          this.authService.refreshToken();
+
+          this.router.navigate(['']);
+          this.loginDropDownMenu = ['О пользователе', 'Выйти'];
           const message = new MessageCode();
           this.sendMessagePush(message.AUTH_LOGIN_OK);
         }))

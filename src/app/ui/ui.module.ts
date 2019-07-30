@@ -11,22 +11,28 @@ import { MainComponent } from './layout/main/main.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { EditComponent } from './layout/edit/edit.component';
 import {BasicAuthHtppInterceptorService} from '../service/basicauthhtppInterceptorservice';
-import {CommonService} from '../service/common.service';
+import {AppRoutingModule} from '../app-routing/app-routing.module';
+import { UnauthorizeComponent } from './layout/unauthorize/unauthorize.component';
+import { JwtHelperService, JWT_OPTIONS  } from '@auth0/angular-jwt';
+
 
 
 @NgModule({
-  declarations: [LayoutComponent, HeaderComponent, SidebarComponent, MainComponent, EditComponent],
+  declarations: [LayoutComponent, HeaderComponent, SidebarComponent, MainComponent, EditComponent, UnauthorizeComponent],
   imports: [
     CommonModule,
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
+    AppRoutingModule,
     ReactiveFormsModule,
     ClarityModule
   ],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthHtppInterceptorService, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: BasicAuthHtppInterceptorService, multi: true },
+    { provide: JWT_OPTIONS, useValue: JWT_OPTIONS },
+    JwtHelperService
   ],
   exports: [LayoutComponent]
 })

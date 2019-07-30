@@ -2,12 +2,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { UiModule } from './ui/ui.module';
-import { ClarityModule } from '@clr/angular';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AngularFontAwesomeModule } from 'angular-font-awesome';
-import { AppRoutingModule } from './app-routing/app-routing.module';
-import {CommonService} from './service/common.service';
-
+import {HttpClientModule} from '@angular/common/http';
+import {AuthGuardService} from './service/auth-guard.service';
+import {AuthService} from './service/auth.service';
 
 
 @NgModule({
@@ -18,10 +17,10 @@ import {CommonService} from './service/common.service';
     BrowserModule,
     BrowserAnimationsModule,
     AngularFontAwesomeModule,
-    AppRoutingModule,
+    HttpClientModule,
     UiModule
   ],
-  providers: [],
+  providers: [AuthGuardService, AuthService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
