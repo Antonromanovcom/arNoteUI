@@ -36,7 +36,7 @@ export class MainComponent implements OnInit {
   parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
   changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
 
-  error: any; // отображение ошибок
+  error: any; // отображение ошибок в алертах
   result: any; // отображение результатов в алертах
   summAll = 0; // отображение сум по всем желаниям
   summPriority = 0; // отображение сум по приоритетным желаниям
@@ -193,7 +193,15 @@ export class MainComponent implements OnInit {
   errorHandler(err, message: string) {
     this.isEdit = false;
     this.isSalaryAdd = false;
-    this.error = message;
+    console.log('error - ' + err.error);
+    if (err.error === 'ERR-01') {
+      this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
+    } else if (err.error === 'ERR-02') {
+      this.error = 'У вас нет сохраненных желаний! Добавьте хотя бы одно желание!';
+    } else {
+      this.error = message;
+    }
+
     console.log(err);
     timer(4000).subscribe(() => {
       this.error = null;
