@@ -4,51 +4,78 @@
   <div class="content-area">
     <!--<ng-content></ng-content>-->
 
-    <clr-alert [clrAlertType]="'success'" *ngIf="result">
-      <clr-alert-item>
-        <span class="alert-text">
-            {{result}}
-        </span>
-      </clr-alert-item>
-    </clr-alert>
 
-    <clr-alert [clrAlertType]="'danger'" *ngIf="error">
-      <clr-alert-item>
-        <span class="alert-text">
-            {{error}}
-        </span>
-      </clr-alert-item>
-    </clr-alert>
 
-    <div class="clr-row">
-      <div class="col-lg-8">
+    <!--<div class="row">-->
+      <!--<div class="col-lg-12">-->
+
+    <!--<div class="clr-row">-->
+      <!--<div class="clr-col-lg-8">-->
 
         <!--<clr-datagrid class="datagrid-compact">-->
         <clr-datagrid>
+          <clr-dg-action-bar>
+            <div class="actions-container">
+
+              <clr-alert [clrAlertType]="'success'" *ngIf="result">
+                <clr-alert-item>
+        <span class="alert-text">
+            {{result}}
+        </span>
+                </clr-alert-item>
+              </clr-alert>
+
+              <clr-alert [clrAlertType]="'danger'" *ngIf="error">
+                <clr-alert-item>
+        <span class="alert-text">
+            {{error}}
+        </span>
+                </clr-alert-item>
+              </clr-alert>
+
+              <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
+              <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
+              <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
+              <button class="btn btn-secondary; hidden-md-down" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'"> Парсинг csv</button>
+              <button class="{{filterMode ? 'btn btn-danger; hidden-md-down' : 'btn btn-secondary; hidden-md-down'}}" (click)="filterWishes()"> {{filterButtonText}} </button>
+
+              <clr-dropdown class="hidden-md-down">
+                <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+                  ПРИОРИТЕТ
+                  <clr-icon shape="caret down"></clr-icon>
+                </button>
+                <clr-dropdown-menu *clrIfOpen>
+                  <label class="dropdown-header">Быстрый фильтр по приоритету</label>
+                  <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+
+            </div>
+          </clr-dg-action-bar>
           <clr-dg-column>Желание</clr-dg-column>
           <clr-dg-column>Цена</clr-dg-column>
-          <clr-dg-column class="hidden-md-down">Приоритет</clr-dg-column>
-          <clr-dg-column class="hidden-md-down">.</clr-dg-column>
-          <clr-dg-column class="hidden-md-down">.</clr-dg-column>
-          <clr-dg-column>Ред.</clr-dg-column>
+          <clr-dg-column [style.width.px]="20" class="hidden-md-down">Приоритет</clr-dg-column>
+          <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
+          <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
+          <clr-dg-column [style.width.px]="10" class="hidden-md-down">Ред.</clr-dg-column>
 
           <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
-            <clr-dg-cell style="width: 80%">{{item.wish}}</clr-dg-cell>
-            <clr-dg-cell style="width: 20%; text-align: center">{{item.price}}</clr-dg-cell>
-            <clr-dg-cell class="hidden-md-down" style="width: 5%; text-align: center">{{item.priority}}</clr-dg-cell>
-            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center">
+            <clr-dg-cell >{{item.wish}}</clr-dg-cell>
+            <clr-dg-cell style="text-align: center">{{item.price}}</clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="text-align: center">{{item.priority}}</clr-dg-cell>
+            <clr-dg-cell class="hidden-md-down" style="text-align: center">
               <clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon>
             </clr-dg-cell>
-            <clr-dg-cell class="hidden-md-down" style="width: 2%; text-align: center">
+            <clr-dg-cell class="hidden-md-down" style="text-align: center">
               <clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon>
             </clr-dg-cell>
-            <clr-dg-cell style="width: 5%; text-align: center">
+            <clr-dg-cell class="hidden-md-down" style="text-align: center">
               <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon>
             </clr-dg-cell>
 
           </clr-dg-row>
 
-          <clr-dg-footer>
+          <clr-dg-footer class="hidden-md-down">
 
             <span class="label label-danger">ИТОГО<span class="badge badge-orange">{{summAll}} руб.</span></span>
             <span class="label label-danger">Реализация<span class="badge badge-danger">{{periodAll}} мес.</span></span>
@@ -64,26 +91,12 @@
 
           </clr-dg-footer>
         </clr-datagrid>
-      </div>
-    </div>
+      <!--</div>-->
+    <!--</div>-->
 
 
-    <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
-    <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
-    <button class="btn btn-secondary" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
-    <button class="btn btn-secondary" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'"> Парсинг csv</button>
-    <button class="btn btn-secondary" (click)="filterWishes()"> Поиск / Фильтр </button>
 
-    <clr-dropdown>
-      <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-        ПРИОРИТЕТ
-        <clr-icon shape="caret down"></clr-icon>
-      </button>
-      <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
-        <label class="dropdown-header">Быстрый фильтр по приоритету</label>
-        <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
-      </clr-dropdown-menu>
-    </clr-dropdown>
+
 
     <clr-modal [(clrModalOpen)]="isEdit">
       <h3 class="modal-title">{{isEditMode ? 'Редактировать желание' : 'Добавить желание'}}</h3>
@@ -259,12 +272,14 @@
         </form>
 
         <div class="row">
-          <button type="button" (click)="sendCsvFile()" class="btn btn-primary mt-1">Парсить</button>
+          <button type="button" (click)="applyFilter()" class="btn btn-primary mt-1">Фильтровать</button>
         </div>
 
       </div>
     </clr-modal>
 
   </div>
+
   <app-sidebar class="sidenav"></app-sidebar>
+
 </div>

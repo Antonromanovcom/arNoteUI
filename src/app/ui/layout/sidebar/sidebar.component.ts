@@ -7,7 +7,8 @@ import {Component, OnInit} from '@angular/core';
     <div class="content-container">
       <div class="content-area">
       </div>
-      <clr-vertical-nav>
+      <!--<div class="hidden-md-down">-->
+      <clr-vertical-nav class="hidden-md-down">
         <a clrVerticalNavLink routerLink="../401" routerLinkActive="active">О проекте</a>
         <a clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
         <!--<a clrVerticalNavLink routerLink="./pikachu" routerLinkActive="active">Pikachu</a>
@@ -16,7 +17,7 @@ import {Component, OnInit} from '@angular/core';
         <div class="nav-divider"></div>
         <a clrVerticalNavLink routerLink="./credit" routerLinkActive="active">Credit</a>-->
       </clr-vertical-nav>
-    </div>
+      <!--</div>-->
 
   `,
   styles: []

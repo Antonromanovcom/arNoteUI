@@ -1,3 +1,4 @@
+<clr-main-container>
 <header class="header-1">
   <div class="branding">
     <a class="nav-link">
@@ -10,11 +11,6 @@
       <clr-icon shape="home"></clr-icon>
     </a>
   </div>
-  <!--<form class="search">-->
-    <!--<label for="search_input">-->
-      <!--<input id="search_input" type="text" placeholder="Search for keywords...">-->
-    <!--</label>-->
-  <!--</form>-->
   <div class="header-actions">
     <clr-dropdown class="dropdown bottom-right">
       <button class="nav-icon" clrDropdownToggle>
@@ -25,25 +21,32 @@
       <div class="dropdown-menu">
         <label class="dropdown-header">Меню пользователя</label>
         <a *ngFor="let item of loginDropDownMenu" (click)="loginIconHandler(item)"  clrDropdownItem>{{item}}</a>
-
-        <!--<a clrDropdownItem onclick="showLoginForm()">Войти</a>-->
-        <!--<a clrDropdownItem>О пользователе</a>-->
-        <!--<a clrDropdownItem>Выйти</a>-->
-
       </div>
     </clr-dropdown>
-    <!--<clr-dropdown>-->
-      <!--<button type="button" class="btn btn-outline-primary" clrDropdownTrigger>-->
-        <!--Залогиниться как...-->
-        <!--<clr-icon shape="caret down"></clr-icon>-->
-      <!--</button>-->
-      <!--<clr-dropdown-menu clrPosition="top-left" *clrIfOpen>-->
-        <!--<label class="dropdown-header">Залогиниться как</label>-->
-        <!--<a *ngFor="let item of templogins" (click)="changeLogin(item)"  clrDropdownItem>{{item}}</a>-->
-      <!--</clr-dropdown-menu>-->
-    <!--</clr-dropdown>-->
+
   </div>
 </header>
+
+<!--<div class="content-container">
+  <div class="content-area">
+    <clr-tabs>
+      <clr-tab>
+        <button clrTabLink>Настройка сервисов</button>
+        <clr-tab-content id="content1" *clrIfActive>
+          <h3>Настройка сервисов</h3>
+          <app-transaction-log></app-transaction-log>
+        </clr-tab-content>
+      </clr-tab>
+      <clr-tab>
+        <button clrTabLink>Отчеты</button>
+        <clr-tab-content id="transaction-log" *clrIfActive="true">
+          <h3>Журнал отчетов</h3>
+          <app-report></app-report>
+        </clr-tab-content>
+      </clr-tab>
+    </clr-tabs>
+  </div>
+</div>-->
 
 
 <clr-modal [(clrModalOpen)]="isLogin">
@@ -158,3 +161,5 @@
 
   </div>
 </clr-modal>
+
+</clr-main-container>

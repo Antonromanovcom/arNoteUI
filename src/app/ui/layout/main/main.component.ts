@@ -9,7 +9,7 @@ import {Salary} from '../../../dto/salary';
 import {HttpParams} from '@angular/common/http';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
-
+import {WishNameFilter} from './wish-name-filter';
 
 
 @Component({
@@ -36,7 +36,8 @@ export class MainComponent implements OnInit {
   apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
   parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
   changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
-  filterUrl = this.myBaseUrl + '/wishes?search=wish:Еще'
+  filterUrl = this.myBaseUrl + '/filter';
+  private wishFilter = new WishNameFilter();
 
 
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
@@ -48,6 +49,8 @@ export class MainComponent implements OnInit {
   summPriority = 0; // отображение сум по приоритетным желаниям
   periodAll = 0; // период реализации для всего
   periodPriority = 0; // период реализации для приоритетного
+  filterMode = false; // период реализации для приоритетного
+  filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -115,7 +118,7 @@ export class MainComponent implements OnInit {
   ngOnInit() {
     this.isUserCrypto = false;
 
-    this.getWishes();
+    this.getWishes(this.apiUrl);
 
     this.uploadForm = this.fb.group({
       profile: ['']
@@ -135,7 +138,7 @@ export class MainComponent implements OnInit {
         this.isSalaryAdd = false;
 
         if (this.globalError.messageType === this.globalError.AUTH_LOGIN_OK) {
-          this.getWishes();
+          this.getWishes(this.apiUrl);
         } else if (this.globalError.messageType === this.globalError.USER_DATA_CHANGE_OK) {
           this.isEdit = false;
           this.isSalaryAdd = false;
@@ -175,7 +178,7 @@ export class MainComponent implements OnInit {
     } else {
       this.apiUrl = this.priorityWishesUrl;
     }
-    this.getWishes();
+    this.getWishes(this.apiUrl);
   }
 
   up(event: any, item: Wish) {
@@ -211,9 +214,6 @@ export class MainComponent implements OnInit {
   }
 
 
-
-
-
   decryptWishes() {
 
     console.log('decrypt method');
@@ -228,7 +228,7 @@ export class MainComponent implements OnInit {
     });*/
 
     this.wishes.forEach((element) => {
-       // element.wish = this.commonService.decrypt(this.cryptokey, element.wish);
+      // element.wish = this.commonService.decrypt(this.cryptokey, element.wish);
       element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
 
       // element.wish = this.temp(this.cryptokey, element.wish);
@@ -237,15 +237,17 @@ export class MainComponent implements OnInit {
   }
 
   temp(keys, value) {
-return '144' + '45454';
+    return '144' + '45454';
   }
 
   // getWishes() {
   getWishes(url: string) {
 
+    // this.apiUrl
+
     this.isCrypto();
 
-    this.httpService.getData(this.apiUrl).pipe(
+    this.httpService.getData(url).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
       })
@@ -470,13 +472,19 @@ return '144' + '45454';
     ).subscribe(res => {
       console.log(res);
       this.showAlert('Приоритет успешно изменен на - ' + res.priority, 'ADD MODE', res);
-      this.getWishes();
+      this.getWishes(this.apiUrl);
     });
   }
 
   // Показать окно включения/выключения фильтров
   filterWishes() {
-    this.isFilterModal = true;
+    if (!this.filterMode) {
+      this.isFilterModal = true;
+    } else {
+      this.getWishes(this.apiUrl);
+      this.filterMode = false;
+      this.filterButtonText = 'ПОИСК/ФИЛЬТР';
+    }
   }
 
 
@@ -501,17 +509,33 @@ return '144' + '45454';
 
   applyFilter() {
 
+    this.isFilterModal = false;
+    this.filterMode = true; // включаем filtermode
+    this.filterButtonText = 'ВЫКЛЮЧИТЬ ФИЛЬТР'; // период реализации для приоритетного
+
+    this.wishes = this.wishes.filter(
+      wish => wish.wish.toLowerCase().includes(this.filterForm.value.wish.toLowerCase()));
 
 
-    this.httpService.login(body.toString())
-      .pipe(
-        tap(resp => {
-          console.log('header', resp.headers.get('Authorization'));
-          sessionStorage.setItem('token', resp.headers.get('Authorization'));
-          localStorage.setItem('token', resp.headers.get('Authorization'));
-          console.log('storage', localStorage.getItem('token'));
-        }))
-      .subscribe();
+    /* const wish = new Wish(1, this.filterForm.value.wish, 0, 1, false, '', '');
+
+     if (this.isUserCrypto) {
+       wish.wish = this.commonService.convertText('encrypt', wish.wish, this.cryptokey);
+       console.log('encrypted wish', wish.wish);
+     }
+
+
+     this.httpService.sendData(wish, this.filterUrl).pipe(
+       catchError(err => {
+         return this.errorHandler(err, 'Невозможно осуществить фильтрацию!');
+       })
+     ).subscribe(hero => {
+       console.log('hero', hero);
+       this.wishes = hero['list'];
+
+       this.showAlert('Фильтр по желаниям активен!', 'ADD MODE', hero);
+     });*/
+
   }
 
   /*logout() {
