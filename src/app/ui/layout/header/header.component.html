@@ -9,9 +9,6 @@
     <a class="active nav-link nav-icon" clrVerticalNavLink routerLink="../" routerLinkActive="active">
       <clr-icon shape="home"></clr-icon>
     </a>
-    <!--<a class=" nav-link nav-icon">-->
-      <!--<clr-icon shape="cog"></clr-icon>-->
-    <!--</a>-->
   </div>
   <!--<form class="search">-->
     <!--<label for="search_input">-->
@@ -47,22 +44,7 @@
     <!--</clr-dropdown>-->
   </div>
 </header>
-<!--<nav class="subnav">-->
-  <!--<ul class="nav">-->
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link active" href="#">Dashboard</a>-->
-    <!--</li>-->
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link" href="#">Projects</a>-->
-    <!--</li>-->
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link" href="#">Reports</a>-->
-    <!--</li>-->
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link" href="#">Users</a>-->
-    <!--</li>-->
-  <!--</ul>-->
-<!--</nav>-->
+
 
 <clr-modal [(clrModalOpen)]="isLogin">
   <h3 class="modal-title">Войти</h3>
@@ -92,6 +74,86 @@
 
     <div class="row">
       <button type="button" (click)="sendLogin()" class="btn btn-primary mt-1">Войти</button>
+    </div>
+
+  </div>
+</clr-modal>
+
+<!--ФОРМА РЕДАКТИРОВАНИЯ ПОЛЬЗОВАТЕЛЬСКИХ ДАННЫХ-->
+
+<clr-modal [(clrModalOpen)]="isUserDataEdit">
+  <h3 class="modal-title">Редактирование пользовательских данных</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="userInfoForm">
+
+      <!--ПОЛЕ ЛОГИН-->
+
+      <clr-input-container>
+
+        <label #label for="editlogin" class="input-label clr-col-12">Логин</label>
+        <input type="text" clrInput formControlName="editlogin" id="editlogin" name="editlogin" autocomplete="off" required
+               size="100">
+        <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+      </clr-input-container>
+
+      <!--ПОЛЕ ПАРОЛЬ-->
+
+      <clr-password-container>
+
+        <label #label for="editpassword" class="input-label clr-col-12">Пароль</label>
+        <input type="password" clrPassword formControlName="editpassword" id="editpassword" name="editpassword" autocomplete="off"
+               size="100">
+        </clr-password-container>
+
+      <br/>
+
+      <!-- ENCRYPTED MODE -->
+
+      <clr-checkbox-wrapper>
+
+        <label #label for="isencrypted" class="input-label clr-col-12">Шифрование данных на фронте</label>
+        <input type="checkbox" clrCheckbox  formControlName="isencrypted" id="isencrypted" name="isencrypted">
+        </clr-checkbox-wrapper>
+
+      <!--ПОЛЕ EMAIL-->
+
+      <clr-input-container>
+
+        <label #label for="email" class="input-label clr-col-12">Email</label>
+        <input type="email" clrInput formControlName="email" id="email" name="email" autocomplete="off" required
+               size="100">
+        <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+      </clr-input-container>
+
+      <!--ПОЛЕ ПОЛНОЕ ИМЯ-->
+
+      <clr-input-container>
+
+        <label #label for="fullname" class="input-label clr-col-12">Полное имя</label>
+        <input type="text" clrInput formControlName="fullname" id="fullname" name="fullname" autocomplete="off"
+               size="100">
+      </clr-input-container>
+
+      <!-- ПОЛЕ КЛЮЧ ШИФРОВАНИЯ -->
+
+      <clr-password-container>
+
+        <label #label for="cryptkey" class="input-label clr-col-12">Персональный ключ шифрования</label>
+        <input type="password" clrPassword formControlName="cryptkey" id="cryptkey" name="cryptkey" autocomplete="off" required
+               size="100">
+        <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+      </clr-password-container>
+      <br/>
+
+      <span class="label label-warning">Ключ хранится только у Вас. Запомните его и не теряйте.</span>
+
+
+
+
+    </form>
+
+    <div class="row">
+      <button type="button" (click)="changeUserData()" class="btn btn-primary mt-1"  [disabled]="!userInfoForm.valid">ИЗМЕНИТЬ</button>
     </div>
 
   </div>

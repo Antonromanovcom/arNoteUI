@@ -4,13 +4,15 @@ import {Observable} from 'rxjs';
 import {Wish} from '../dto/wish';
 import {Salary} from '../dto/salary';
 import {map, tap} from 'rxjs/operators';
+import {User} from '../dto/user';
 
 
 @Injectable()
 export class HttpService {
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   public getData(url: string): Observable<any> {
     return this.http.get(url);
@@ -20,7 +22,7 @@ export class HttpService {
 
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
 
@@ -35,7 +37,7 @@ export class HttpService {
 
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
 
@@ -46,7 +48,7 @@ export class HttpService {
 
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
 
@@ -57,7 +59,7 @@ export class HttpService {
 
     const httpOptions = {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json'
+        'Content-Type': 'application/json'
       })
     };
 
@@ -66,29 +68,32 @@ export class HttpService {
 
 
   public login(loginPayload): Observable<HttpResponse<Object>> {
-  // public login(loginPayload): Observable<any> {
 
-   console.log('loginPayload ->' + loginPayload);
+    console.log('loginPayload ->' + loginPayload);
 
     const headers = {
       'Content-type': 'application/x-www-form-urlencoded'
-    }
+    };
 
-    // return this.http.post('http://localhost:8080/login', loginPayload, {headers});
-    // return this.http.post('https://yandex.ru/', loginPayload, {headers});
-
-   /* return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?username=tom&password=123', {observe: 'response'}).pipe(
-      tap(resp => console.log('111')));*/
-
-    /*return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?username=tom&password=123', {observe: 'response'}).pipe(
-      tap(resp => console.log('heaeder', resp.headers.get('Authorization'))));*/
-
-    // return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?username=anton&password=123', {observe: 'response'});
     return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?' + loginPayload, {observe: 'response'});
-    // return this.http.get('http://localhost:8080/login?username=anton&password=123');
+  }
 
+  public isCryptoUser(): Observable<any> {
+    return this.http.get('http://localhost:8080/rest/wishes/users/getcurrent');
+  }
+
+  public updateUserData(user: User, url: string): Observable<User> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.put<User>(url, user, httpOptions);
   }
 
 
-   // 'assets/data/test.json'
+
+  // 'assets/data/test.json'
 }

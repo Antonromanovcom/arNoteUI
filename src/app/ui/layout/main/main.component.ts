@@ -4,11 +4,12 @@ import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {throwError, timer} from 'rxjs';
 import {Subscription} from 'rxjs/Subscription';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
-import {HttpHeaders, HttpParams} from '@angular/common/http';
+import {HttpParams} from '@angular/common/http';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
+
 
 
 @Component({
@@ -19,7 +20,7 @@ import {MessageCode} from '../../../service/message.code';
 })
 export class MainComponent implements OnInit {
 
-  // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
+  // --------------------------------- URL'ы -------------------------------------
 
   localJson = 'assets/data.json'; // временный локальный json для тестирования
   _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
@@ -35,7 +36,12 @@ export class MainComponent implements OnInit {
   apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
   parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
   changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
+  filterUrl = this.myBaseUrl + '/wishes?search=wish:Еще'
 
+
+  // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
+
+  cryptokey = ''; // пользовательский ключ шифрования
   error: any; // отображение ошибок в алертах
   result: any; // отображение результатов в алертах
   summAll = 0; // отображение сум по всем желаниям
@@ -43,18 +49,27 @@ export class MainComponent implements OnInit {
   periodAll = 0; // период реализации для всего
   periodPriority = 0; // период реализации для приоритетного
 
+// --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
+
   isEdit = false; // режим редактирования для отображения / или чтобы спрятать модальное окно
   isSalaryAdd = false; // режим добавления зп
   isEditMode = false; // редактировать или добавить
   isCsvParse = false; // отправить на парсинг csv
+  isFilterModal = false; // вывести модал фильтрации
+
   wishes: Wish[] = []; // контейнер желаний
   filters = ['Все', 'Приоритет']; // фильтры
-  templogins = ['Антон', 'Женя', 'Настя']; // фильтры
-  uploadForm: FormGroup;
+
+  // --------------------------------- ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ И ЕГО ДАННЫЕ -------------------------------------
+
+  isUserCrypto: boolean;
+  userRole: string;
 
   private subscription: Subscription;
   globalError: MessageCode;
 
+  // --------------------------------- ФОРМЫ -------------------------------------
+  uploadForm: FormGroup;
   form = this.fb.group({
     id: ['', []],
     name: ['', [
@@ -88,12 +103,18 @@ export class MainComponent implements OnInit {
     csvfile: ['', []]
   });
 
+  filterForm = this.fb.group({
+    wish: ['', [
+      Validators.required
+    ]]
+  });
+
   constructor(private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder) {
-
-
   }
 
   ngOnInit() {
+    this.isUserCrypto = false;
+
     this.getWishes();
 
     this.uploadForm = this.fb.group({
@@ -115,8 +136,15 @@ export class MainComponent implements OnInit {
 
         if (this.globalError.messageType === this.globalError.AUTH_LOGIN_OK) {
           this.getWishes();
+        } else if (this.globalError.messageType === this.globalError.USER_DATA_CHANGE_OK) {
+          this.isEdit = false;
+          this.isSalaryAdd = false;
+          this.isCsvParse = false;
+          this.result = this.globalError.USER_DATA_CHANGE_OK;
+          timer(4000).subscribe(() => {
+            this.result = null;
+          });
         } else {
-
           this.error = error.messageType;
 
           timer(4000).subscribe(() => {
@@ -125,6 +153,19 @@ export class MainComponent implements OnInit {
         }
       }
     });
+
+    // Проверка ключа шифрования
+    this.cryptokey = localStorage.getItem('cryptokey');
+    if ((this.isUserCrypto) && (!this.cryptokey)) {
+
+      this.error = 'Мы не смогли забрать с куки ваш ключ шифрования и при этом у вас включена эта настройка. ' +
+        'Задайте ключ шифрования меню О пользователе';
+
+      timer(4000).subscribe(() => {
+        this.error = null;
+      });
+    }
+
   }
 
   changeFilter(item: string) {
@@ -142,9 +183,6 @@ export class MainComponent implements OnInit {
     this.wishes.sort((a, b) => a.priority - b.priority);
   }
 
-  // findMax() {
-  //   return this.wishes.reduce((a, b) => a.priority > b.priority ? a : b);
-  // }
 
   down(event: any, item: Wish) {
 
@@ -155,8 +193,58 @@ export class MainComponent implements OnInit {
     this.wishes.sort((a, b) => a.priority - b.priority);
   }
 
-  getWishes() {
-    console.log(this.apiUrl);
+
+  isCrypto() {
+
+    this.httpService.isCryptoUser().pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить крипто-статус пользователя!');
+      })
+    ).subscribe(data => {
+      this.isUserCrypto = data.userCryptoMode;
+      this.userRole = data.userRole;
+
+
+      console.log('crypto -> ' + data.userCryptoMode);
+      console.log('userRole -> ' + data.userRole);
+    });
+  }
+
+
+
+
+
+  decryptWishes() {
+
+    console.log('decrypt method');
+
+    /*this.wishes.forEach(function (element) {
+      console.log('before decrypt' - element.wish);
+
+      // element.wish = commonService.encrypt(this.cryptokey, element.wish);
+      element.wish = this.temp(this.cryptokey, element.wish);
+
+      console.log('after decrypt' - element.wish);
+    });*/
+
+    this.wishes.forEach((element) => {
+       // element.wish = this.commonService.decrypt(this.cryptokey, element.wish);
+      element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
+
+      // element.wish = this.temp(this.cryptokey, element.wish);
+    });
+
+  }
+
+  temp(keys, value) {
+return '144' + '45454';
+  }
+
+  // getWishes() {
+  getWishes(url: string) {
+
+    this.isCrypto();
+
     this.httpService.getData(this.apiUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
@@ -164,7 +252,13 @@ export class MainComponent implements OnInit {
     ).subscribe(data => {
       this.wishes = data['list'];
       console.log(this.wishes);
+
+      if (this.isUserCrypto) {
+        console.log('decrypt-mode');
+        this.decryptWishes();
+      }
     });
+
 
     this.httpService.getData(this.apiGetSumm).pipe(
       catchError(err => {
@@ -249,6 +343,7 @@ export class MainComponent implements OnInit {
     }
   }
 
+  // Отправить файл на парсинг
   onSubmit() {
     const formData = new FormData();
     formData.append('csvfile', this.uploadForm.get('profile').value);
@@ -323,7 +418,7 @@ export class MainComponent implements OnInit {
 
   }
 
-  addEditService() {
+  addEditWish() {
 
     const wish = new Wish(this.form.value.id,
       this.form.value.name,
@@ -332,6 +427,11 @@ export class MainComponent implements OnInit {
       false,
       this.form.value.description,
       this.form.value.url);
+
+    if (this.isUserCrypto) {
+      wish.wish = this.commonService.convertText('encrypt', wish.wish, this.cryptokey);
+      console.log('encrypted wish', wish.wish);
+    }
 
     if (this.isEditMode) {
 
@@ -345,6 +445,7 @@ export class MainComponent implements OnInit {
       });
 
     } else {
+
       this.httpService.sendData(wish, this.myBaseUrl).pipe(
         catchError(err => {
 
@@ -373,6 +474,11 @@ export class MainComponent implements OnInit {
     });
   }
 
+  // Показать окно включения/выключения фильтров
+  filterWishes() {
+    this.isFilterModal = true;
+  }
+
 
 // ЛОГИН и АВТОРИЗАЦИЯ
 
@@ -383,10 +489,6 @@ export class MainComponent implements OnInit {
       .set('password', pwd);
 
     this.httpService.login(body.toString())
-    /*.pipe(
-    catchError(err => {
-      return this.errorHandler(err, 'Невозможно залогиниться!!');
-    }))*/
       .pipe(
         tap(resp => {
           console.log('header', resp.headers.get('Authorization'));
@@ -397,12 +499,27 @@ export class MainComponent implements OnInit {
       .subscribe();
   }
 
-  logout() {
-    console.log('unauthorize');
-    localStorage.removeItem('token');
+  applyFilter() {
+
+
+
+    this.httpService.login(body.toString())
+      .pipe(
+        tap(resp => {
+          console.log('header', resp.headers.get('Authorization'));
+          sessionStorage.setItem('token', resp.headers.get('Authorization'));
+          localStorage.setItem('token', resp.headers.get('Authorization'));
+          console.log('storage', localStorage.getItem('token'));
+        }))
+      .subscribe();
   }
 
-  changeLogin(item: string) {
+  /*logout() {
+    console.log('unauthorize');
+    localStorage.removeItem('token');
+  }*/
+
+  /*changeLogin(item: string) {
 
     if (item === 'Антон') {
 
@@ -414,6 +531,6 @@ export class MainComponent implements OnInit {
     }
 
     this.getWishes();
-  }
+  }*/
 
 }

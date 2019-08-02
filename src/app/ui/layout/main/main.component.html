@@ -64,47 +64,31 @@
 
           </clr-dg-footer>
         </clr-datagrid>
-
-
       </div>
     </div>
 
 
-    <!--<div>{{globalError.messageType}}</div>-->
-
     <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
     <button class="btn btn-secondary" (click)="getWishes()"> Обновить</button>
     <button class="btn btn-secondary" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
-    <button class="btn btn-secondary" (click)="openParseCsv($event)"> Парсинг csv</button>
-    <!--<button class="btn btn-secondary" (click)="login()"> Логин </button>-->
+    <button class="btn btn-secondary" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'"> Парсинг csv</button>
+    <button class="btn btn-secondary" (click)="filterWishes()"> Поиск / Фильтр </button>
+
     <clr-dropdown>
       <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-        Фильтры
+        ПРИОРИТЕТ
         <clr-icon shape="caret down"></clr-icon>
       </button>
       <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
-        <label class="dropdown-header">Фильтры</label>
+        <label class="dropdown-header">Быстрый фильтр по приоритету</label>
         <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
       </clr-dropdown-menu>
     </clr-dropdown>
 
-    <!--<clr-dropdown>
-      <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-        Залогиниться как...
-        <clr-icon shape="caret down"></clr-icon>
-      </button>
-      <clr-dropdown-menu clrPosition="top-left" *clrIfOpen>
-        <label class="dropdown-header">Залогиниться как</label>
-        <a *ngFor="let item of templogins" (click)="changeLogin(item)" clrDropdownItem>{{item}}</a>
-      </clr-dropdown-menu>
-    </clr-dropdown>-->
-
-
     <clr-modal [(clrModalOpen)]="isEdit">
-      <h3 class="modal-title">{{isEditMode ? 'Редактировать сервис' : 'Добавить сервис'}}</h3>
+      <h3 class="modal-title">{{isEditMode ? 'Редактировать желание' : 'Добавить желание'}}</h3>
       <div class="modal-body">
         <form clrForm [formGroup]="form">
-
 
           <!--ПОЛЕ ID-->
 
@@ -141,7 +125,6 @@
                    id="description"
                    name="description"
                    autocomplete="off" required size="100">
-            <!--<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>-->
           </clr-input-container>
 
           <!--ПОЛЕ URL-->
@@ -154,8 +137,6 @@
                    id="url"
                    name="url"
                    autocomplete="off" required size="100">
-            <!--<clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>-->
-            <!--<clr-control-error *clrIfError="'pattern'">Некорректный форма url</clr-control-error>-->
           </clr-input-container>
 
           <!--ПОЛЕ PRIORITY-->
@@ -185,7 +166,7 @@
         </form>
 
         <div class="row">
-          <button type="button" (click)="addEditService()" class="btn btn-primary mt-1">Сохранить</button>
+          <button type="button" (click)="addEditWish()" class="btn btn-primary mt-1">Сохранить</button>
           <button type="button" (click)="deleteWish()" *ngIf="isEditMode" class="btn btn-danger mt-1">Удалить</button>
         </div>
 
@@ -259,13 +240,31 @@
       </div>
     </clr-modal>
 
+    <!--ФОРМА ФИЛЬТРАЦИИ -->
+
+    <clr-modal [(clrModalOpen)]="isFilterModal">
+      <h3 class="modal-title">Фильтры и поиск</h3>
+      <div class="modal-body">
+        <form clrForm [formGroup]="filterForm">
+
+
+          <!-- ПОЛЕ ПОИСКА / ФИЛЬТРАЦИИ ПО ЖЕЛАНИЮ -->
+
+          <clr-input-container>
+
+            <label #label for="wish" class="input-label clr-col-12">Желание</label>
+            <input type="text" clrInput formControlName="wish" id="wish" name="wish" autocomplete="off" required size="100">
+          </clr-input-container>
+
+        </form>
+
+        <div class="row">
+          <button type="button" (click)="sendCsvFile()" class="btn btn-primary mt-1">Парсить</button>
+        </div>
+
+      </div>
+    </clr-modal>
 
   </div>
-  <!--</div>-->
-
-  <!--<div class="col-4">-->
   <app-sidebar class="sidenav"></app-sidebar>
-
-  <!--</div>-->
-  <!--</div>-->
 </div>
