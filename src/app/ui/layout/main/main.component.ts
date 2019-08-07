@@ -26,8 +26,8 @@ export class MainComponent implements OnInit {
 
   localJson = 'assets/data.json'; // временный локальный json для тестирования
   _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
-  _myBaseUrl = '/rest/wishes';
-  myBaseUrl = 'http://localhost:8080/rest/wishes';
+  myBaseUrl = '/rest/wishes';
+  _myBaseUrl = 'http://localhost:8080/rest/wishes';
   apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
   priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
   groupWishesUrl = this.myBaseUrl + '/groups';
@@ -58,6 +58,7 @@ export class MainComponent implements OnInit {
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
   monthOrdermode = false; // режим отображение дерева группировки по месяцам
   private wishFilter = new WishNameFilter();
+  isSalayExists = true;
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -163,6 +164,14 @@ export class MainComponent implements OnInit {
         }
       }
     });
+
+    // Закрываем пункт меню группировки по месяцам если нет зарплат
+
+    if (!this.isSalayExists) {
+      this.filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
+    } else {
+      this.filters = ['Все', 'Приоритет']; // фильтры
+    }
 
     // Проверка ключа шифрования
     this.cryptokey = localStorage.getItem('cryptokey');
@@ -343,8 +352,10 @@ export class MainComponent implements OnInit {
     console.log('error - ' + err.error);
     if (err.error === 'ERR-01') {
       this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
+      this.isSalayExists = false;
     } else if (err.error === 'ERR-02') {
       this.error = 'У вас нет сохраненных желаний! Добавьте хотя бы одно желание!';
+      this.isSalayExists = false;
     } else {
       this.error = message;
     }

@@ -3,12 +3,16 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {Wish} from '../dto/wish';
 import {Salary} from '../dto/salary';
-import {map, tap} from 'rxjs/operators';
 import {User} from '../dto/user';
 
 
 @Injectable()
 export class HttpService {
+
+  _loginURL = 'http://localhost:8080/login?';
+  loginURL = '/login?';
+  _isCryptoUserUrl = 'http://localhost:8080/rest/wishes/users/getcurrent';
+  isCryptoUserUrl = '/rest/wishes/users/getcurrent';
 
 
   constructor(private http: HttpClient) {
@@ -75,11 +79,11 @@ export class HttpService {
       'Content-type': 'application/x-www-form-urlencoded'
     };
 
-    return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?' + loginPayload, {observe: 'response'});
+    return this.http.get<HttpResponse<Object>>(this.loginURL + loginPayload, {observe: 'response'});
   }
 
   public isCryptoUser(): Observable<any> {
-    return this.http.get('http://localhost:8080/rest/wishes/users/getcurrent');
+    return this.http.get(this.isCryptoUserUrl);
   }
 
   public updateUserData(user: User, url: string): Observable<User> {

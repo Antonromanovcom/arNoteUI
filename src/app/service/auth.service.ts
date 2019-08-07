@@ -12,6 +12,9 @@ let isExpired = helper.isTokenExpired(myRawToken);
 @Injectable()
 export class AuthService {
 
+  _loginURL = 'http://localhost:8080/login?';
+  loginURL = '/login?';
+
 
   constructor(private http: HttpClient, public jwtHelper: JwtHelperService) {
   }
@@ -25,7 +28,7 @@ export class AuthService {
       'Content-type': 'application/x-www-form-urlencoded'
     };
 
-    return this.http.get<HttpResponse<Object>>('http://localhost:8080/login?' + loginPayload, {observe: 'response'});
+    return this.http.get<HttpResponse<Object>>(this.loginURL + loginPayload, {observe: 'response'});
   }
 
   public isAuthenticated(): boolean {
