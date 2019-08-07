@@ -1,6 +1,5 @@
 
 ::ng-deep clr-icon:hover {
-  /*background:#53ea93;*/
   -webkit-transform: scale(1.2);
   -ms-transform: scale(1.2);
   transform: scale(1.2);
@@ -28,12 +27,14 @@
   /*height:100%*/
 }
 
+#test1{
+  /*min-width: 100%;
+  min-height: 100%;
+  position: relative;
+  background: rgba(200, 54, 54, 0.25);
+  padding-left: 10px;*/
 
-/*::ng-deep .datagrid .datagrid-column.rj .datagrid-column-title {*/
-  /*text-align: right;*/
-/*}*/
-
-
+}
 
 
   @media screen and (max-width: 500px){

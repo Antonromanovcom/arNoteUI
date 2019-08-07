@@ -10,6 +10,8 @@ import {HttpParams} from '@angular/common/http';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
 import {WishNameFilter} from './wish-name-filter';
+import {WishListGroup} from '../../../dto/wish-list-group';
+import {WishGroupItem} from '../../../dto/wish-group-item';
 
 
 @Component({
@@ -28,6 +30,8 @@ export class MainComponent implements OnInit {
   myBaseUrl = 'http://localhost:8080/rest/wishes';
   apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
   priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
+  groupWishesUrl = this.myBaseUrl + '/groups'; // приоритетные желания
+
   _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
   allWishesUrl = this.myBaseUrl + '/all'; // все желания
   _allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
@@ -36,8 +40,8 @@ export class MainComponent implements OnInit {
   apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
   parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
   changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
+  changePriorityMonthUrl = this.myBaseUrl + '/changemonth'; // url для быстрого изменения приоритета
   filterUrl = this.myBaseUrl + '/filter';
-  private wishFilter = new WishNameFilter();
 
 
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
@@ -51,6 +55,8 @@ export class MainComponent implements OnInit {
   periodPriority = 0; // период реализации для приоритетного
   filterMode = false; // период реализации для приоритетного
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
+  monthOrdermode = false; // режим отображение дерева группировки по месяцам
+  private wishFilter = new WishNameFilter();
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -61,7 +67,8 @@ export class MainComponent implements OnInit {
   isFilterModal = false; // вывести модал фильтрации
 
   wishes: Wish[] = []; // контейнер желаний
-  filters = ['Все', 'Приоритет']; // фильтры
+  wishGroups: WishListGroup[] = []; // контейнер желаний
+  filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
 
   // --------------------------------- ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ И ЕГО ДАННЫЕ -------------------------------------
 
@@ -171,10 +178,34 @@ export class MainComponent implements OnInit {
 
   }
 
+
+  getWishesWithMonthGroupping() {
+
+    this.httpService.getData(this.groupWishesUrl).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить желания!');
+      })
+    ).subscribe(data => {
+
+      this.wishGroups = data['list'];
+      this.monthOrdermode = true;
+
+      /* if (this.isUserCrypto) {
+         console.log('decrypt-mode');
+         this.decryptWishes();
+       }*/
+    });
+
+  }
+
   changeFilter(item: string) {
 
     if (item === 'Все') {
       this.apiUrl = this.allWishesUrl;
+    } else if (item === 'Помесячная группировка') {
+
+      this.getWishesWithMonthGroupping();
+
     } else {
       this.apiUrl = this.priorityWishesUrl;
     }
@@ -215,35 +246,14 @@ export class MainComponent implements OnInit {
 
 
   decryptWishes() {
-
     console.log('decrypt method');
-
-    /*this.wishes.forEach(function (element) {
-      console.log('before decrypt' - element.wish);
-
-      // element.wish = commonService.encrypt(this.cryptokey, element.wish);
-      element.wish = this.temp(this.cryptokey, element.wish);
-
-      console.log('after decrypt' - element.wish);
-    });*/
-
     this.wishes.forEach((element) => {
-      // element.wish = this.commonService.decrypt(this.cryptokey, element.wish);
       element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
-
-      // element.wish = this.temp(this.cryptokey, element.wish);
     });
 
   }
 
-  temp(keys, value) {
-    return '144' + '45454';
-  }
-
-  // getWishes() {
   getWishes(url: string) {
-
-    // this.apiUrl
 
     this.isCrypto();
 
@@ -284,6 +294,12 @@ export class MainComponent implements OnInit {
       .subscribe(res => {
         this.showAlert('Желание с id [' + this.form.value.id + '] успешно удалено!', 'ADD MODE', res);
       });
+  }
+
+  toMainTableMode() {
+
+    this.monthOrdermode = false;
+
   }
 
   errorHandler(err, message: string) {
@@ -475,6 +491,27 @@ export class MainComponent implements OnInit {
       this.getWishes(this.apiUrl);
     });
   }
+
+
+  changePriorityMonth(item: WishGroupItem, move: string) {
+
+    console.log('change priority month => ' + item);
+    console.log('URL ->' + this.changePriorityMonthUrl + '/' + item.id + '/' + move);
+    this.httpService.getData(this.changePriorityMonthUrl + '/' + item.id + '/' + move).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно изменить приоритет!');
+      })
+    ).subscribe(res => {
+      console.log(res);
+      this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
+
+      this.getWishes(this.apiUrl);
+      this.getWishesWithMonthGroupping();
+
+    });
+  }
+
+
 
   // Показать окно включения/выключения фильтров
   filterWishes() {

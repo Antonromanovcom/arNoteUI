@@ -1,23 +1,7 @@
 <div class="content-container">
-  <!--<div class="clr-break-row">-->
-  <!--<div class="col-4">-->
   <div class="content-area">
-    <!--<ng-content></ng-content>-->
 
-
-
-    <!--<div class="row">-->
-      <!--<div class="col-lg-12">-->
-
-    <!--<div class="clr-row">-->
-      <!--<div class="clr-col-lg-8">-->
-
-        <!--<clr-datagrid class="datagrid-compact">-->
-        <clr-datagrid>
-          <clr-dg-action-bar>
-            <div class="actions-container">
-
-              <clr-alert [clrAlertType]="'success'" *ngIf="result">
+    <clr-alert [clrAlertType]="'success'" *ngIf="result">
                 <clr-alert-item>
         <span class="alert-text">
             {{result}}
@@ -33,6 +17,26 @@
                 </clr-alert-item>
               </clr-alert>
 
+        <clr-datagrid *ngIf="!monthOrdermode">
+          <clr-dg-action-bar>
+            <div class="actions-container">
+
+              <!--<clr-alert [clrAlertType]="'success'" *ngIf="result">
+                <clr-alert-item>
+        <span class="alert-text">
+            {{result}}
+        </span>
+                </clr-alert-item>
+              </clr-alert>
+
+              <clr-alert [clrAlertType]="'danger'" *ngIf="error">
+                <clr-alert-item>
+        <span class="alert-text">
+            {{error}}
+        </span>
+                </clr-alert-item>
+              </clr-alert>-->
+
               <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
               <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
               <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату</button>
@@ -41,11 +45,11 @@
 
               <clr-dropdown class="hidden-md-down">
                 <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-                  ПРИОРИТЕТ
+                  РЕЖИМ ОТОБРАЖЕНИЯ
                   <clr-icon shape="caret down"></clr-icon>
                 </button>
                 <clr-dropdown-menu *clrIfOpen>
-                  <label class="dropdown-header">Быстрый фильтр по приоритету</label>
+                  <label class="dropdown-header">Режим отображения</label>
                   <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
                 </clr-dropdown-menu>
               </clr-dropdown>
@@ -93,6 +97,75 @@
         </clr-datagrid>
       <!--</div>-->
     <!--</div>-->
+
+    <!--<clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">-->
+    <!--<tr *ngFor="let item of wishGroups">-->
+      <!--<td colspan="2">{{item.monthName}}</td>-->
+
+    <div *ngIf="monthOrdermode">
+
+    <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим </button>
+
+    <clr-tree-node *ngFor="let month of wishGroups" [(clrExpanded)]="month.expanded">
+
+       <!--<span class="label label-purple">{{month.monthName}} <span class="badge">{{month.sum}}</span></span>-->
+      <span class="{{month.colorClass}}">{{month.monthName}} <span class="badge">{{month.sum}}</span></span><span *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
+
+      <!--<span class="label label-blue">2</span><span class="label label-light-blue">3</span>
+      <span class="label label-orange">4</span><span class="label label-success">5</span><span class="label label-danger">6</span>-->
+
+      <clr-tree-node *ngFor="let items of month.wishList">
+
+        <!--<div id="test1">{{items.wish}}</div>-->
+
+        {{items.wish}} | {{items.price}} | <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon> |
+        <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
+
+      </clr-tree-node>
+    </clr-tree-node>
+
+
+</div>
+
+
+
+
+    <!--<table class="table">
+      <thead>
+      <tr>
+        <th>Decimal</th>
+        <th>Hexadecimal</th>
+        <th>Binary</th>
+        <th>Roman Numeral</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let item of wishGroups">
+        <td colspan="2">{{item.monthName}}</td>
+        <td>1</td>
+        <td>1</td>
+        <td>I</td>
+      </tr>
+      <tr>
+        <td colspan="2">5</td>
+        &lt;!&ndash;<td>5</td>&ndash;&gt;
+        <td>101</td>
+        <td>V</td>
+      </tr>
+     &lt;!&ndash; <tr>
+        <td>10</td>
+        <td>A</td>
+        <td>1010</td>
+        <td>X</td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td>F</td>
+        <td>1111</td>
+        <td>XV</td>
+      </tr>&ndash;&gt;
+      </tbody>
+    </table>-->
 
 
 
