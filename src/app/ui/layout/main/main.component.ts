@@ -30,7 +30,8 @@ export class MainComponent implements OnInit {
   myBaseUrl = 'http://localhost:8080/rest/wishes';
   apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
   priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
-  groupWishesUrl = this.myBaseUrl + '/groups'; // приоритетные желания
+  groupWishesUrl = this.myBaseUrl + '/groups';
+  userViewModeUrl = this.myBaseUrl + '/users/toggle';
 
   _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
   allWishesUrl = this.myBaseUrl + '/all'; // все желания
@@ -124,13 +125,12 @@ export class MainComponent implements OnInit {
 
   ngOnInit() {
     this.isUserCrypto = false;
-
     this.getWishes(this.apiUrl);
-
     this.uploadForm = this.fb.group({
       profile: ['']
     });
 
+    this.getUserViewMode();
 
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
@@ -175,7 +175,41 @@ export class MainComponent implements OnInit {
         this.error = null;
       });
     }
+  }
 
+  getUserViewMode() {
+
+    this.httpService.getData(this.userViewModeUrl + '/GET').pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить настройки пользовательского отображения!');
+      })
+    ).subscribe(data => {
+      console.log('data.viewMode => ' + data.viewMode);
+      if (data.viewMode === 'TREE') {
+        this.monthOrdermode = true;
+        this.getWishesWithMonthGroupping();
+      } else {
+        this.monthOrdermode = false;
+      }
+
+    });
+  }
+
+  setUserViewMode(mode: string) {
+
+    this.httpService.getData(this.userViewModeUrl + '/' + mode).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить настройки пользовательского отображения!');
+      })
+    ).subscribe(data => {
+      console.log('data.viewMode => ' + data.viewMode);
+      /*if (data.viewMode === 'TREE') {
+        this.monthOrdermode = true;
+      } else {
+        this.monthOrdermode = false;
+      }*/
+
+    });
   }
 
 
@@ -195,7 +229,6 @@ export class MainComponent implements OnInit {
          this.decryptWishes();
        }*/
     });
-
   }
 
   changeFilter(item: string) {
@@ -205,6 +238,7 @@ export class MainComponent implements OnInit {
     } else if (item === 'Помесячная группировка') {
 
       this.getWishesWithMonthGroupping();
+      this.setUserViewMode('TREE');
 
     } else {
       this.apiUrl = this.priorityWishesUrl;
@@ -299,6 +333,7 @@ export class MainComponent implements OnInit {
   toMainTableMode() {
 
     this.monthOrdermode = false;
+    this.setUserViewMode('TABLE');
 
   }
 
@@ -510,7 +545,6 @@ export class MainComponent implements OnInit {
 
     });
   }
-
 
 
   // Показать окно включения/выключения фильтров
