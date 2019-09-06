@@ -7,7 +7,7 @@
     </a>
   </div>
   <div class="header-nav">
-    <a class="active nav-link nav-icon" clrVerticalNavLink routerLink="../" routerLinkActive="active">
+    <a *ngIf="idToken" class="active nav-link nav-icon" clrVerticalNavLink routerLink="../" routerLinkActive="active">
       <clr-icon shape="home"></clr-icon>
     </a>
   </div>
@@ -26,27 +26,6 @@
 
   </div>
 </header>
-
-<!--<div class="content-container">
-  <div class="content-area">
-    <clr-tabs>
-      <clr-tab>
-        <button clrTabLink>Настройка сервисов</button>
-        <clr-tab-content id="content1" *clrIfActive>
-          <h3>Настройка сервисов</h3>
-          <app-transaction-log></app-transaction-log>
-        </clr-tab-content>
-      </clr-tab>
-      <clr-tab>
-        <button clrTabLink>Отчеты</button>
-        <clr-tab-content id="transaction-log" *clrIfActive="true">
-          <h3>Журнал отчетов</h3>
-          <app-report></app-report>
-        </clr-tab-content>
-      </clr-tab>
-    </clr-tabs>
-  </div>
-</div>-->
 
 
 <clr-modal [(clrModalOpen)]="isLogin">
@@ -128,7 +107,7 @@
         <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
       </clr-input-container>
 
-      <!--ПОЛЕ ПОЛНОЕ ИМЯ-->
+      <!-- ПОЛЕ ПОЛНОЕ ИМЯ -->
 
       <clr-input-container>
 
@@ -139,7 +118,7 @@
 
       <!-- ПОЛЕ КЛЮЧ ШИФРОВАНИЯ -->
 
-      <clr-password-container>
+      <clr-password-container *ngIf="user.userCryptoMode">
 
         <label #label for="cryptkey" class="input-label clr-col-12">Персональный ключ шифрования</label>
         <input type="password" clrPassword formControlName="cryptkey" id="cryptkey" name="cryptkey" autocomplete="off" required
@@ -148,7 +127,7 @@
       </clr-password-container>
       <br/>
 
-      <span class="label label-warning">Ключ хранится только у Вас. Запомните его и не теряйте.</span>
+      <span *ngIf="user.userCryptoMode" class="label label-warning">Ключ хранится только у Вас. Запомните его и не теряйте.</span>
 
 
 
@@ -157,6 +136,7 @@
 
     <div class="row">
       <button type="button" (click)="changeUserData()" class="btn btn-primary mt-1"  [disabled]="!userInfoForm.valid">ИЗМЕНИТЬ</button>
+      <button type="button" *ngIf="user.userCryptoMode" (click)="clearCryptoKey()" class="btn btn-danger mt-1"  [disabled]="!userInfoForm.valid">СТЕРЕТЬ КЛЮЧ ШИФРОВАНИЯ</button>
     </div>
 
   </div>

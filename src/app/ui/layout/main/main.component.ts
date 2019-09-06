@@ -9,10 +9,9 @@ import {Salary} from '../../../dto/salary';
 import {HttpParams} from '@angular/common/http';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
-import {WishNameFilter} from './wish-name-filter';
 import {WishListGroup} from '../../../dto/wish-list-group';
 import {WishGroupItem} from '../../../dto/wish-group-item';
-
+import {environment} from '../../../../environments/environment';
 
 @Component({
   selector: 'app-main',
@@ -24,25 +23,23 @@ export class MainComponent implements OnInit {
 
   // --------------------------------- URL'ы -------------------------------------
 
-  localJson = 'assets/data.json'; // временный локальный json для тестирования
-  _apiUrl = 'http://localhost:8080/rest/wishes/all'; // основная ссылка на api
-  myBaseUrl = '/rest/wishes';
+
+  SERVER_URL: string = environment.serverUrl;
+
+  myBaseUrl = this.SERVER_URL + '/rest/wishes';
   _myBaseUrl = 'http://localhost:8080/rest/wishes';
+
   apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
   priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
   groupWishesUrl = this.myBaseUrl + '/groups';
   userViewModeUrl = this.myBaseUrl + '/users/toggle';
-
-  _priorityWishesUrl = 'http://localhost:8080/rest/wishes/priority'; // приоритетные желания
   allWishesUrl = this.myBaseUrl + '/all'; // все желания
-  _allWishesUrl = 'http://localhost:8080/rest/wishes/all'; // все желания
   apiGetSumm = this.myBaseUrl + '/summ'; // ссылка для получения сумм
-  _apiGetSumm = 'http://localhost:8080/rest/wishes/summ'; // ссылка для получения сумм
   apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
   parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
   changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
   changePriorityMonthUrl = this.myBaseUrl + '/changemonth'; // url для быстрого изменения приоритета
-  filterUrl = this.myBaseUrl + '/filter';
+  changePriorityMonthManualyUrl = this.myBaseUrl + '/transferwish'; // url для быстрого изменения приоритета
 
 
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
@@ -54,11 +51,12 @@ export class MainComponent implements OnInit {
   summPriority = 0; // отображение сум по приоритетным желаниям
   periodAll = 0; // период реализации для всего
   periodPriority = 0; // период реализации для приоритетного
+  implementationPeriod = ''; // средний период реализации желаний
   filterMode = false; // период реализации для приоритетного
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
   monthOrdermode = false; // режим отображение дерева группировки по месяцам
-  private wishFilter = new WishNameFilter();
-  isSalayExists = true;
+  // private wishFilter = new WishNameFilter();
+  isSalaryExists = false;
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -67,21 +65,26 @@ export class MainComponent implements OnInit {
   isEditMode = false; // редактировать или добавить
   isCsvParse = false; // отправить на парсинг csv
   isFilterModal = false; // вывести модал фильтрации
+  isMonthGroupModeWishEdit = false; // вывод формы редактирования желания при помесячной группировке
+
+  // --------------------------------- ХРАНИЛИЩА -------------------------------------
 
   wishes: Wish[] = []; // контейнер желаний
   wishGroups: WishListGroup[] = []; // контейнер желаний
+  monthList = []; // контейнер месяцов
+
   filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
+  groupMonthSort = ['По имени', 'По сумме [1..10]', 'По сумме [10..1]']; // сортировка помесячной группировки
 
   // --------------------------------- ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ И ЕГО ДАННЫЕ -------------------------------------
 
   isUserCrypto: boolean;
   userRole: string;
-
   private subscription: Subscription;
   globalError: MessageCode;
 
   // --------------------------------- ФОРМЫ -------------------------------------
-  uploadForm: FormGroup;
+  uploadForm: FormGroup; // Основная форма добавления / редактирования желаний
   form = this.fb.group({
     id: ['', []],
     name: ['', [
@@ -97,10 +100,13 @@ export class MainComponent implements OnInit {
     price: ['', [
       Validators.required,
       Validators.pattern(/^[0-9]+$/)
-    ]]
+    ]],
+    creationDate: ['', []]
   });
 
-  salaryForm = this.fb.group({
+  creationDate
+
+  salaryForm = this.fb.group({ // форма ввода / редактирования зарплаты
     salary: ['', [
       Validators.required,
       Validators.pattern(/^[0-9]+$/)
@@ -111,12 +117,24 @@ export class MainComponent implements OnInit {
     ]]
   });
 
-  csvForm = this.fb.group({
+  csvForm = this.fb.group({ // форма парсинга csv
     csvfile: ['', []]
   });
 
-  filterForm = this.fb.group({
+  filterForm = this.fb.group({ // форма включения / выклюяения фильтров
     wish: ['', [
+      Validators.required
+    ]]
+  });
+
+  MonthGroupModeWishEdit = this.fb.group({ // форма редактирования желания при помесячной группировке
+    id: ['', [
+      Validators.required
+    ]],
+    wish: ['', [
+      Validators.required
+    ]],
+    month: ['', [
       Validators.required
     ]]
   });
@@ -167,7 +185,9 @@ export class MainComponent implements OnInit {
 
     // Закрываем пункт меню группировки по месяцам если нет зарплат
 
-    if (!this.isSalayExists) {
+    console.log('this.isSalaryExists - > ', this.isSalaryExists);
+
+    if (this.isSalaryExists) {
       this.filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
     } else {
       this.filters = ['Все', 'Приоритет']; // фильтры
@@ -196,7 +216,7 @@ export class MainComponent implements OnInit {
       console.log('data.viewMode => ' + data.viewMode);
       if (data.viewMode === 'TREE') {
         this.monthOrdermode = true;
-        this.getWishesWithMonthGroupping();
+        this.getWishesWithMonthGroupping('?sortType=all');
       } else {
         this.monthOrdermode = false;
       }
@@ -217,14 +237,13 @@ export class MainComponent implements OnInit {
       } else {
         this.monthOrdermode = false;
       }*/
-
     });
   }
 
 
-  getWishesWithMonthGroupping() {
+  getWishesWithMonthGroupping(sorting: string) {
 
-    this.httpService.getData(this.groupWishesUrl).pipe(
+    this.httpService.getData(this.groupWishesUrl + sorting).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
       })
@@ -233,11 +252,90 @@ export class MainComponent implements OnInit {
       this.wishGroups = data['list'];
       this.monthOrdermode = true;
 
-      /* if (this.isUserCrypto) {
-         console.log('decrypt-mode');
-         this.decryptWishes();
-       }*/
+      this.isCrypto();
+
+      if (this.isUserCrypto) {
+        console.log('decrypt-mode');
+        this.decryptOrderedWishes();
+      }
     });
+  }
+
+// Вытащить список месяцев и лет, пришедший с бека
+  getMonths() {
+    this.wishGroups.forEach((element) => {
+      this.monthList.push(element.monthName + ' ' + element.year);
+    });
+  }
+
+  // Применить изменение (месячного) порядка для желания
+  applyMonthChange4Wish() {
+    console.log(this.MonthGroupModeWishEdit.value.month);
+
+    this.httpService.getData(this.changePriorityMonthManualyUrl + '?id=' + this.MonthGroupModeWishEdit.value.id + '&month=' + this.MonthGroupModeWishEdit.value.month).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно изменить приоритет!');
+      })
+    ).subscribe(res => {
+      console.log(res);
+      this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
+
+      this.getWishes(this.apiUrl);
+      this.getWishesWithMonthGroupping('?sortType=all');
+      this.isMonthGroupModeWishEdit = false;
+
+    });
+  }
+
+  // Редактирование желания при помесячной группировке
+  editMonthGroupItem(items: WishGroupItem) {
+    this.getMonths();
+    console.log(items.wish);
+    this.isMonthGroupModeWishEdit = true;
+    this.MonthGroupModeWishEdit.patchValue({
+      id: items.id,
+      wish: items.wish
+    });
+  }
+
+
+  // Изменить сортировку помесячной группировки
+  sortGroupList(item: string) {
+
+    //  if (this.isUserCrypto) {
+    if (item === 'По имени') {
+      this.wishGroups.forEach((element) => {
+        element.wishList.sort((a, b): number => {
+          if (a.wish < b.wish) return -1;
+          if (a.wish > b.wish) return 1;
+          return 0;
+        });
+      });
+    } else if (item === 'По сумме [1..10]') {
+      this.wishGroups.forEach((element) => {
+        element.wishList.sort((a, b): number => {
+          if (a.price < b.price) return -1;
+          if (a.price > b.price) return 1;
+          return 0;
+        });
+      });
+    } else {
+      this.wishGroups.forEach((element) => {
+        element.wishList.sort((a, b): number => {
+          return b.price - a.price;
+        });
+      });
+    }
+    //  } else {
+
+    /*if (item === 'По имени') {
+      this.getWishesWithMonthGroupping('?sortType=name');
+    } else if (item === 'По сумме [1..10]') {
+      this.getWishesWithMonthGroupping('?sortType=price-asc');
+    } else {
+      this.getWishesWithMonthGroupping('?sortType=price-desc');
+    }*/
+    //}
   }
 
   changeFilter(item: string) {
@@ -246,7 +344,7 @@ export class MainComponent implements OnInit {
       this.apiUrl = this.allWishesUrl;
     } else if (item === 'Помесячная группировка') {
 
-      this.getWishesWithMonthGroupping();
+      this.getWishesWithMonthGroupping('?sortType=all');
       this.setUserViewMode('TREE');
 
     } else {
@@ -292,9 +390,23 @@ export class MainComponent implements OnInit {
     console.log('decrypt method');
     this.wishes.forEach((element) => {
       element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
+      element.description = this.commonService.convertText('decr', element.description, this.cryptokey);
+      element.url = this.commonService.convertText('decr', element.url, this.cryptokey);
     });
-
   }
+
+  decryptOrderedWishes() {
+    console.log('decrypt method for ordered wishes');
+    this.wishGroups.forEach((month) => {
+      month.wishList.forEach((element) => {
+        console.log('element.wish', element.wish);
+        // console.log('this.cryptokey', this.cryptokey);
+        console.log('test', this.commonService.convertText('decr', element.wish, this.cryptokey));
+        element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
+      });
+    });
+  }
+
 
   getWishes(url: string) {
 
@@ -307,7 +419,6 @@ export class MainComponent implements OnInit {
     ).subscribe(data => {
       this.wishes = data['list'];
       console.log(this.wishes);
-
       if (this.isUserCrypto) {
         console.log('decrypt-mode');
         this.decryptWishes();
@@ -324,6 +435,10 @@ export class MainComponent implements OnInit {
       this.summPriority = data.priority;
       this.periodAll = data.allPeriodForImplementation;
       this.periodPriority = data.priorityPeriodForImplementation;
+      this.implementationPeriod = data.averageImplementationTime;
+
+      this.isSalaryExists = true;
+      this.filters = ['Все', 'Приоритет', 'Помесячная группировка'];
       console.log('Sal: ' + data.lastSalary);
     });
   }
@@ -352,10 +467,12 @@ export class MainComponent implements OnInit {
     console.log('error - ' + err.error);
     if (err.error === 'ERR-01') {
       this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
-      this.isSalayExists = false;
+      this.isSalaryExists = false;
+      this.filters = ['Все', 'Приоритет'];
     } else if (err.error === 'ERR-02') {
       this.error = 'У вас нет сохраненных желаний! Добавьте хотя бы одно желание!';
-      this.isSalayExists = false;
+      this.isSalaryExists = false;
+      this.filters = ['Все', 'Приоритет'];
     } else {
       this.error = message;
     }
@@ -370,32 +487,46 @@ export class MainComponent implements OnInit {
 
   openEditWish(event: any, item: Wish, isedit: number) {
 
-    if (isedit === 1) {
-      this.isEdit = true;
-      this.isEditMode = true;
 
-      this.form.patchValue({
-        id: item.id,
-        name: item.wish,
-        description: item.description,
-        url: item.url,
-        priority: item.priority,
-        price: item.price,
+    // Если это юзер с шифрованием на фронте и при этом у него не задан ключ
+    if ((!this.cryptokey) && (this.isUserCrypto)) {
+
+      this.error = 'Задайте ключ шифрование в меню О пользователе. ' +
+        'Без этого при включенном режиме шифрования пользовательских данных мы не можем добавить желание!';
+      timer(4000).subscribe(() => {
+        this.error = null;
       });
-
     } else {
-      this.isEdit = true;
-      this.isEditMode = false;
 
-      this.form.patchValue({
-        id: 1,
-        name: '',
-        description: 'какое-то описание',
-        url: '',
-        priority: 1,
-        price: 0,
-      });
+      if (isedit === 1) {
+        this.isEdit = true;
+        this.isEditMode = true;
 
+        this.form.patchValue({
+          id: item.id,
+          name: item.wish,
+          description: item.description,
+          url: item.url,
+          priority: item.priority,
+          price: item.price,
+          creationDate: item.creationDate
+        });
+
+      } else {
+        this.isEdit = true;
+        this.isEditMode = false;
+
+        this.form.patchValue({
+          id: 1,
+          name: '',
+          description: 'какое-то описание',
+          url: '',
+          priority: 1,
+          price: 0,
+          creationDate: ''
+        });
+
+      }
     }
   }
 
@@ -478,9 +609,44 @@ export class MainComponent implements OnInit {
     ).subscribe(hero => {
 
       this.showAlert('Зарплата успешно обновлена!', 'ADD MODE', hero);
+      this.getWishes(this.apiUrl);
     });
 
   }
+
+  realizeWish() {
+    const wish = new Wish(this.form.value.id,
+      this.form.value.name,
+      this.form.value.price,
+      this.form.value.priority,
+      false,
+      this.form.value.description,
+      this.form.value.url,
+      true
+    );
+    if (!this.cryptokey) {
+      console.log('cryptokey is null. Try to fix it');
+      this.cryptokey = localStorage.getItem('cryptokey');
+    }
+
+    if (this.isUserCrypto) {
+      wish.wish = this.commonService.convertText('encrypt', wish.wish, this.cryptokey);
+      wish.description = this.commonService.convertText('encrypt', wish.description, this.cryptokey);
+      wish.url = this.commonService.convertText('encrypt', wish.url, this.cryptokey);
+      console.log('encrypted wish', wish.wish);
+    }
+
+    this.httpService.updateWish(wish, this.myBaseUrl).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно обновить желание!');
+      })
+    ).subscribe(hero => {
+
+      this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
+      this.getWishes(this.apiUrl);
+    });
+  }
+
 
   addEditWish() {
 
@@ -490,10 +656,19 @@ export class MainComponent implements OnInit {
       this.form.value.priority,
       false,
       this.form.value.description,
-      this.form.value.url);
+      this.form.value.url,
+      false
+    );
+
+    if (!this.cryptokey) {
+      console.log('cryptokey is null. Try to fix it');
+      this.cryptokey = localStorage.getItem('cryptokey');
+    }
 
     if (this.isUserCrypto) {
       wish.wish = this.commonService.convertText('encrypt', wish.wish, this.cryptokey);
+      wish.description = this.commonService.convertText('encrypt', wish.description, this.cryptokey);
+      wish.url = this.commonService.convertText('encrypt', wish.url, this.cryptokey);
       console.log('encrypted wish', wish.wish);
     }
 
@@ -506,6 +681,7 @@ export class MainComponent implements OnInit {
       ).subscribe(hero => {
 
         this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
+        this.getWishes(this.apiUrl);
       });
 
     } else {
@@ -519,6 +695,7 @@ export class MainComponent implements OnInit {
       ).subscribe(hero => {
 
         this.showAlert('Желание успешно добавлено!', 'ADD MODE', hero);
+        this.getWishes(this.apiUrl);
       });
     }
   }
@@ -533,7 +710,7 @@ export class MainComponent implements OnInit {
       })
     ).subscribe(res => {
       console.log(res);
-      this.showAlert('Приоритет успешно изменен на - ' + res.priority, 'ADD MODE', res);
+      this.showAlert('Приоритет успешно изменен на ' + res.priority, 'ADD MODE', res);
       this.getWishes(this.apiUrl);
     });
   }
@@ -541,7 +718,6 @@ export class MainComponent implements OnInit {
 
   changePriorityMonth(item: WishGroupItem, move: string) {
 
-    console.log('change priority month => ' + item);
     console.log('URL ->' + this.changePriorityMonthUrl + '/' + item.id + '/' + move);
     this.httpService.getData(this.changePriorityMonthUrl + '/' + item.id + '/' + move).pipe(
       catchError(err => {
@@ -552,7 +728,7 @@ export class MainComponent implements OnInit {
       this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
 
       this.getWishes(this.apiUrl);
-      this.getWishesWithMonthGroupping();
+      this.getWishesWithMonthGroupping('?sortType=all');
 
     });
   }
@@ -619,24 +795,4 @@ export class MainComponent implements OnInit {
      });*/
 
   }
-
-  /*logout() {
-    console.log('unauthorize');
-    localStorage.removeItem('token');
-  }*/
-
-  /*changeLogin(item: string) {
-
-    if (item === 'Антон') {
-
-      this.login('anton', '123');
-    } else if (item === 'Женя') {
-      this.login('eugene', '123');
-    } else {
-      this.login('nastya', '123');
-    }
-
-    this.getWishes();
-  }*/
-
 }

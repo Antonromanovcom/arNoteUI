@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import {environment} from '../../environments/environment';
 
 const helper = new JwtHelperService();
 let myRawToken = localStorage.getItem('token');
@@ -12,8 +13,9 @@ let isExpired = helper.isTokenExpired(myRawToken);
 @Injectable()
 export class AuthService {
 
+  SERVER_URL: string = environment.serverUrl;
   _loginURL = 'http://localhost:8080/login?';
-  loginURL = '/login?';
+  loginURL = this.SERVER_URL + '/login?';
 
 
   constructor(private http: HttpClient, public jwtHelper: JwtHelperService) {
@@ -35,10 +37,7 @@ export class AuthService {
 
     console.log('TOKEN EXPIRE - ' + isExpired);
     return !isExpired;
-
   }
-
-
 
   public refreshToken() {
 
@@ -49,6 +48,4 @@ export class AuthService {
 
     console.log('TOKEN EXPIRE - ' + isExpired);
   }
-
-
 }

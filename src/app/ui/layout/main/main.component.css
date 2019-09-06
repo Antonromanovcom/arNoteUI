@@ -9,12 +9,9 @@
 .sumallrow {
   background-color: #790909;
   color: #ffffff;
-
 }
 
 ::ng-deep  .main-container {
-  /*background-color: #ea1e2c;*/
-  /*height: 100%;*/
 }
 
 .sumpriorrow {
@@ -27,23 +24,12 @@
   /*height:100%*/
 }
 
-#test1{
-  /*min-width: 100%;
-  min-height: 100%;
-  position: relative;
-  background: rgba(200, 54, 54, 0.25);
-  padding-left: 10px;*/
-
-}
-
-
   @media screen and (max-width: 500px){
 
     .sidenav {
       min-width: 1%;
       visibility: hidden;
-      background: #ea1e2c;
-
+      /*background: #ea1e2c;*/
     }
 
 

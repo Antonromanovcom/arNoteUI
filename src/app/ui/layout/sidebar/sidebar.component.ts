@@ -8,9 +8,9 @@ import {Component, OnInit} from '@angular/core';
       <div class="content-area">
       </div>
       <!--<div class="hidden-md-down">-->
-      <clr-vertical-nav class="hidden-md-down">
+      <clr-vertical-nav>
         <a clrVerticalNavLink routerLink="../401" routerLinkActive="active">О проекте</a>
-        <a clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
+        <a *ngIf="idToken" clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
         <!--<a clrVerticalNavLink routerLink="./pikachu" routerLinkActive="active">Pikachu</a>
         <a clrVerticalNavLink routerLink="./raichu" routerLinkActive="active">Raichu</a>
         <a clrVerticalNavLink routerLink="./snorlax" routerLinkActive="active">Snorlax</a>
@@ -28,6 +28,7 @@ export class SidebarComponent implements OnInit {
   }
 
   ngOnInit() {
+    const idToken = localStorage.getItem('token');
   }
 
 }

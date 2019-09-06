@@ -1,6 +1,7 @@
 export class Wish {
 
-  constructor(id: number, wish: string, price: number, priority: number, archive: boolean, description: string, url: string) {
+  constructor(id: number, wish: string, price: number, priority: number, archive: boolean,
+              description: string, url: string, realized: boolean) {
     this.id = id;
     this.wish = wish;
     this.price = price;
@@ -8,6 +9,7 @@ export class Wish {
     this.archive = archive;
     this.description = description;
     this.url = url;
+    this.realized = realized;
   }
 
   id: number;
@@ -17,4 +19,7 @@ export class Wish {
   archive: boolean;
   description: string;
   url: string;
+  realized: boolean;
+  priorityGroup: number;
+  creationDate: string;
 }

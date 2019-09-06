@@ -9,7 +9,7 @@ import {MessageCode} from '../../../service/message.code';
 import {Router} from '@angular/router';
 import {HttpService} from '../../../service/http.service';
 import {User} from '../../../dto/user';
-import {Wish} from '../../../dto/wish';
+import {environment} from '../../../../environments/environment';
 
 
 @Component({
@@ -23,16 +23,15 @@ export class HeaderComponent implements OnInit {
 
   // --------------------------------- URL'ы -------------------------------------
 
-
+  SERVER_URL: string = environment.serverUrl;
   cryptokey = '';
-  _myBaseUrl = '/rest/wishes';
-  myBaseUrl = 'http://localhost:8080/rest/wishes';
+  myBaseUrl = this.SERVER_URL + '/rest/wishes';
+  _myBaseUrl = 'http://localhost:8080/rest/wishes';
   usersUrl = this.myBaseUrl + '/users'; // основная ссылка на api
 
   isLogin = false; // вывод диалогового окна логгирования
   loginDropDownMenu: string[];
   isUserDataEdit = false; // вывод диалогового информации о пользователе.
-  // isUserCrypto: boolean;
   user: User;
 
   loginForm = this.fb.group({
@@ -74,8 +73,20 @@ export class HeaderComponent implements OnInit {
     if (idToken) {
       this.loginDropDownMenu = ['О пользователе', 'Выйти'];
     } else {
-      this.loginDropDownMenu = ['Зарегистрироваться', 'Войти', 'Выйти'];
+      this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
     }
+  }
+
+
+  clearCryptoKey() {
+    localStorage.removeItem('cryptokey');
+
+    this.userInfoForm.patchValue({
+      cryptkey: ''
+    });
+
+    this.isUserDataEdit = false;
+
   }
 
   loadUserData() {
@@ -95,8 +106,6 @@ export class HeaderComponent implements OnInit {
       this.user.email = data.email;
       this.user.fullname = data.fullname;
 
-      // console.log('user-login sub - >', this.user.login);
-
       this.userInfoForm.patchValue({
         editlogin: this.user.login,
         editpassword: this.user.pwd,
@@ -105,9 +114,13 @@ export class HeaderComponent implements OnInit {
         fullname: this.user.fullname
       });
 
+      if (data.userCryptoMode === false) {
+        this.userInfoForm.patchValue({
+          cryptkey: '111'
+        });
+      }
     });
   }
-
 
   loginIconHandler(item: string) {
     if (item === 'Войти') {
@@ -115,13 +128,19 @@ export class HeaderComponent implements OnInit {
       this.isLogin = true;
     } else if (item === 'Выйти') {
       console.log('unauthorize');
-      this.loginDropDownMenu = ['Зарегистрироваться', 'Войти', 'Выйти'];
+      this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
       localStorage.removeItem('token');
       this.router.navigate(['401']);
 
     } else if (item === 'О пользователе') {
       this.loadUserData();
       this.isUserDataEdit = true;
+
+      let tempKey = localStorage.getItem('cryptokey');
+      this.userInfoForm.patchValue({
+        cryptkey: tempKey.toString(),
+      });
+
     }
   }
 
@@ -148,26 +167,44 @@ export class HeaderComponent implements OnInit {
 
   changeUserData() {
 
+    /* console.log('login: ' + this.user.login + ' - ' + this.userInfoForm.value.editlogin);
+     console.log('email: ' + this.user.email + ' - ' + this.userInfoForm.value.email);
+     console.log('fullname: ' + this.user.fullname + ' - ' + this.userInfoForm.value.fullname);*/
 
-    this.user.login = this.userInfoForm.value.editlogin;
-    // this.user.pwd = this.userInfoForm.value.editpassword;
-    this.user.userCryptoMode = this.userInfoForm.value.isencrypted;
-    this.user.email = this.userInfoForm.value.email;
-    this.user.fullname = this.userInfoForm.value.fullname;
+    if ((this.user.login === this.userInfoForm.value.editlogin)
+      && (this.user.email === this.userInfoForm.value.email)
+      && (this.user.fullname === this.userInfoForm.value.fullname)) {
 
-
-    this.httpService.updateUserData(this.user, this.usersUrl + '/' + this.user.id).pipe(
-      catchError(err => {
-        return this.errorHandler(err, 'Невозможно выполнить редактирование пользовательских данных!');
-      })
-    ).subscribe(hero => {
+      console.log('МЕНЯЕМ ТОЛЬКО CRYPTO-KEY');
 
       const messageType = new MessageCode();
       this.sendMessagePush(messageType.USER_DATA_CHANGE_OK);
       this.isUserDataEdit = false;
       localStorage.setItem('cryptokey', this.userInfoForm.value.cryptkey);
       console.log('cryptokey is written - ' + this.userInfoForm.value.cryptkey);
-    });
+
+    } else {
+
+      this.user.login = this.userInfoForm.value.editlogin;
+      this.user.userCryptoMode = this.userInfoForm.value.isencrypted;
+      this.user.email = this.userInfoForm.value.email;
+      this.user.fullname = this.userInfoForm.value.fullname;
+
+      console.log('МЕНЯЕМ ВСЕ ЮЗЕРСКИЕ ДАННЫЕ');
+
+      this.httpService.updateUserData(this.user, this.usersUrl + '/' + this.user.id).pipe(
+        catchError(err => {
+          return this.errorHandler(err, 'Невозможно выполнить редактирование пользовательских данных!');
+        })
+      ).subscribe(hero => {
+
+        const messageType = new MessageCode();
+        this.sendMessagePush(messageType.USER_DATA_CHANGE_OK);
+        this.isUserDataEdit = false;
+        localStorage.setItem('cryptokey', this.userInfoForm.value.cryptkey);
+        console.log('cryptokey is written - ' + this.userInfoForm.value.cryptkey);
+      });
+    }
   }
 
   sendMessagePush(message: string) {
@@ -176,7 +213,6 @@ export class HeaderComponent implements OnInit {
     errorType.messageType = message;
     console.log('Error message- ' + errorType.messageType);
     this.commonService.pushError(errorType);
-
   }
 
   sendLogin() {
@@ -206,7 +242,5 @@ export class HeaderComponent implements OnInit {
           this.sendMessagePush(message.AUTH_LOGIN_OK);
         }))
       .subscribe();
-
-
   }
 }

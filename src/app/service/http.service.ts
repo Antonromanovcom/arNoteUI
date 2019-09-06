@@ -4,15 +4,18 @@ import {Observable} from 'rxjs';
 import {Wish} from '../dto/wish';
 import {Salary} from '../dto/salary';
 import {User} from '../dto/user';
+import {environment} from '../../environments/environment';
 
 
 @Injectable()
 export class HttpService {
 
+  SERVER_URL: string = environment.serverUrl;
+
   _loginURL = 'http://localhost:8080/login?';
-  loginURL = '/login?';
+  loginURL = this.SERVER_URL + '/login?';
   _isCryptoUserUrl = 'http://localhost:8080/rest/wishes/users/getcurrent';
-  isCryptoUserUrl = '/rest/wishes/users/getcurrent';
+  isCryptoUserUrl = this.SERVER_URL + '/rest/wishes/users/getcurrent';
 
 
   constructor(private http: HttpClient) {
@@ -96,8 +99,6 @@ export class HttpService {
 
     return this.http.put<User>(url, user, httpOptions);
   }
-
-
 
   // 'assets/data/test.json'
 }
