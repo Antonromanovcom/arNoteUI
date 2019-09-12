@@ -12,20 +12,19 @@ import {MessageCode} from '../../../service/message.code';
 import {WishListGroup} from '../../../dto/wish-list-group';
 import {WishGroupItem} from '../../../dto/wish-group-item';
 import {environment} from '../../../../environments/environment';
+import {DatePipe} from '@angular/common';
 
 @Component({
   selector: 'app-main',
   templateUrl: 'main.component.html',
-  providers: [HttpService],
+  providers: [HttpService, DatePipe],
   styleUrls: ['./main.component.css']
 })
 export class MainComponent implements OnInit {
 
   // --------------------------------- URL'ы -------------------------------------
 
-
   SERVER_URL: string = environment.serverUrl;
-
   myBaseUrl = this.SERVER_URL + '/rest/wishes';
   _myBaseUrl = 'http://localhost:8080/rest/wishes';
 
@@ -55,8 +54,8 @@ export class MainComponent implements OnInit {
   filterMode = false; // период реализации для приоритетного
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
   monthOrdermode = false; // режим отображение дерева группировки по месяцам
-  // private wishFilter = new WishNameFilter();
   isSalaryExists = false;
+  curDateFormated = '';
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -75,6 +74,7 @@ export class MainComponent implements OnInit {
 
   filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
   groupMonthSort = ['По имени', 'По сумме [1..10]', 'По сумме [10..1]']; // сортировка помесячной группировки
+  mainSort = ['По имени', 'По сумме [1..10]', 'По сумме [10..1]', 'По приоритету']; // сортировка помесячной группировки
 
   // --------------------------------- ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ И ЕГО ДАННЫЕ -------------------------------------
 
@@ -103,8 +103,6 @@ export class MainComponent implements OnInit {
     ]],
     creationDate: ['', []]
   });
-
-  creationDate
 
   salaryForm = this.fb.group({ // форма ввода / редактирования зарплаты
     salary: ['', [
@@ -139,7 +137,8 @@ export class MainComponent implements OnInit {
     ]]
   });
 
-  constructor(private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder) {
+  constructor(private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder, private datePipe: DatePipe) {
+    this.curDateFormated = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   }
 
   ngOnInit() {
@@ -326,16 +325,36 @@ export class MainComponent implements OnInit {
         });
       });
     }
-    //  } else {
+  }
 
-    /*if (item === 'По имени') {
-      this.getWishesWithMonthGroupping('?sortType=name');
+  // Изменить сортировку основной таблицы
+  sortMainList(item: string) {
+
+    if (item === 'По имени') {
+      this.wishes.sort((a, b): number => {
+        if (a.wish < b.wish) return -1;
+        if (a.wish > b.wish) return 1;
+        return 0;
+      });
+
     } else if (item === 'По сумме [1..10]') {
-      this.getWishesWithMonthGroupping('?sortType=price-asc');
+
+      this.wishes.sort((a, b): number => {
+        if (a.price < b.price) return -1;
+        if (a.price > b.price) return 1;
+        return 0;
+      });
+    } else if (item === 'По приоритету') {
+      this.wishes.sort((a, b): number => {
+        if (a.priority < b.priority) return -1;
+        if (a.priority > b.priority) return 1;
+        return 0;
+      });
     } else {
-      this.getWishesWithMonthGroupping('?sortType=price-desc');
-    }*/
-    //}
+      this.wishes.sort((a, b): number => {
+        return b.price - a.price;
+      });
+    }
   }
 
   changeFilter(item: string) {
@@ -523,7 +542,7 @@ export class MainComponent implements OnInit {
           url: '',
           priority: 1,
           price: 0,
-          creationDate: ''
+          creationDate: this.curDateFormated
         });
 
       }

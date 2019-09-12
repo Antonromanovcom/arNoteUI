@@ -6,6 +6,10 @@
 
 }
 
+.dropdown .dropdown-toggle {
+  margin: 5px;
+}
+
 .sumallrow {
   background-color: #790909;
   color: #ffffff;

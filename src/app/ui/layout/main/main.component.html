@@ -21,6 +21,7 @@
       <clr-dg-action-bar>
         <div class="actions-container">
 
+
           <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
           <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
           <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату
@@ -42,7 +43,18 @@
               <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
             </clr-dropdown-menu>
           </clr-dropdown>
-          <!--class="hidden-md-down"-->
+
+          <clr-dropdown class="hidden-md-down">
+            <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+              СОРТИРОВКА
+              <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <clr-dropdown-menu *clrIfOpen>
+              <label class="dropdown-header">Сортировка</label>
+              <a *ngFor="let item of mainSort" (click)="sortMainList(item)" clrDropdownItem>{{item}}</a>
+            </clr-dropdown-menu>
+          </clr-dropdown>
+
         </div>
       </clr-dg-action-bar>
       <clr-dg-column>Желание</clr-dg-column>
@@ -106,9 +118,9 @@
         *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
 
         <clr-tree-node *ngFor="let items of month.wishList">
-          <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a> | {{items.price}} |
+          <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a>{{'&nbsp;| ' + items.price + ' |'}}
           <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
-          |
+           |
           <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
 
         </clr-tree-node>
@@ -122,12 +134,21 @@
       <div class="modal-body">
         <form clrForm [formGroup]="form">
 
+          <!--ПОЛЕ ДАТА СОЗДАНИЯ-->
+
+          <clr-input-container>
+
+            <label #label for="creationDate" class="input-label clr-col-12">Дата создания</label>
+            <input type="text" clrInput formControlName="creationDate" id="creationDate" name="creationDate" autocomplete="off" readonly
+                   size="50">
+          </clr-input-container>
+
           <!--ПОЛЕ ID-->
 
           <clr-input-container hidden>
 
             <label #label for="id" class="input-label clr-col-12">id</label>
-            <input type="id" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required
+            <input type="text" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required
                    size="50">
           </clr-input-container>
 
