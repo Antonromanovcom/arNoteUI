@@ -1,25 +1,21 @@
 import {Component, OnInit} from '@angular/core';
 import {CommonService} from '../../service/common.service';
 import {HttpService} from '../../service/http.service';
-import { JwtHelperService, JWT_OPTIONS  } from '@auth0/angular-jwt';
+import {JwtHelperService, JWT_OPTIONS} from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-layout',
   template: `
-    <!--<div class="main-container">
-      <app-header></app-header>
-      <app-main>
-        <ng-content></ng-content>
-      </app-main>
-    </div>-->
-
     <clr-main-container>
       <clr-header class="header">
         <app-header></app-header>
       </clr-header>
       <div class="content-container">
+        <clr-vertical-nav [clr-nav-level]="1">
+          <a clrVerticalNavLink routerLink="../401" routerLinkActive="active">О проекте</a>
+          <a *ngIf="idToken" clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
+        </clr-vertical-nav>
         <div class="content-area">
-          <!--<app-main></app-main>-->
           <router-outlet></router-outlet>
         </div>
       </div>

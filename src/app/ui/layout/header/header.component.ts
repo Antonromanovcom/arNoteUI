@@ -10,6 +10,7 @@ import {Router} from '@angular/router';
 import {HttpService} from '../../../service/http.service';
 import {User} from '../../../dto/user';
 import {environment} from '../../../../environments/environment';
+import {NewUser} from '../../../dto/newuser';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class HeaderComponent implements OnInit {
   usersUrl = this.myBaseUrl + '/users'; // основная ссылка на api
 
   isLogin = false; // вывод диалогового окна логгирования
+  isRegister = false; // вывод диалогового окна регистрации
   loginDropDownMenu: string[];
   isUserDataEdit = false; // вывод диалогового информации о пользователе.
   user: User;
@@ -41,6 +43,21 @@ export class HeaderComponent implements OnInit {
     password: ['', [
       Validators.required
     ]]
+  });
+
+  registerForm = this.fb.group({
+    login: ['', [
+      Validators.required,
+      Validators.pattern(/^[A-Za-z0-9]+$/)
+    ]],
+    password: ['', [
+      Validators.required
+    ]],
+    email: ['', [
+      Validators.required,
+      Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')
+    ]],
+    fullname: ['', []],
   });
 
   userInfoForm = this.fb.group({
@@ -59,7 +76,8 @@ export class HeaderComponent implements OnInit {
     cryptkey: ['', [Validators.required]]
   });
 
-  constructor(private commonService: CommonService, private authService: AuthService, private httpService: HttpService, private fb: FormBuilder, public router: Router) {
+  constructor(private commonService: CommonService, private authService: AuthService, private httpService: HttpService,
+              private fb: FormBuilder, public router: Router) {
   }
 
   ngOnInit() {
@@ -124,14 +142,13 @@ export class HeaderComponent implements OnInit {
 
   loginIconHandler(item: string) {
     if (item === 'Войти') {
-      console.log(item);
       this.isLogin = true;
     } else if (item === 'Выйти') {
-      console.log('unauthorize');
       this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
       localStorage.removeItem('token');
       this.router.navigate(['401']);
-
+    } else if (item === 'Зарегистрироваться') {
+      this.isRegister = true;
     } else if (item === 'О пользователе') {
       this.loadUserData();
       this.isUserDataEdit = true;
@@ -148,13 +165,12 @@ export class HeaderComponent implements OnInit {
 
     this.isLogin = false;
     this.isUserDataEdit = false;
+    this.isRegister = false; // прячем окно регистрации
 
     const errorType = new MessageCode();
     if (message === 'LOGINERROR') {
       this.sendMessagePush(errorType.WRONG_LOGIN);
     } else {
-      console.log('e ... ', err.error);
-
       if (err.error === 'SUCH_USER_EXIST') {
         this.sendMessagePush(errorType.USER_DATA_CHANGE_SUCH_USER_EXISTS);
       } else {
@@ -166,10 +182,6 @@ export class HeaderComponent implements OnInit {
 
 
   changeUserData() {
-
-    /* console.log('login: ' + this.user.login + ' - ' + this.userInfoForm.value.editlogin);
-     console.log('email: ' + this.user.email + ' - ' + this.userInfoForm.value.email);
-     console.log('fullname: ' + this.user.fullname + ' - ' + this.userInfoForm.value.fullname);*/
 
     if ((this.user.login === this.userInfoForm.value.editlogin)
       && (this.user.email === this.userInfoForm.value.email)
@@ -214,6 +226,28 @@ export class HeaderComponent implements OnInit {
     console.log('Error message- ' + errorType.messageType);
     this.commonService.pushError(errorType);
   }
+
+  register() {
+
+    const newUser = new User();
+    newUser.login = this.registerForm.value.login;
+    newUser.pwd = this.registerForm.value.password;
+    newUser.fullname = this.registerForm.value.fullname;
+    newUser.email = this.registerForm.value.email;
+    newUser.userCryptoMode = false;
+    newUser.userRole = 'USER';
+
+    this.authService.register(newUser, this.usersUrl).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'REGISTERERROR');
+      })
+    ).subscribe(res => {
+      const messageType = new MessageCode();
+      this.sendMessagePush(messageType.REGISTER_OK);
+      this.isRegister = false;
+    });
+  }
+
 
   sendLogin() {
 

@@ -1,4 +1,4 @@
-<clr-main-container>
+<!--<clr-main-container>-->
 <header class="header-1">
   <div class="branding">
     <a class="nav-link">
@@ -60,6 +60,60 @@
 
   </div>
 </clr-modal>
+
+  <!-- ФОРМА РЕГИСТРАЦИИ ЮЗЕРА -->
+
+  <clr-modal [(clrModalOpen)]="isRegister">
+    <h3 class="modal-title">Регистрация нового пользователя</h3>
+    <div class="modal-body">
+      <form clrForm [formGroup]="registerForm">
+
+        <!--ПОЛЕ ЛОГИН-->
+
+        <clr-input-container>
+
+          <label #label for="reglogin" class="input-label clr-col-12">Логин</label>
+          <input type="text" clrInput formControlName="login" id="reglogin" name="login" autocomplete="off" required
+                 size="100">
+        </clr-input-container>
+
+        <!--ПОЛЕ ПАРОЛЬ-->
+
+        <clr-input-container>
+
+          <label #label for="regpassword" class="input-label clr-col-12">Пароль</label>
+          <input type="password" clrInput formControlName="password" id="regpassword" name="password" autocomplete="off" required
+                 size="100">
+        </clr-input-container>
+
+        <!--ПОЛЕ EMAIL-->
+
+        <clr-input-container>
+
+          <label #label for="regemail" class="input-label clr-col-12">E-mail</label>
+          <input type="email" clrInput formControlName="email" id="regemail" name="email" autocomplete="off" required
+                 size="100">
+        </clr-input-container>
+        <br/>
+        <span class="label label-danger">Не используйте почтовые ящики сервиса mail.ru!</span>
+
+        <!--ПОЛЕ ПОЛНОЕ ИМЯ-->
+
+        <clr-input-container>
+
+          <label #label for="registerfullname" class="input-label clr-col-12">Полное имя</label>
+          <input type="text" clrInput formControlName="fullname" id="registerfullname" name="fullname" autocomplete="off" size="100">
+        </clr-input-container>
+
+      </form>
+
+      <div class="row">
+        <button type="button" (click)="register()" class="btn btn-primary mt-1">Зарегистрироваться</button>
+      </div>
+
+    </div>
+  </clr-modal>
+
 
 <!--ФОРМА РЕДАКТИРОВАНИЯ ПОЛЬЗОВАТЕЛЬСКИХ ДАННЫХ-->
 
@@ -131,7 +185,6 @@
 
 
 
-
     </form>
 
     <div class="row">
@@ -142,4 +195,4 @@
   </div>
 </clr-modal>
 
-</clr-main-container>
+<!--</clr-main-container>-->

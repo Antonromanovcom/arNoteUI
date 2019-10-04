@@ -151,12 +151,12 @@ export class MainComponent implements OnInit {
     this.getUserViewMode();
 
     this.subscription = this.commonService.error$.subscribe(error => {
-      if (error == null) {
 
+      if (error == null) {
         this.globalError = new MessageCode();
         this.globalError.messageType = 'NO ERRORS';
-
       } else {
+
 
         this.globalError = error;
         this.isEdit = false;
@@ -169,12 +169,13 @@ export class MainComponent implements OnInit {
           this.isSalaryAdd = false;
           this.isCsvParse = false;
           this.result = this.globalError.USER_DATA_CHANGE_OK;
+
           timer(4000).subscribe(() => {
             this.result = null;
           });
+
         } else {
           this.error = error.messageType;
-
           timer(4000).subscribe(() => {
             this.error = null;
           });
@@ -231,11 +232,6 @@ export class MainComponent implements OnInit {
       })
     ).subscribe(data => {
       console.log('data.viewMode => ' + data.viewMode);
-      /*if (data.viewMode === 'TREE') {
-        this.monthOrdermode = true;
-      } else {
-        this.monthOrdermode = false;
-      }*/
     });
   }
 

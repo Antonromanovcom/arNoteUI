@@ -31,7 +31,11 @@ export class UnauthorizeComponent implements OnInit {
 
         this.globalError = error;
         if (this.globalError.messageType === this.globalError.AUTH_LOGIN_OK) {
-
+        } else if (this.globalError.messageType === this.globalError.REGISTER_OK) {
+          this.result = this.globalError.REGISTER_OK;
+          timer(4000).subscribe(() => {
+            this.result = null;
+          });
         } else {
 
           this.error = error.messageType;

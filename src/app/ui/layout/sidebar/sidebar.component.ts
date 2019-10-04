@@ -3,22 +3,13 @@ import {Component, OnInit} from '@angular/core';
 @Component({
   selector: 'app-sidebar',
   template: `
-
-    <div class="content-container">
-      <div class="content-area">
-      </div>
-      <!--<div class="hidden-md-down">-->
-      <clr-vertical-nav>
+    <!--<div class="content-container">-->
+      <!--<div class="content-area">-->
+      <!--</div>-->
+      <clr-vertical-nav [clr-nav-level]="1">
         <a clrVerticalNavLink routerLink="../401" routerLinkActive="active">О проекте</a>
         <a *ngIf="idToken" clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
-        <!--<a clrVerticalNavLink routerLink="./pikachu" routerLinkActive="active">Pikachu</a>
-        <a clrVerticalNavLink routerLink="./raichu" routerLinkActive="active">Raichu</a>
-        <a clrVerticalNavLink routerLink="./snorlax" routerLinkActive="active">Snorlax</a>
-        <div class="nav-divider"></div>
-        <a clrVerticalNavLink routerLink="./credit" routerLinkActive="active">Credit</a>-->
       </clr-vertical-nav>
-      <!--</div>-->
-
   `,
   styles: []
 })

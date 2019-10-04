@@ -1,8 +1,11 @@
 import {Injectable} from '@angular/core';
-import {HttpClient, HttpResponse} from '@angular/common/http';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {environment} from '../../environments/environment';
+import {Wish} from '../dto/wish';
+import {NewUser} from '../dto/newuser';
+import {User} from '../dto/user';
 
 const helper = new JwtHelperService();
 let myRawToken = localStorage.getItem('token');
@@ -32,6 +35,19 @@ export class AuthService {
 
     return this.http.get<HttpResponse<Object>>(this.loginURL + loginPayload, {observe: 'response'});
   }
+
+  public register(newUser: User, url: string): Observable<User> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.post<User>(url, newUser, httpOptions);
+  }
+
+
 
   public isAuthenticated(): boolean {
 

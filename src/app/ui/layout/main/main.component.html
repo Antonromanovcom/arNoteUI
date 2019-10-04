@@ -1,363 +1,367 @@
-<div class="content-container">
-  <div class="content-area">
+<!--<clr-main-container>-->
+  <!--<div class="content-container">-->
+    <!--<div class="content-area">-->
 
-    <clr-alert [clrAlertType]="'success'" *ngIf="result">
-      <clr-alert-item>
+      <clr-alert [clrAlertType]="'success'" *ngIf="result">
+        <clr-alert-item>
         <span class="alert-text">
             {{result}}
         </span>
-      </clr-alert-item>
-    </clr-alert>
+        </clr-alert-item>
+      </clr-alert>
 
-    <clr-alert [clrAlertType]="'danger'" *ngIf="error">
-      <clr-alert-item>
+      <clr-alert [clrAlertType]="'danger'" *ngIf="error">
+        <clr-alert-item>
         <span class="alert-text">
             {{error}}
         </span>
-      </clr-alert-item>
-    </clr-alert>
+        </clr-alert-item>
+      </clr-alert>
 
-    <clr-datagrid *ngIf="!monthOrdermode">
-      <clr-dg-action-bar>
-        <div class="actions-container">
+      <clr-datagrid *ngIf="!monthOrdermode">
+        <clr-dg-action-bar>
+          <div class="actions-container">
 
 
-          <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
-          <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
-          <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату
-          </button>
-          <button class="btn btn-secondary; hidden-md-down" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'">
-            Парсинг csv
-          </button>
-          <button class="{{filterMode ? 'btn btn-danger; hidden-md-down' : 'btn btn-secondary; hidden-md-down'}}"
-                  (click)="filterWishes()"> {{filterButtonText}}
-          </button>
-
-          <clr-dropdown class="hidden-md-down">
-            <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-              РЕЖИМ ОТОБРАЖЕНИЯ
-              <clr-icon shape="caret down"></clr-icon>
+            <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
+            <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
+            <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату
             </button>
-            <clr-dropdown-menu *clrIfOpen>
-              <label class="dropdown-header">Режим отображения</label>
-              <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
-            </clr-dropdown-menu>
-          </clr-dropdown>
-
-          <clr-dropdown class="hidden-md-down">
-            <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-              СОРТИРОВКА
-              <clr-icon shape="caret down"></clr-icon>
+            <button class="btn btn-secondary; hidden-md-down" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'">
+              Парсинг csv
             </button>
-            <clr-dropdown-menu *clrIfOpen>
-              <label class="dropdown-header">Сортировка</label>
-              <a *ngFor="let item of mainSort" (click)="sortMainList(item)" clrDropdownItem>{{item}}</a>
-            </clr-dropdown-menu>
-          </clr-dropdown>
+            <button class="{{filterMode ? 'btn btn-danger; hidden-md-down' : 'btn btn-secondary; hidden-md-down'}}"
+                    (click)="filterWishes()"> {{filterButtonText}}
+            </button>
 
-        </div>
-      </clr-dg-action-bar>
-      <clr-dg-column>Желание</clr-dg-column>
-      <clr-dg-column>Цена</clr-dg-column>
-      <clr-dg-column [style.width.px]="20" class="hidden-md-down">Приоритет</clr-dg-column>
-      <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
-      <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
-      <clr-dg-column [style.width.px]="10" class="hidden-md-down">Ред.</clr-dg-column>
+            <clr-dropdown class="hidden-md-down">
+              <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+                РЕЖИМ ОТОБРАЖЕНИЯ
+                <clr-icon shape="caret down"></clr-icon>
+              </button>
+              <clr-dropdown-menu *clrIfOpen>
+                <label class="dropdown-header">Режим отображения</label>
+                <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
+              </clr-dropdown-menu>
+            </clr-dropdown>
 
-      <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
-        <clr-dg-cell>{{item.wish}}</clr-dg-cell>
-        <clr-dg-cell style="text-align: center">{{item.price | number:'2.'}}</clr-dg-cell>
-        <clr-dg-cell class="hidden-md-down" style="text-align: center">{{item.priority}}</clr-dg-cell>
-        <clr-dg-cell class="hidden-md-down" style="text-align: center">
-          <clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon>
-        </clr-dg-cell>
-        <clr-dg-cell class="hidden-md-down" style="text-align: center">
-          <clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon>
-        </clr-dg-cell>
-        <clr-dg-cell class="hidden-md-down" style="text-align: center">
-          <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon>
-        </clr-dg-cell>
-      </clr-dg-row>
+            <clr-dropdown class="hidden-md-down">
+              <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+                СОРТИРОВКА
+                <clr-icon shape="caret down"></clr-icon>
+              </button>
+              <clr-dropdown-menu *clrIfOpen>
+                <label class="dropdown-header">Сортировка</label>
+                <a *ngFor="let item of mainSort" (click)="sortMainList(item)" clrDropdownItem>{{item}}</a>
+              </clr-dropdown-menu>
+            </clr-dropdown>
 
-      <clr-dg-footer>
+          </div>
+        </clr-dg-action-bar>
+        <clr-dg-column>Желание</clr-dg-column>
+        <clr-dg-column>Цена</clr-dg-column>
+        <clr-dg-column [style.width.px]="20" class="hidden-md-down">Приоритет</clr-dg-column>
+        <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
+        <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
+        <clr-dg-column [style.width.px]="10" class="hidden-md-down">Ред.</clr-dg-column>
 
-        <span class="hidden-md-down"><span class="label label-danger">ИТОГО<span class="badge badge-orange">{{summAll | number:'2.'}} руб.</span></span></span>
-        <span class="hidden-sm-down"><span class="label label-danger">Реализация<span class="badge badge-danger">{{periodAll}} мес.</span></span></span>
-        <span class="label label-success">ИТОГО (PRIOR)<span class="badge badge-orange">{{summPriority | number:'2.'}} руб.</span></span>
-        <span class="label label-success">Реализация<span
-          class="badge badge-success">{{periodPriority}} мес.</span></span>
-        <span class="hidden-lg-down"><span class="label label-gray">Среднее время<span class="badge badge-blue">{{implementationPeriod}}</span></span></span>
+        <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
+          <clr-dg-cell>{{item.wish}}</clr-dg-cell>
+          <clr-dg-cell style="text-align: center">{{item.price | number:'2.'}}</clr-dg-cell>
+          <clr-dg-cell class="hidden-md-down" style="text-align: center">{{item.priority}}</clr-dg-cell>
+          <clr-dg-cell class="hidden-md-down" style="text-align: center">
+            <clr-icon shape="upload" (click)="changePriority(item, 'down')"></clr-icon>
+          </clr-dg-cell>
+          <clr-dg-cell class="hidden-md-down" style="text-align: center">
+            <clr-icon shape="download" (click)="changePriority(item, 'up')"></clr-icon>
+          </clr-dg-cell>
+          <clr-dg-cell class="hidden-md-down" style="text-align: center">
+            <clr-icon shape="edit" (click)="openEditWish($event, item, 1)"></clr-icon>
+          </clr-dg-cell>
+        </clr-dg-row>
+
+        <clr-dg-footer>
+
+          <span class="hidden-md-down"><span class="label label-danger">ИТОГО<span class="badge badge-orange">{{summAll | number:'2.'}} руб.</span></span></span>
+          <span class="hidden-sm-down"><span class="label label-danger">Реализация<span class="badge badge-danger">{{periodAll}} мес.</span></span></span>
+          <span class="label label-success">ИТОГО (PRIOR)<span class="badge badge-orange">{{summPriority | number:'2.'}} руб.</span></span>
+          <span class="label label-success">Реализация<span
+            class="badge badge-success">{{periodPriority}} мес.</span></span>
+          <span class="hidden-lg-down"><span class="label label-gray">Среднее время<span class="badge badge-blue">{{implementationPeriod}}</span></span></span>
 
 
-        <clr-dg-pagination #pagination [clrDgPageSize]="15">
-          <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]" class="hidden-md-down"> жел/стр.</clr-dg-page-size>
-          {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} из {{pagination.totalItems}} жел.
-        </clr-dg-pagination>
+          <clr-dg-pagination #pagination [clrDgPageSize]="15">
+            <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]" class="hidden-md-down"> жел/стр.
+            </clr-dg-page-size>
+            {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} из {{pagination.totalItems}} жел.
+          </clr-dg-pagination>
 
-      </clr-dg-footer>
-    </clr-datagrid>
+        </clr-dg-footer>
+      </clr-datagrid>
 
-    <div *ngIf="monthOrdermode">
+      <div *ngIf="monthOrdermode">
 
-      <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
-      <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=all')"> Обновить</button>
-      <clr-dropdown class="hidden-md-down">
-        <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-          СОРТИРОВКА
-          <clr-icon shape="caret down"></clr-icon>
-        </button>
-        <clr-dropdown-menu *clrIfOpen>
-          <label class="dropdown-header">Сортировка</label>
-          <a *ngFor="let item of groupMonthSort" (click)="sortGroupList(item)" clrDropdownItem>{{item}}</a>
-        </clr-dropdown-menu>
-      </clr-dropdown>
+        <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
+        <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=all')"> Обновить</button>
+        <clr-dropdown class="hidden-md-down">
+          <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
+            СОРТИРОВКА
+            <clr-icon shape="caret down"></clr-icon>
+          </button>
+          <clr-dropdown-menu *clrIfOpen>
+            <label class="dropdown-header">Сортировка</label>
+            <a *ngFor="let item of groupMonthSort" (click)="sortGroupList(item)" clrDropdownItem>{{item}}</a>
+          </clr-dropdown-menu>
+        </clr-dropdown>
 
-      <clr-tree-node *ngFor="let month of wishGroups" [(clrExpanded)]="month.expanded">
+        <clr-tree-node *ngFor="let month of wishGroups" [(clrExpanded)]="month.expanded">
 
-        <span class="{{month.colorClass}}">{{month.monthName}} <span class="badge">{{month.sum}}</span></span><span
-        *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
+          <span class="{{month.colorClass}}">{{month.monthName}} <span class="badge">{{month.sum}}</span></span><span
+          *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
 
-        <clr-tree-node *ngFor="let items of month.wishList">
-          <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a>{{'&nbsp;| ' + items.price + ' |'}}
-          <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
-           |
-          <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
+          <clr-tree-node *ngFor="let items of month.wishList">
+            <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a>{{'&nbsp;| ' + items.price + '
+            |'}}
+            <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
+            |
+            <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
 
+          </clr-tree-node>
         </clr-tree-node>
-      </clr-tree-node>
 
-
-    </div>
-
-    <clr-modal [(clrModalOpen)]="isEdit">
-      <h3 class="modal-title">{{isEditMode ? 'Редактировать желание' : 'Добавить желание'}}</h3>
-      <div class="modal-body">
-        <form clrForm [formGroup]="form">
-
-          <!--ПОЛЕ ДАТА СОЗДАНИЯ-->
-
-          <clr-input-container>
-
-            <label #label for="creationDate" class="input-label clr-col-12">Дата создания</label>
-            <input type="text" clrInput formControlName="creationDate" id="creationDate" name="creationDate" autocomplete="off" readonly
-                   size="50">
-          </clr-input-container>
-
-          <!--ПОЛЕ ID-->
-
-          <clr-input-container hidden>
-
-            <label #label for="id" class="input-label clr-col-12">id</label>
-            <input type="text" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required
-                   size="50">
-          </clr-input-container>
-
-          <!--ПОЛЕ ИМЯ-->
-
-          <clr-input-container>
-
-            <label #label for="name" class="input-label clr-col-12">Название</label>
-            <input type="text"
-                   clrInput
-                   formControlName="name"
-                   id="name"
-                   name="name"
-                   autocomplete="off" required size="100">
-
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-          </clr-input-container>
-
-          <!--ПОЛЕ ОПИСАНИЕ-->
-
-          <clr-input-container>
-            <label #label for="description" class="input-label clr-col-12">Описание</label>
-            <input type="text"
-                   clrInput
-                   formControlName="description"
-                   id="description"
-                   name="description"
-                   autocomplete="off" required size="100">
-          </clr-input-container>
-
-          <!--ПОЛЕ URL-->
-
-          <clr-input-container>
-            <label #label for="url" class="input-label clr-col-12">URL</label>
-            <input type="url"
-                   clrInput
-                   formControlName="url"
-                   id="url"
-                   name="url"
-                   autocomplete="off" required size="100">
-          </clr-input-container>
-
-          <!--ПОЛЕ PRIORITY-->
-
-          <clr-input-container>
-            <label #label for="priority" class="input-label clr-col-12">Приоритет</label>
-            <input type="text"
-                   clrInput
-                   formControlName="priority"
-                   id="priority"
-                   name="priority"
-                   autocomplete="off">
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-          </clr-input-container>
-
-          <!--ПОЛЕ PRICE-->
-
-          <clr-input-container>
-            <label #label for="price" class="input-label clr-col-12">Цена</label>
-            <input type="text"
-                   clrInput
-                   formControlName="price"
-                   id="price"
-                   name="price"
-                   autocomplete="off">
-          </clr-input-container>
-        </form>
-
-        <div class="row">
-          <button type="button" (click)="addEditWish()" class="btn btn-primary mt-1">Сохранить</button>
-          <button type="button" (click)="deleteWish()" *ngIf="isEditMode" class="btn btn-danger mt-1">Удалить</button>
-          <button type="button" (click)="realizeWish()" *ngIf="isEditMode" class="btn btn-success mt-1">Реализовано
-          </button>
-        </div>
 
       </div>
-    </clr-modal>
 
-    <clr-modal [(clrModalOpen)]="isSalaryAdd">
-      <h3 class="modal-title">Добавить зарплату</h3>
-      <div class="modal-body">
-        <form clrForm [formGroup]="salaryForm">
+      <clr-modal [(clrModalOpen)]="isEdit">
+        <h3 class="modal-title">{{isEditMode ? 'Редактировать желание' : 'Добавить желание'}}</h3>
+        <div class="modal-body">
+          <form clrForm [formGroup]="form">
 
-          <!--ПОЛЕ SALARY-->
+            <!--ПОЛЕ ДАТА СОЗДАНИЯ-->
 
-          <clr-input-container>
+            <clr-input-container>
 
-            <label #label for="salary" class="input-label clr-col-12">Зарплата</label>
-            <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required
-                   size="100">
-          </clr-input-container>
+              <label #label for="creationDate" class="input-label clr-col-12">Дата создания</label>
+              <input type="text" clrInput formControlName="creationDate" id="creationDate" name="creationDate"
+                     autocomplete="off" readonly
+                     size="50">
+            </clr-input-container>
 
-          <!--ПОЛЕ RESIDUAL SALARY-->
+            <!--ПОЛЕ ID-->
 
-          <clr-input-container>
+            <clr-input-container hidden>
 
-            <label #label for="residualSalary" class="input-label clr-col-12">Остаточная зарплата</label>
-            <input type="text" clrInput formControlName="residualSalary" id="residualSalary" name="residualSalary"
-                   autocomplete="off" required
-                   size="100">
-          </clr-input-container>
-          <br/>
+              <label #label for="id" class="input-label clr-col-12">id</label>
+              <input type="text" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required
+                     size="50">
+            </clr-input-container>
 
-          <span
-            class="label label-warning">Зарплата, которая остается у вас после всех трат. Расчет идет именно по ней.</span>
+            <!--ПОЛЕ ИМЯ-->
 
+            <clr-input-container>
 
-        </form>
+              <label #label for="name" class="input-label clr-col-12">Название</label>
+              <input type="text"
+                     clrInput
+                     formControlName="name"
+                     id="name"
+                     name="name"
+                     autocomplete="off" required size="100">
 
-        <div class="row">
-          <button type="button" (click)="addSalary()" class="btn btn-primary mt-1">Добавить</button>
-        </div>
+              <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+            </clr-input-container>
 
-      </div>
-    </clr-modal>
+            <!--ПОЛЕ ОПИСАНИЕ-->
 
-    <clr-modal [(clrModalOpen)]="isCsvParse">
-      <h3 class="modal-title">Парсинг csv-файла</h3>
-      <div class="modal-body">
-        <form clrForm [formGroup]="csvForm">
+            <clr-input-container>
+              <label #label for="description" class="input-label clr-col-12">Описание</label>
+              <input type="text"
+                     clrInput
+                     formControlName="description"
+                     id="description"
+                     name="description"
+                     autocomplete="off" required size="100">
+            </clr-input-container>
 
+            <!--ПОЛЕ URL-->
 
-          <!--ПОЛЕ FILE-->
+            <clr-input-container>
+              <label #label for="url" class="input-label clr-col-12">URL</label>
+              <input type="url"
+                     clrInput
+                     formControlName="url"
+                     id="url"
+                     name="url"
+                     autocomplete="off" required size="100">
+            </clr-input-container>
 
-          <clr-input-container>
+            <!--ПОЛЕ PRIORITY-->
 
-            <label #label for="csvfile" class="input-label clr-col-12">Укажите csv-файл</label>
-            <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off"
-                   required
-                   size="100">
-          </clr-input-container>
+            <clr-input-container>
+              <label #label for="priority" class="input-label clr-col-12">Приоритет</label>
+              <input type="text"
+                     clrInput
+                     formControlName="priority"
+                     id="priority"
+                     name="priority"
+                     autocomplete="off">
+              <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+            </clr-input-container>
 
-          <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+            <!--ПОЛЕ PRICE-->
 
-            <input type="file" name="profile" (change)="onFileSelect($event)"/>
-            <div>
-              <button type="submit">Upload</button>
-            </div>
+            <clr-input-container>
+              <label #label for="price" class="input-label clr-col-12">Цена</label>
+              <input type="text"
+                     clrInput
+                     formControlName="price"
+                     id="price"
+                     name="price"
+                     autocomplete="off">
+            </clr-input-container>
           </form>
 
-        </form>
-
-        <div class="row">
-          <button type="button" (click)="sendCsvFile()" class="btn btn-primary mt-1">Парсить</button>
-        </div>
-
-      </div>
-    </clr-modal>
-
-    <!--ФОРМА ФИЛЬТРАЦИИ -->
-
-    <clr-modal [(clrModalOpen)]="isFilterModal">
-      <h3 class="modal-title">Фильтры и поиск</h3>
-      <div class="modal-body">
-        <form clrForm [formGroup]="filterForm">
-
-
-          <!-- ПОЛЕ ПОИСКА / ФИЛЬТРАЦИИ ПО ЖЕЛАНИЮ -->
-
-          <clr-input-container>
-
-            <label #label for="wish" class="input-label clr-col-12">Желание</label>
-            <input type="text" clrInput formControlName="wish" id="wish" name="wish" autocomplete="off" required
-                   size="100">
-          </clr-input-container>
-
-        </form>
-
-        <div class="row">
-          <button type="button" (click)="applyFilter()" class="btn btn-primary mt-1">Фильтровать</button>
-        </div>
-
-      </div>
-    </clr-modal>
-
-    <!--ФОРМА РЕДАКТИРОВАНИЯ ЖЕЛАНИЯ ПРИ ПОМЕСЯЧНОЙ ГРУППИРОВКЕ -->
-
-    <clr-modal [(clrModalOpen)]="isMonthGroupModeWishEdit">
-      <h3 class="modal-title">Изменить порядок желания</h3>
-      <div class="modal-body">
-        <form clrForm [formGroup]="MonthGroupModeWishEdit">
-
-          <!-- ПОЛЕ ЖЕЛАНИЕ -->
-
-          <clr-input-container>
-
-            <label #label for="selected_wish" class="input-label clr-col-12">Желание</label>
-            <input type="text" clrInput formControlName="wish" id="selected_wish" name="wish" autocomplete="off"
-                   required readonly
-                   size="100%">
-          </clr-input-container>
-
-          <div>
-            <clr-select-container>
-              <label #label for="month_field" class="input-label clr-col-12">Месяц</label>
-              <select id="month_field" [ngModel]="month" formControlName="month" clrSelect>
-                <option *ngFor="let currentMonth of monthList" [value]="currentMonth">{{currentMonth}}</option>
-              </select>
-            </clr-select-container>
+          <div class="row">
+            <button type="button" (click)="addEditWish()" class="btn btn-primary mt-1">Сохранить</button>
+            <button type="button" (click)="deleteWish()" *ngIf="isEditMode" class="btn btn-danger mt-1">Удалить</button>
+            <button type="button" (click)="realizeWish()" *ngIf="isEditMode" class="btn btn-success mt-1">Реализовано
+            </button>
           </div>
 
-        </form>
-
-        <div class="row">
-          <button type="button" (click)="applyMonthChange4Wish()" class="btn btn-primary mt-1">Принять</button>
         </div>
+      </clr-modal>
 
-      </div>
-    </clr-modal>
-  </div>
-  <app-sidebar class="sidenav"></app-sidebar>
-</div>
+      <clr-modal [(clrModalOpen)]="isSalaryAdd">
+        <h3 class="modal-title">Добавить зарплату</h3>
+        <div class="modal-body">
+          <form clrForm [formGroup]="salaryForm">
+
+            <!--ПОЛЕ SALARY-->
+
+            <clr-input-container>
+
+              <label #label for="salary" class="input-label clr-col-12">Зарплата</label>
+              <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required
+                     size="100">
+            </clr-input-container>
+
+            <!--ПОЛЕ RESIDUAL SALARY-->
+
+            <clr-input-container>
+
+              <label #label for="residualSalary" class="input-label clr-col-12">Остаточная зарплата</label>
+              <input type="text" clrInput formControlName="residualSalary" id="residualSalary" name="residualSalary"
+                     autocomplete="off" required
+                     size="100">
+            </clr-input-container>
+            <br/>
+
+            <span
+              class="label label-warning">Зарплата, которая остается у вас после всех трат. Расчет идет именно по ней.</span>
+
+
+          </form>
+
+          <div class="row">
+            <button type="button" (click)="addSalary()" class="btn btn-primary mt-1">Добавить</button>
+          </div>
+
+        </div>
+      </clr-modal>
+
+      <clr-modal [(clrModalOpen)]="isCsvParse">
+        <h3 class="modal-title">Парсинг csv-файла</h3>
+        <div class="modal-body">
+          <form clrForm [formGroup]="csvForm">
+
+
+            <!--ПОЛЕ FILE-->
+
+            <clr-input-container>
+
+              <label #label for="csvfile" class="input-label clr-col-12">Укажите csv-файл</label>
+              <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off"
+                     required
+                     size="100">
+            </clr-input-container>
+
+            <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+
+              <input type="file" name="profile" (change)="onFileSelect($event)"/>
+              <div>
+                <button type="submit">Upload</button>
+              </div>
+            </form>
+
+          </form>
+
+          <div class="row">
+            <button type="button" (click)="sendCsvFile()" class="btn btn-primary mt-1">Парсить</button>
+          </div>
+
+        </div>
+      </clr-modal>
+
+      <!--ФОРМА ФИЛЬТРАЦИИ -->
+
+      <clr-modal [(clrModalOpen)]="isFilterModal">
+        <h3 class="modal-title">Фильтры и поиск</h3>
+        <div class="modal-body">
+          <form clrForm [formGroup]="filterForm">
+
+
+            <!-- ПОЛЕ ПОИСКА / ФИЛЬТРАЦИИ ПО ЖЕЛАНИЮ -->
+
+            <clr-input-container>
+
+              <label #label for="wish" class="input-label clr-col-12">Желание</label>
+              <input type="text" clrInput formControlName="wish" id="wish" name="wish" autocomplete="off" required
+                     size="100">
+            </clr-input-container>
+
+          </form>
+
+          <div class="row">
+            <button type="button" (click)="applyFilter()" class="btn btn-primary mt-1">Фильтровать</button>
+          </div>
+
+        </div>
+      </clr-modal>
+
+      <!--ФОРМА РЕДАКТИРОВАНИЯ ЖЕЛАНИЯ ПРИ ПОМЕСЯЧНОЙ ГРУППИРОВКЕ -->
+
+      <clr-modal [(clrModalOpen)]="isMonthGroupModeWishEdit">
+        <h3 class="modal-title">Изменить порядок желания</h3>
+        <div class="modal-body">
+          <form clrForm [formGroup]="MonthGroupModeWishEdit">
+
+            <!-- ПОЛЕ ЖЕЛАНИЕ -->
+
+            <clr-input-container>
+
+              <label #label for="selected_wish" class="input-label clr-col-12">Желание</label>
+              <input type="text" clrInput formControlName="wish" id="selected_wish" name="wish" autocomplete="off"
+                     required readonly
+                     size="100%">
+            </clr-input-container>
+
+            <div>
+              <clr-select-container>
+                <label #label for="month_field" class="input-label clr-col-12">Месяц</label>
+                <select id="month_field" [ngModel]="month" formControlName="month" clrSelect>
+                  <option *ngFor="let currentMonth of monthList" [value]="currentMonth">{{currentMonth}}</option>
+                </select>
+              </clr-select-container>
+            </div>
+
+          </form>
+
+          <div class="row">
+            <button type="button" (click)="applyMonthChange4Wish()" class="btn btn-primary mt-1">Принять</button>
+          </div>
+
+        </div>
+      </clr-modal>
+    <!--</div>-->
+  <!--</div>-->
+<!--</clr-main-container>-->
