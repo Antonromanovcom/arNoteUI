@@ -51,33 +51,59 @@
           </clr-dropdown-menu>
         </clr-dropdown>
       </div>
+
+      <!--МИНИ-КНОПКИ ДЛЯ МОБИЛКИ-->
+
       <div class="ar-900-show">
         <div class="clr-row" style="margin-left: 1%">
-        <button type="button" class="btn btn-icon" (click)="openEditWish($event, item, 2)" aria-label="Добавить желание"><clr-icon shape="plus"></clr-icon></button>
-        <button type="button" class="btn btn-icon" (click)="getWishes(apiUrl)" aria-label="Обновить"><clr-icon shape="refresh"></clr-icon></button>
-        <div class="ar-360-hide"><button type="button" (click)="openAddSalaryModal($event)" class="btn btn-icon" aria-label="Задать зарплату"><clr-icon shape="ruble"></clr-icon></button> </div>
-        <button type="button" class="{{filterMode ? 'btn btn-icon btn-danger' : 'btn btn-icon'}}" (click)="filterWishes()" aria-label="Поиск"><clr-icon shape="search"></clr-icon></button>
+          <button type="button" class="btn btn-icon" (click)="openEditWish($event, item, 2)"
+                  aria-label="Добавить желание">
+            <clr-icon shape="plus"></clr-icon>
+          </button>
+          <button type="button" class="btn btn-icon" (click)="getWishes(apiUrl)" aria-label="Обновить">
+            <clr-icon shape="refresh"></clr-icon>
+          </button>
+          <div class="ar-360-hide">
+            <button type="button" (click)="openAddSalaryModal($event)" class="btn btn-icon"
+                    aria-label="Задать зарплату">
+              <clr-icon shape="ruble"></clr-icon>
+            </button>
+          </div>
+          <button type="button" class="{{filterMode ? 'btn btn-icon btn-danger' : 'btn btn-icon'}}"
+                  (click)="filterWishes()" aria-label="Поиск">
+            <clr-icon shape="search"></clr-icon>
+          </button>
+          <button type="button" class="{{filterMode ? 'btn btn-icon btn-danger' : 'btn btn-icon'}}"
+                  (click)="summInfo()" aria-label="Итоги">
+            <clr-icon shape="help"></clr-icon>
+          </button>
 
           <clr-dropdown>
             <button type="button" class="btn btn-icon" aria-label="Режимы" clrDropdownTrigger>
               <clr-icon shape="eye"></clr-icon>
               <clr-icon shape="caret down"></clr-icon>
             </button>
-            <clr-dropdown-menu *clrIfOpen>
+            <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
               <label class="dropdown-header">Режим отображения</label>
               <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
             </clr-dropdown-menu>
           </clr-dropdown>
 
-          <clr-dropdown>
-            <button type="button" class="btn btn-icon" aria-label="Сортировка" clrDropdownTrigger>
-              <clr-icon shape="sort-by"></clr-icon><clr-icon shape="caret down"></clr-icon>
-            </button>
-            <clr-dropdown-menu *clrIfOpen>
-              <label class="dropdown-header">Сортировка</label>
-              <a *ngFor="let item of mainSort" (click)="sortMainList(item)" clrDropdownItem>{{item}}</a>
-            </clr-dropdown-menu>
-          </clr-dropdown>
+          <div class="ar-475-hide">
+
+            <clr-dropdown>
+              <button type="button" class="btn btn-icon" aria-label="Сортировка" clrDropdownTrigger>
+                <clr-icon shape="sort-by"></clr-icon>
+                <clr-icon shape="caret down"></clr-icon>
+              </button>
+              <clr-dropdown-menu *clrIfOpen>
+                <label class="dropdown-header">Сортировка</label>
+                <a *ngFor="let item of mainSort" (click)="sortMainList(item)" clrDropdownItem>{{item}}</a>
+              </clr-dropdown-menu>
+            </clr-dropdown>
+
+          </div>
+
 
         </div>
       </div>
@@ -122,7 +148,6 @@
         <clr-dg-pagination #pagination [clrDgPageSize]="15">
           <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]" class="ar-475-hide"> жел/стр.
           </clr-dg-page-size>
-          <!--<div class="ar-360-hide"> {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} из {{pagination.totalItems}} жел.</div>-->
           <span class="ar-360-hide"> {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} из {{pagination.totalItems}} жел.</span>
         </clr-dg-pagination>
       </div>
@@ -151,14 +176,27 @@
     <span class="{{month.colorClass}}">{{month.monthName}} <span class="badge">{{month.sum}}</span></span><span
     *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
 
+
     <clr-tree-node *ngFor="let items of month.wishList">
-      <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a>{{'&nbsp;| ' + items.price + '
-      |'}}
-      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
-      |
-      <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
+
+
+      <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a>{{'&nbsp;| ' + items.price + ' |'}}
+      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>      |      <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
+
+
+      <!--<div class="ar-475-show">
+        <clr-tree-node *ngFor="let items of month.wishList">
+          <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish | slice:0:15}}...</a>{{'&nbsp;| ' +
+          items.price + ' |'}}
+          <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
+          |
+          <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
+        </clr-tree-node>
+      </div>-->
 
     </clr-tree-node>
+
+
   </clr-tree-node>
 
 
@@ -391,6 +429,40 @@
     <div class="row">
       <button type="button" (click)="applyMonthChange4Wish()" class="btn btn-primary mt-1">Принять</button>
     </div>
+
+  </div>
+</clr-modal>
+
+
+<!--ФОРМА ВЫВОДА / ДУБЛИРОВАНИЯ ИТОГОВЫХ ДАННЫХ -->
+
+<clr-modal [(clrModalOpen)]="isSummInfoForm">
+  <h3 class="modal-title">ИТОГО</h3>
+  <div class="modal-body">
+
+    <div>
+      <span class="label label-danger">ВСЕ ЖЕЛАНИЯ <span
+        class="badge badge-orange">{{summAll | number:'2.'}} руб.</span></span>
+    </div>
+    <div>
+      <span class="label label-danger">Реализация<span class="badge badge-danger">{{periodAll}} мес.</span></span>
+    </div>
+    <div>
+      <span class="label label-success">ИТОГО (PRIOR)<span class="badge badge-orange">{{summPriority | number:'2.'}} руб.</span></span>
+    </div>
+    <div>
+      <span class="label label-success">Реализация<span
+        class="badge badge-success">{{periodPriority}} мес.</span></span>
+    </div>
+    <div>
+      <span class="label label-gray">Среднее время<span class="badge badge-blue">{{implementationPeriod}}</span></span>
+    </div>
+
+
+    <div class="row">
+      <button type="button" (click)="isSummInfoForm=false" class="btn btn-primary mt-1">Закрыть</button>
+    </div>
+
 
   </div>
 </clr-modal>

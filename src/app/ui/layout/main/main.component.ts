@@ -65,6 +65,7 @@ export class MainComponent implements OnInit {
   isCsvParse = false; // отправить на парсинг csv
   isFilterModal = false; // вывести модал фильтрации
   isMonthGroupModeWishEdit = false; // вывод формы редактирования желания при помесячной группировке
+  isSummInfoForm = false; // вывод формы с итоговой информацией (сумма всех желаний, время реализации)
 
   // --------------------------------- ХРАНИЛИЩА -------------------------------------
 
@@ -414,9 +415,6 @@ export class MainComponent implements OnInit {
     console.log('decrypt method for ordered wishes');
     this.wishGroups.forEach((month) => {
       month.wishList.forEach((element) => {
-        console.log('element.wish', element.wish);
-        // console.log('this.cryptokey', this.cryptokey);
-        console.log('test', this.commonService.convertText('decr', element.wish, this.cryptokey));
         element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
       });
     });
@@ -758,6 +756,11 @@ export class MainComponent implements OnInit {
       this.filterMode = false;
       this.filterButtonText = 'ПОИСК/ФИЛЬТР';
     }
+  }
+
+  // Показать окно c итогами: стоимость всех желаний, время реализации и все такое
+  summInfo() {
+      this.isSummInfoForm = true;
   }
 
 

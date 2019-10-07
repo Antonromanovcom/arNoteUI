@@ -45,6 +45,13 @@
   }
 }
 
+@media screen and (min-width: 475px) {
+  .ar-475-show {
+    display:none!important;
+  }
+}
+
+
 
 @media screen and (max-width: 360px) {
   .ar-360-hide {
