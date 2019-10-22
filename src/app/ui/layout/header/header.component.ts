@@ -3,14 +3,14 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpParams} from '@angular/common/http';
 import {AuthService} from '../../../service/auth.service';
-import {throwError} from 'rxjs';
+import {throwError, timer} from 'rxjs';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
 import {Router} from '@angular/router';
 import {HttpService} from '../../../service/http.service';
 import {User} from '../../../dto/user';
 import {environment} from '../../../../environments/environment';
-import {NewUser} from '../../../dto/newuser';
+import {Subscription} from 'rxjs/Subscription';
 
 
 @Component({
@@ -25,10 +25,12 @@ export class HeaderComponent implements OnInit {
   // --------------------------------- URL'ы -------------------------------------
 
   SERVER_URL: string = environment.serverUrl;
+  private subscription: Subscription;
   cryptokey = '';
   myBaseUrl = this.SERVER_URL + '/rest/wishes';
   _myBaseUrl = 'http://localhost:8080/rest/wishes';
   usersUrl = this.myBaseUrl + '/users'; // основная ссылка на api
+  serviceMessage: MessageCode;
 
   isLogin = false; // вывод диалогового окна логгирования
   isRegister = false; // вывод диалогового окна регистрации
@@ -89,192 +91,226 @@ export class HeaderComponent implements OnInit {
 
 
     if (idToken) {
-      this.loginDropDownMenu = ['О пользователе', 'Выйти'];
+      if (this.authService.isAuthenticated()) {
+        this.loginDropDownMenu = ['О пользователе', 'Выйти'];
+      } else {
+        this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
+      }
+
     } else {
       this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
     }
-  }
+
+    this.subscription = this.commonService.error$.subscribe(error => {
+      console.log('message ->' + error);
+      if (error != null) {
+        this.serviceMessage = error;
+        if (this.serviceMessage.messageType === this.serviceMessage.SESSION_EXPIRED) {
+          console.log('pizdec ->' + error);
+          this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
+        }
+      }
+    }
+  );
+}
 
 
-  clearCryptoKey() {
-    localStorage.removeItem('cryptokey');
+clearCryptoKey()
+{
+  localStorage.removeItem('cryptokey');
+
+  this.userInfoForm.patchValue({
+    cryptkey: ''
+  });
+
+  this.isUserDataEdit = false;
+
+}
+
+loadUserData()
+{
+
+  this.httpService.isCryptoUser().pipe(
+    catchError(err => {
+      return this.errorHandler(err, 'Невозможно получить крипто-статус пользователя!');
+    })
+  ).subscribe(data => {
+
+    this.user.id = data.id;
+    this.user.login = data.login;
+    this.user.pwd = data.pwd;
+    this.user.userRole = data.userRole;
+    this.user.userCryptoMode = data.userCryptoMode;
+    this.user.creationDate = data.creationDate;
+    this.user.email = data.email;
+    this.user.fullname = data.fullname;
 
     this.userInfoForm.patchValue({
-      cryptkey: ''
+      editlogin: this.user.login,
+      editpassword: this.user.pwd,
+      isencrypted: this.user.userCryptoMode,
+      email: this.user.email,
+      fullname: this.user.fullname
     });
 
-    this.isUserDataEdit = false;
-
-  }
-
-  loadUserData() {
-
-    this.httpService.isCryptoUser().pipe(
-      catchError(err => {
-        return this.errorHandler(err, 'Невозможно получить крипто-статус пользователя!');
-      })
-    ).subscribe(data => {
-
-      this.user.id = data.id;
-      this.user.login = data.login;
-      this.user.pwd = data.pwd;
-      this.user.userRole = data.userRole;
-      this.user.userCryptoMode = data.userCryptoMode;
-      this.user.creationDate = data.creationDate;
-      this.user.email = data.email;
-      this.user.fullname = data.fullname;
-
+    if (data.userCryptoMode === false) {
       this.userInfoForm.patchValue({
-        editlogin: this.user.login,
-        editpassword: this.user.pwd,
-        isencrypted: this.user.userCryptoMode,
-        email: this.user.email,
-        fullname: this.user.fullname
+        cryptkey: '111'
       });
-
-      if (data.userCryptoMode === false) {
-        this.userInfoForm.patchValue({
-          cryptkey: '111'
-        });
-      }
-    });
-  }
-
-  loginIconHandler(item: string) {
-    if (item === 'Войти') {
-      this.isLogin = true;
-    } else if (item === 'Выйти') {
-      this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
-      localStorage.removeItem('token');
-      this.router.navigate(['401']);
-    } else if (item === 'Зарегистрироваться') {
-      this.isRegister = true;
-    } else if (item === 'О пользователе') {
-      this.loadUserData();
-      this.isUserDataEdit = true;
-
-      let tempKey = localStorage.getItem('cryptokey');
-      this.userInfoForm.patchValue({
-        cryptkey: tempKey.toString(),
-      });
-
     }
+  });
+}
+
+loginIconHandler(item
+:
+string
+)
+{
+  if (item === 'Войти') {
+    this.isLogin = true;
+  } else if (item === 'Выйти') {
+    this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
+    localStorage.removeItem('token');
+    this.router.navigate(['401']);
+  } else if (item === 'Зарегистрироваться') {
+    this.isRegister = true;
+  } else if (item === 'О пользователе') {
+    this.loadUserData();
+    this.isUserDataEdit = true;
+
+    let tempKey = localStorage.getItem('cryptokey');
+    this.userInfoForm.patchValue({
+      cryptkey: tempKey.toString(),
+    });
+
   }
+}
 
-  errorHandler(err, message: string) {
+errorHandler(err, message
+:
+string
+)
+{
 
-    this.isLogin = false;
-    this.isUserDataEdit = false;
-    this.isRegister = false; // прячем окно регистрации
+  this.isLogin = false;
+  this.isUserDataEdit = false;
+  this.isRegister = false; // прячем окно регистрации
 
-    const errorType = new MessageCode();
-    if (message === 'LOGINERROR') {
-      this.sendMessagePush(errorType.WRONG_LOGIN);
+  const errorType = new MessageCode();
+  if (message === 'LOGINERROR') {
+    this.sendMessagePush(errorType.WRONG_LOGIN);
+  } else {
+    if (err.error === 'SUCH_USER_EXIST') {
+      this.sendMessagePush(errorType.USER_DATA_CHANGE_SUCH_USER_EXISTS);
     } else {
-      if (err.error === 'SUCH_USER_EXIST') {
-        this.sendMessagePush(errorType.USER_DATA_CHANGE_SUCH_USER_EXISTS);
-      } else {
-        this.sendMessagePush(errorType.USER_DATA_CHANGE_SOME_ERROR);
-      }
+      this.sendMessagePush(errorType.USER_DATA_CHANGE_SOME_ERROR);
     }
-    return throwError(err);
   }
+  return throwError(err);
+}
 
 
-  changeUserData() {
+changeUserData()
+{
 
-    if ((this.user.login === this.userInfoForm.value.editlogin)
-      && (this.user.email === this.userInfoForm.value.email)
-      && (this.user.fullname === this.userInfoForm.value.fullname)) {
+  if ((this.user.login === this.userInfoForm.value.editlogin)
+    && (this.user.email === this.userInfoForm.value.email)
+    && (this.user.fullname === this.userInfoForm.value.fullname)) {
 
-      console.log('МЕНЯЕМ ТОЛЬКО CRYPTO-KEY');
+    console.log('МЕНЯЕМ ТОЛЬКО CRYPTO-KEY');
+
+    const messageType = new MessageCode();
+    this.sendMessagePush(messageType.USER_DATA_CHANGE_OK);
+    this.isUserDataEdit = false;
+    localStorage.setItem('cryptokey', this.userInfoForm.value.cryptkey);
+    console.log('cryptokey is written - ' + this.userInfoForm.value.cryptkey);
+
+  } else {
+
+    this.user.login = this.userInfoForm.value.editlogin;
+    this.user.userCryptoMode = this.userInfoForm.value.isencrypted;
+    this.user.email = this.userInfoForm.value.email;
+    this.user.fullname = this.userInfoForm.value.fullname;
+
+    console.log('МЕНЯЕМ ВСЕ ЮЗЕРСКИЕ ДАННЫЕ');
+
+    this.httpService.updateUserData(this.user, this.usersUrl + '/' + this.user.id).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно выполнить редактирование пользовательских данных!');
+      })
+    ).subscribe(hero => {
 
       const messageType = new MessageCode();
       this.sendMessagePush(messageType.USER_DATA_CHANGE_OK);
       this.isUserDataEdit = false;
       localStorage.setItem('cryptokey', this.userInfoForm.value.cryptkey);
       console.log('cryptokey is written - ' + this.userInfoForm.value.cryptkey);
-
-    } else {
-
-      this.user.login = this.userInfoForm.value.editlogin;
-      this.user.userCryptoMode = this.userInfoForm.value.isencrypted;
-      this.user.email = this.userInfoForm.value.email;
-      this.user.fullname = this.userInfoForm.value.fullname;
-
-      console.log('МЕНЯЕМ ВСЕ ЮЗЕРСКИЕ ДАННЫЕ');
-
-      this.httpService.updateUserData(this.user, this.usersUrl + '/' + this.user.id).pipe(
-        catchError(err => {
-          return this.errorHandler(err, 'Невозможно выполнить редактирование пользовательских данных!');
-        })
-      ).subscribe(hero => {
-
-        const messageType = new MessageCode();
-        this.sendMessagePush(messageType.USER_DATA_CHANGE_OK);
-        this.isUserDataEdit = false;
-        localStorage.setItem('cryptokey', this.userInfoForm.value.cryptkey);
-        console.log('cryptokey is written - ' + this.userInfoForm.value.cryptkey);
-      });
-    }
-  }
-
-  sendMessagePush(message: string) {
-    const errorType = new MessageCode();
-    errorType.messageType = errorType.WRONG_LOGIN;
-    errorType.messageType = message;
-    console.log('Error message- ' + errorType.messageType);
-    this.commonService.pushError(errorType);
-  }
-
-  register() {
-
-    const newUser = new User();
-    newUser.login = this.registerForm.value.login;
-    newUser.pwd = this.registerForm.value.password;
-    newUser.fullname = this.registerForm.value.fullname;
-    newUser.email = this.registerForm.value.email;
-    newUser.userCryptoMode = false;
-    newUser.userRole = 'USER';
-
-    this.authService.register(newUser, this.usersUrl).pipe(
-      catchError(err => {
-        return this.errorHandler(err, 'REGISTERERROR');
-      })
-    ).subscribe(res => {
-      const messageType = new MessageCode();
-      this.sendMessagePush(messageType.REGISTER_OK);
-      this.isRegister = false;
     });
   }
+}
+
+sendMessagePush(message
+:
+string
+)
+{
+  const errorType = new MessageCode();
+
+  errorType.messageType = message;
+  console.log('Error message- ' + errorType.messageType);
+  this.commonService.pushError(errorType);
+}
+
+register()
+{
+
+  const newUser = new User();
+  newUser.login = this.registerForm.value.login;
+  newUser.pwd = this.registerForm.value.password;
+  newUser.fullname = this.registerForm.value.fullname;
+  newUser.email = this.registerForm.value.email;
+  newUser.userCryptoMode = false;
+  newUser.userRole = 'USER';
+
+  this.authService.register(newUser, this.usersUrl).pipe(
+    catchError(err => {
+      return this.errorHandler(err, 'REGISTERERROR');
+    })
+  ).subscribe(res => {
+    const messageType = new MessageCode();
+    this.sendMessagePush(messageType.REGISTER_OK);
+    this.isRegister = false;
+  });
+}
 
 
-  sendLogin() {
+sendLogin()
+{
 
-    const body = new HttpParams()
-      .set('username', this.loginForm.value.login)
-      .set('password', this.loginForm.value.password);
+  const body = new HttpParams()
+    .set('username', this.loginForm.value.login)
+    .set('password', this.loginForm.value.password);
 
-    this.authService.login(body.toString())
-      .pipe(
-        catchError(err => {
-          return this.errorHandler(err, 'LOGINERROR');
-        }))
-      .pipe(
-        tap(resp => {
-          console.log('header', resp.headers.get('Authorization'));
-          localStorage.removeItem('token');
-          localStorage.setItem('token', resp.headers.get('Authorization'));
-          console.log('storage', localStorage.getItem('token'));
-          this.isLogin = false;
+  this.authService.login(body.toString())
+    .pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'LOGINERROR');
+      }))
+    .pipe(
+      tap(resp => {
+        console.log('header', resp.headers.get('Authorization'));
+        localStorage.removeItem('token');
+        localStorage.setItem('token', resp.headers.get('Authorization'));
+        console.log('storage', localStorage.getItem('token'));
+        this.isLogin = false;
 
-          this.authService.refreshToken();
+        this.authService.refreshToken();
 
-          this.router.navigate(['']);
-          this.loginDropDownMenu = ['О пользователе', 'Выйти'];
-          const message = new MessageCode();
-          this.sendMessagePush(message.AUTH_LOGIN_OK);
-        }))
-      .subscribe();
-  }
+        this.router.navigate(['']);
+        this.loginDropDownMenu = ['О пользователе', 'Выйти'];
+        const message = new MessageCode();
+        this.sendMessagePush(message.AUTH_LOGIN_OK);
+      }))
+    .subscribe();
+}
 }

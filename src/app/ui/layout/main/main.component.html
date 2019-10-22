@@ -101,10 +101,7 @@
                 <a *ngFor="let item of mainSort" (click)="sortMainList(item)" clrDropdownItem>{{item}}</a>
               </clr-dropdown-menu>
             </clr-dropdown>
-
           </div>
-
-
         </div>
       </div>
     </div>
@@ -117,7 +114,7 @@
   <clr-dg-column [style.width.px]="10" class="hidden-md-down">Ред.</clr-dg-column>
 
   <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
-    <clr-dg-cell>{{item.wish}}</clr-dg-cell>
+    <clr-dg-cell><a (click)="openEditWish($event, item, 1)">{{item.wish}}</a></clr-dg-cell>
     <clr-dg-cell style="text-align: center">{{item.price | number:'2.'}}</clr-dg-cell>
     <clr-dg-cell class="hidden-md-down" style="text-align: center">{{item.priority}}</clr-dg-cell>
     <clr-dg-cell class="hidden-md-down" style="text-align: center">
@@ -146,7 +143,7 @@
 
       <div>
         <clr-dg-pagination #pagination [clrDgPageSize]="15">
-          <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]" class="ar-475-hide"> жел/стр.
+          <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]" class="ar-475-hide" style="margin-left: 4%"> жел/стр.
           </clr-dg-page-size>
           <span class="ar-360-hide"> {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}} из {{pagination.totalItems}} жел.</span>
         </clr-dg-pagination>

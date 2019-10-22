@@ -259,6 +259,7 @@ export class MainComponent implements OnInit {
 
 // Вытащить список месяцев и лет, пришедший с бека
   getMonths() {
+    this.monthList.length = 0;
     this.wishGroups.forEach((element) => {
       this.monthList.push(element.monthName + ' ' + element.year);
     });

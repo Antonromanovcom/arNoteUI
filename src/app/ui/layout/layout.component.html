@@ -1,0 +1,15 @@
+<clr-main-container>
+  <clr-header class="header">
+    <app-header></app-header>
+  </clr-header>
+  <div class="content-container">
+    <clr-vertical-nav [clr-nav-level]="1">
+      <a clrVerticalNavLink routerLink="../401" routerLinkActive="active">О проекте</a>
+      <a *ngIf="idToken" clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
+    </clr-vertical-nav>
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+  <app-session-timeout-modal></app-session-timeout-modal>
+</clr-main-container>

@@ -37,12 +37,12 @@ export class UnauthorizeComponent implements OnInit {
             this.result = null;
           });
         } else {
-
-          this.error = error.messageType;
-
-          timer(4000).subscribe(() => {
-            this.error = null;
-          });
+          if (this.globalError.messageType !== this.globalError.SESSION_EXPIRED) {
+            this.error = error.messageType;
+            timer(4000).subscribe(() => {
+              this.error = null;
+            });
+          }
         }
       }
     });
