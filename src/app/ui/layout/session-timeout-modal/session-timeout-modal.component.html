@@ -1,0 +1,16 @@
+<clr-modal [clrModalOpen]="userInactive | async" [clrModalClosable]="false" class="session-timeout-modal">
+  <h3 class="modal-title">
+    Сессия истекла
+  </h3>
+  <div class="modal-body">
+    <p>
+      Ваша сессия истекла! Необходимо войти еще раз!
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-primary" (click)="logout()">
+      Продолжить
+    </button>
+  </div>
+
+</clr-modal>
