@@ -175,22 +175,8 @@
 
 
     <clr-tree-node *ngFor="let items of month.wishList">
-
-
       <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish}}</a>{{'&nbsp;| ' + items.price + ' |'}}
       <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>      |      <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
-
-
-      <!--<div class="ar-475-show">
-        <clr-tree-node *ngFor="let items of month.wishList">
-          <a [routerLink]="" (click)="editMonthGroupItem(items)"> {{items.wish | slice:0:15}}...</a>{{'&nbsp;| ' +
-          items.price + ' |'}}
-          <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
-          |
-          <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
-        </clr-tree-node>
-      </div>-->
-
     </clr-tree-node>
 
 
@@ -452,7 +438,15 @@
         class="badge badge-success">{{periodPriority}} мес.</span></span>
     </div>
     <div>
-      <span class="label label-gray">Среднее время<span class="badge badge-blue">{{implementationPeriod}}</span></span>
+      <span class="label label-gray">Среднее время<span class="badge badge-blue">{{implementationPeriod}} дней.</span></span>
+    </div>
+
+    <div>
+      <span class="label label-purple">Реализовано за все время<span class="badge badge-blue">{{implemetedSummAllTime}} руб.</span></span>
+    </div>
+
+    <div>
+      <span class="label label-light-blue">Реализовано за тек.месяц<span class="badge badge-blue">{{implemetedSummMonth}} руб.</span></span>
     </div>
 
 

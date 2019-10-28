@@ -51,6 +51,10 @@ export class MainComponent implements OnInit {
   periodAll = 0; // период реализации для всего
   periodPriority = 0; // период реализации для приоритетного
   implementationPeriod = ''; // средний период реализации желаний
+  implemetedSummAllTime = ''; // общая сумма реализованного за все время
+  implemetedSummMonth = ''; // общая сумма реализованного за текущий месяц
+
+
   filterMode = false; // период реализации для приоритетного
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
   monthOrdermode = false; // режим отображение дерева группировки по месяцам
@@ -450,6 +454,9 @@ export class MainComponent implements OnInit {
       this.periodAll = data.allPeriodForImplementation;
       this.periodPriority = data.priorityPeriodForImplementation;
       this.implementationPeriod = data.averageImplementationTime;
+
+      this.implemetedSummAllTime = data.implemetedSummAllTime;
+      this.implemetedSummMonth = data.implemetedSummMonth;
 
       this.isSalaryExists = true;
       this.filters = ['Все', 'Приоритет', 'Помесячная группировка'];

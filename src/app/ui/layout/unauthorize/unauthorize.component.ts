@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {CommonService} from '../../../service/common.service';
 import {Subscription} from 'rxjs/Subscription';
 import {MessageCode} from '../../../service/message.code';
 import {timer} from 'rxjs';
+import {Router, ActivatedRoute, Params} from '@angular/router';
+
 
 @Component({
   selector: 'app-unauthorize',
@@ -17,9 +19,16 @@ export class UnauthorizeComponent implements OnInit {
   private subscription: Subscription;
   globalError: MessageCode;
 
-  constructor(private commonService: CommonService) { }
+  constructor(private commonService: CommonService, private route: ActivatedRoute) {
+  }
 
   ngOnInit() {
+
+    this.route.queryParams.subscribe(params => {
+      const date = params['startdate'];
+      console.log(date);
+    });
+
 
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
