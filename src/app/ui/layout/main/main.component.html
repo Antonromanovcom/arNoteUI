@@ -155,9 +155,10 @@
 
 <div *ngIf="monthOrdermode">
 
+  <div class="ar-900-hide">
   <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
   <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=all')"> Обновить</button>
-  <clr-dropdown class="hidden-md-down">
+  <clr-dropdown>
     <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
       СОРТИРОВКА
       <clr-icon shape="caret down"></clr-icon>
@@ -167,6 +168,14 @@
       <a *ngFor="let item of groupMonthSort" (click)="sortGroupList(item)" clrDropdownItem>{{item}}</a>
     </clr-dropdown-menu>
   </clr-dropdown>
+  </div>
+
+<!--КНОПКИ ДЛЯ МОБИЛКИ-->
+  <div class="ar-900-show">
+    <button type="button" class="btn btn-icon" (click)="toMainTableMode()" aria-label="Вернуться в табличный режим"><clr-icon shape="undo"></clr-icon></button>
+    <button type="button" class="btn btn-icon" (click)="getWishesWithMonthGroupping('?sortType=all')" aria-label="Обновить"><clr-icon shape="refresh"></clr-icon></button>
+  </div>
+
 
   <clr-tree-node *ngFor="let month of wishGroups" [(clrExpanded)]="month.expanded">
 
