@@ -43,6 +43,14 @@
   .ar-475-hide {
     display:none!important;
   }
+
+  .string-truncate {
+    width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
 }
 
 @media screen and (min-width: 475px) {
@@ -92,6 +100,8 @@
 .fas .fa-arrow-up{
   background: #0c5460;
 }
+
+
 
 .fa, .fas:hover {
   background: aqua;

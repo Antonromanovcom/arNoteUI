@@ -47,17 +47,11 @@ export class AuthService {
     return this.http.post<User>(url, newUser, httpOptions);
   }
 
-
-
   public isAuthenticated(): boolean {
-
-    console.log('TOKEN EXPIRE - ' + isExpired);
     return !isExpired;
   }
 
   public refreshToken() {
-
-    console.log('TOKEN REFRESH');
 
     myRawToken = localStorage.getItem('token');
     isExpired = helper.isTokenExpired(myRawToken);
