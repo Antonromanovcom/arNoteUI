@@ -59,7 +59,9 @@ export class MainComponent implements OnInit {
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
   monthOrdermode = false; // режим отображение дерева группировки по месяцам
   isSalaryExists = false;
+  lastSalary = 0;
   curDateFormated = '';
+  sortMode = 'По имени'; // глобальный переключатель типов сортировки
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -273,18 +275,19 @@ export class MainComponent implements OnInit {
   applyMonthChange4Wish() {
     console.log(this.MonthGroupModeWishEdit.value.month);
 
-    this.httpService.getData(this.changePriorityMonthManualyUrl + '?id=' + this.MonthGroupModeWishEdit.value.id + '&month=' + this.MonthGroupModeWishEdit.value.month).pipe(
+    this.httpService.getData(this.changePriorityMonthManualyUrl + '?id=' +
+      this.MonthGroupModeWishEdit.value.id + '&month=' +
+      this.MonthGroupModeWishEdit.value.month).pipe(
+
       catchError(err => {
         return this.errorHandler(err, 'Невозможно изменить приоритет!');
       })
     ).subscribe(res => {
       console.log(res);
       this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
-
       this.getWishes(this.apiUrl);
       this.getWishesWithMonthGroupping('?sortType=all');
       this.isMonthGroupModeWishEdit = false;
-
     });
   }
 
@@ -336,6 +339,7 @@ export class MainComponent implements OnInit {
       this.wishes.sort((a, b): number => {
         if (a.wish < b.wish) return -1;
         if (a.wish > b.wish) return 1;
+        this.sortMode = 'По имени';
         return 0;
       });
 
@@ -344,16 +348,19 @@ export class MainComponent implements OnInit {
       this.wishes.sort((a, b): number => {
         if (a.price < b.price) return -1;
         if (a.price > b.price) return 1;
+        this.sortMode = 'По сумме [1..10]';
         return 0;
       });
     } else if (item === 'По приоритету') {
       this.wishes.sort((a, b): number => {
         if (a.priority < b.priority) return -1;
         if (a.priority > b.priority) return 1;
+        this.sortMode = 'По приоритету';
         return 0;
       });
     } else {
       this.wishes.sort((a, b): number => {
+        this.sortMode = 'ДРУГАЯ';
         return b.price - a.price;
       });
     }
@@ -425,7 +432,7 @@ export class MainComponent implements OnInit {
     });
   }
 
-
+  // Загрузить все желания в табличном режиме.
   getWishes(url: string) {
 
     this.isCrypto();
@@ -441,6 +448,9 @@ export class MainComponent implements OnInit {
         console.log('decrypt-mode');
         this.decryptWishes();
       }
+      console.log('SORTING:' + this.sortMode);
+      console.log('FILTERING:' + this.apiUrl);
+      this.sortMainList(this.sortMode);
     });
 
 
@@ -459,6 +469,7 @@ export class MainComponent implements OnInit {
       this.implemetedSummMonth = data.implemetedSummMonth;
 
       this.isSalaryExists = true;
+      this.lastSalary = data.lastSalary;
       this.filters = ['Все', 'Приоритет', 'Помесячная группировка'];
       console.log('Sal: ' + data.lastSalary);
     });
@@ -799,26 +810,5 @@ export class MainComponent implements OnInit {
 
     this.wishes = this.wishes.filter(
       wish => wish.wish.toLowerCase().includes(this.filterForm.value.wish.toLowerCase()));
-
-
-    /* const wish = new Wish(1, this.filterForm.value.wish, 0, 1, false, '', '');
-
-     if (this.isUserCrypto) {
-       wish.wish = this.commonService.convertText('encrypt', wish.wish, this.cryptokey);
-       console.log('encrypted wish', wish.wish);
-     }
-
-
-     this.httpService.sendData(wish, this.filterUrl).pipe(
-       catchError(err => {
-         return this.errorHandler(err, 'Невозможно осуществить фильтрацию!');
-       })
-     ).subscribe(hero => {
-       console.log('hero', hero);
-       this.wishes = hero['list'];
-
-       this.showAlert('Фильтр по желаниям активен!', 'ADD MODE', hero);
-     });*/
-
   }
 }
