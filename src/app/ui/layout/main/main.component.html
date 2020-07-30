@@ -186,7 +186,9 @@
 
   <clr-tree-node *ngFor="let month of wishGroups" [(clrExpanded)]="month.expanded">
     <span class="{{month.colorClass}}">{{month.monthName}} <span class="badge">{{month.sum}}</span></span>
+    <span [ngClass]="(month.balance>0)?'badge badge-success':'badge badge-danger'">{{month.balance}}</span>
     <span *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
+
     <clr-tree-node *ngFor="let items of month.wishList">
       <a [routerLink]="" (click)="editMonthGroupItem(items)">
         <div class="string-truncate">{{items.wish}}</div>
@@ -195,7 +197,9 @@
       |
       <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
     </clr-tree-node>
+
   </clr-tree-node>
+
 </div>
 
 <clr-modal [(clrModalOpen)]="isEdit">

@@ -80,7 +80,7 @@ export class MainComponent implements OnInit {
   monthList = []; // контейнер месяцов
 
   filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
-  groupMonthSort = ['По имени', 'По сумме [1..10]', 'По сумме [10..1]']; // сортировка помесячной группировки
+  groupMonthSort = ['Без сортировки', 'По имени', 'По сумме [1..10]', 'По сумме [10..1]']; // сортировка помесячной группировки
   mainSort = ['По имени', 'По сумме [1..10]', 'По сумме [10..1]', 'По приоритету']; // сортировка помесячной группировки
 
   // --------------------------------- ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ И ЕГО ДАННЫЕ -------------------------------------
@@ -191,7 +191,6 @@ export class MainComponent implements OnInit {
     });
 
     // Закрываем пункт меню группировки по месяцам если нет зарплат
-
     console.log('this.isSalaryExists - > ', this.isSalaryExists);
 
     if (this.isSalaryExists) {
@@ -223,7 +222,7 @@ export class MainComponent implements OnInit {
       console.log('data.viewMode => ' + data.viewMode);
       if (data.viewMode === 'TREE') {
         this.monthOrdermode = true;
-        this.getWishesWithMonthGroupping('?sortType=all');
+        this.getWishesWithMonthGroupping('?sortType=all'); // todo конечно полный пиздец!!!!!!
       } else {
         this.monthOrdermode = false;
       }
@@ -305,30 +304,36 @@ export class MainComponent implements OnInit {
 
   // Изменить сортировку помесячной группировки
   sortGroupList(item: string) {
-
-    //  if (this.isUserCrypto) {
     if (item === 'По имени') {
-      this.wishGroups.forEach((element) => {
+      /*this.wishGroups.forEach((element) => {
         element.wishList.sort((a, b): number => {
+         // localStorage.setItem('monthGroupSort', 'NAME');
           if (a.wish < b.wish) return -1;
           if (a.wish > b.wish) return 1;
           return 0;
         });
-      });
+      });*/
+      this.getWishesWithMonthGroupping('?sortType=name');
     } else if (item === 'По сумме [1..10]') {
-      this.wishGroups.forEach((element) => {
+      this.getWishesWithMonthGroupping('?sortType=price-asc');
+    /*  this.wishGroups.forEach((element) => {
         element.wishList.sort((a, b): number => {
+       //   localStorage.setItem('monthGroupSort', 'PRICE-ASC');
           if (a.price < b.price) return -1;
           if (a.price > b.price) return 1;
           return 0;
         });
-      });
+      });*/
+    } else if (item === 'Без сортировки') {
+      this.getWishesWithMonthGroupping('?sortType=all');
     } else {
-      this.wishGroups.forEach((element) => {
+      this.getWishesWithMonthGroupping('?sortType=price-desc');
+      /*this.wishGroups.forEach((element) => {
         element.wishList.sort((a, b): number => {
+      //    localStorage.setItem('monthGroupSort', 'PRICE-DESC');
           return b.price - a.price;
         });
-      });
+      });*/
     }
   }
 

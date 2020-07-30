@@ -12,4 +12,5 @@ export class WishListGroup {
   overflow: boolean;
   colorClass: string;
   expanded: boolean;
+  balance: number;
 }
