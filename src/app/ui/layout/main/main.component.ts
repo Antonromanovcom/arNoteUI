@@ -13,6 +13,7 @@ import {WishListGroup} from '../../../dto/wish-list-group';
 import {WishGroupItem} from '../../../dto/wish-group-item';
 import {environment} from '../../../../environments/environment';
 import {DatePipe} from '@angular/common';
+import {ChangeWishMonthOrderDto} from '../../../dto/ChangeWishMonthOrderDto';
 
 @Component({
   selector: 'app-main',
@@ -25,21 +26,21 @@ export class MainComponent implements OnInit {
   // --------------------------------- URL'ы -------------------------------------
 
   SERVER_URL: string = environment.serverUrl;
-  myBaseUrl = this.SERVER_URL + '/rest/wishes';
-  _myBaseUrl = 'http://localhost:8080/rest/wishes';
-
-  apiUrl = this.myBaseUrl + '/all'; // все желания // основная ссылка на api
+  myBaseUrl = this.SERVER_URL + '/rest/wishes'; // todo: переименовать
+  apiUrl = this.myBaseUrl + '/default'; // все желания. Основная ссылка на api
   priorityWishesUrl = this.myBaseUrl + '/priority'; // приоритетные желания
-  groupWishesUrl = this.myBaseUrl + '/groups';
-  userViewModeUrl = this.myBaseUrl + '/users/toggle';
-  allWishesUrl = this.myBaseUrl + '/all'; // все желания
-  apiGetSumm = this.myBaseUrl + '/summ'; // ссылка для получения сумм
-  apiSalary = this.myBaseUrl + '/salary'; // ссылка для получения сумм
-  parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
-  changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
-  changePriorityMonthUrl = this.myBaseUrl + '/changemonth'; // url для быстрого изменения приоритета
-  changePriorityMonthManualyUrl = this.myBaseUrl + '/transferwish'; // url для быстрого изменения приоритета
+  userViewModeUrl = this.SERVER_URL + '/user/mode';
+  currentUserUrl = this.SERVER_URL + '/user/current';
 
+  allWishesUrl = this.myBaseUrl + '/all'; // все желания
+  apiGetSumm = this.SERVER_URL + '/statistic/sum'; // ссылка для получения сумм
+  apiSalary = this.SERVER_URL + '/salary'; // ссылка для получения последней зарплаты
+  parseUrl = this.myBaseUrl + '/parsecsv'; // url для парсинга csv
+  searchWishUrl = this.myBaseUrl + '/filter'; // url для поиска желаний
+
+  groupWishesUrl = this.SERVER_URL + '/month-grouping';
+  changePriorityUrl = this.myBaseUrl + '/changepriority'; // url для быстрого изменения приоритета
+  changeMonthOrderUrl = this.groupWishesUrl + '/one-step'; // url для быстрого изменения месяца у желания для помесячной группировки
 
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
 
@@ -54,11 +55,12 @@ export class MainComponent implements OnInit {
   implemetedSummAllTime = ''; // общая сумма реализованного за все время
   implemetedSummMonth = ''; // общая сумма реализованного за текущий месяц
 
-
   filterMode = false; // период реализации для приоритетного
   filterButtonText = 'ПОИСК/ФИЛЬТР'; // период реализации для приоритетного
   monthOrdermode = false; // режим отображение дерева группировки по месяцам
   isSalaryExists = false;
+  // priorityMode = false; // последний запрос по приоритетным желаниям или нет?
+
   lastSalary = 0;
   curDateFormated = '';
   sortMode = 'По имени'; // глобальный переключатель типов сортировки
@@ -81,7 +83,7 @@ export class MainComponent implements OnInit {
 
   filters = ['Все', 'Приоритет', 'Помесячная группировка']; // фильтры
   groupMonthSort = ['Без сортировки', 'По имени', 'По сумме [1..10]', 'По сумме [10..1]']; // сортировка помесячной группировки
-  mainSort = ['По имени', 'По сумме [1..10]', 'По сумме [10..1]', 'По приоритету']; // сортировка помесячной группировки
+  mainSort = ['Без сортировки', 'По имени', 'По сумме [1..10]', 'По сумме [10..1]', 'По приоритету']; // сортировка помесячной группировки
 
   // --------------------------------- ТЕКУЩИЙ ПОЛЬЗОВАТЕЛЬ И ЕГО ДАННЫЕ -------------------------------------
 
@@ -214,7 +216,7 @@ export class MainComponent implements OnInit {
 
   getUserViewMode() {
 
-    this.httpService.getData(this.userViewModeUrl + '/GET').pipe(
+    this.httpService.getData(this.currentUserUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить настройки пользовательского отображения!');
       })
@@ -222,17 +224,16 @@ export class MainComponent implements OnInit {
       console.log('data.viewMode => ' + data.viewMode);
       if (data.viewMode === 'TREE') {
         this.monthOrdermode = true;
-        this.getWishesWithMonthGroupping('?sortType=all'); // todo конечно полный пиздец!!!!!!
+        this.getWishesWithMonthGroupping('?sortType=all'); // todo - это конечно полный пиздец!!!!!!
       } else {
         this.monthOrdermode = false;
       }
-
     });
   }
 
   setUserViewMode(mode: string) {
 
-    this.httpService.getData(this.userViewModeUrl + '/' + mode).pipe(
+    this.httpService.toggleUserViewMode(this.userViewModeUrl + '?mode=' + mode).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить настройки пользовательского отображения!');
       })
@@ -250,7 +251,7 @@ export class MainComponent implements OnInit {
       })
     ).subscribe(data => {
 
-      this.wishGroups = data['list'];
+      this.wishGroups = data.list;
       this.monthOrdermode = true;
 
       this.isCrypto();
@@ -270,14 +271,14 @@ export class MainComponent implements OnInit {
     });
   }
 
-  // Применить изменение (месячного) порядка для желания
+  /**
+   * Применить изменение (месячного) порядка для желания.
+   */
   applyMonthChange4Wish() {
-    console.log(this.MonthGroupModeWishEdit.value.month);
 
-    this.httpService.getData(this.changePriorityMonthManualyUrl + '?id=' +
-      this.MonthGroupModeWishEdit.value.id + '&month=' +
-      this.MonthGroupModeWishEdit.value.month).pipe(
-
+    const moveWish = new ChangeWishMonthOrderDto(this.MonthGroupModeWishEdit.value.id);
+    moveWish.setMonth(this.MonthGroupModeWishEdit.value.month);
+    this.httpService.changeMonthOrder(moveWish, this.groupWishesUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно изменить приоритет!');
       })
@@ -316,14 +317,14 @@ export class MainComponent implements OnInit {
       this.getWishesWithMonthGroupping('?sortType=name');
     } else if (item === 'По сумме [1..10]') {
       this.getWishesWithMonthGroupping('?sortType=price-asc');
-    /*  this.wishGroups.forEach((element) => {
-        element.wishList.sort((a, b): number => {
-       //   localStorage.setItem('monthGroupSort', 'PRICE-ASC');
-          if (a.price < b.price) return -1;
-          if (a.price > b.price) return 1;
-          return 0;
-        });
-      });*/
+      /*  this.wishGroups.forEach((element) => {
+          element.wishList.sort((a, b): number => {
+         //   localStorage.setItem('monthGroupSort', 'PRICE-ASC');
+            if (a.price < b.price) return -1;
+            if (a.price > b.price) return 1;
+            return 0;
+          });
+        });*/
     } else if (item === 'Без сортировки') {
       this.getWishesWithMonthGroupping('?sortType=all');
     } else {
@@ -337,56 +338,58 @@ export class MainComponent implements OnInit {
     }
   }
 
-  // Изменить сортировку основной таблицы
+  // Идем на бэк, чтобы там изменить сортировку
+  sortMainListOnServer(sortType: string) {
+    this.httpService.getData(this.userViewModeUrl + '/mainsort?mode=' + sortType).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Не удалось изменить тип сортировки!');
+      })
+    ).subscribe(data => {
+      console.log('Теперь режим сортировки => ' + data.sortMainMode);
+    });
+  }
+
+
+  /**
+   * Изменить сортировку основной таблицы.
+   * @param item - тип сортировки.
+   */
   sortMainList(item: string) {
-
     if (item === 'По имени') {
-      this.wishes.sort((a, b): number => {
-        if (a.wish < b.wish) return -1;
-        if (a.wish > b.wish) return 1;
-        this.sortMode = 'По имени';
-        return 0;
-      });
-
+      console.log('Сортировка по имени - name');
+      this.getWishesWithSort(this.apiUrl, 'NAME');
     } else if (item === 'По сумме [1..10]') {
-
-      this.wishes.sort((a, b): number => {
-        if (a.price < b.price) return -1;
-        if (a.price > b.price) return 1;
-        this.sortMode = 'По сумме [1..10]';
-        return 0;
-      });
+      this.getWishesWithSort(this.apiUrl, 'PRICE_ASC');
+      console.log('Сортировка по стоимости - price-asc');
+    } else if (item === 'По сумме [10..1]') {
+      this.getWishesWithSort(this.apiUrl, 'PRICE_DESC');
+      console.log('Сортировка по стоимости - price-desc');
     } else if (item === 'По приоритету') {
-      this.wishes.sort((a, b): number => {
-        if (a.priority < b.priority) return -1;
-        if (a.priority > b.priority) return 1;
-        this.sortMode = 'По приоритету';
-        return 0;
-      });
-    } else {
-      this.wishes.sort((a, b): number => {
-        this.sortMode = 'ДРУГАЯ';
-        return b.price - a.price;
-      });
+      this.getWishesWithSort(this.apiUrl, 'PRIORITY');
+      console.log('Сортировка по приоритету');
+    } else { // Без сортировки
+      this.getWishesWithSort(this.apiUrl, 'ALL');
+      console.log('Без сортировки');
     }
   }
 
   changeFilter(item: string) {
 
     if (item === 'Все') {
-      this.apiUrl = this.allWishesUrl;
+      this.getWishes(this.allWishesUrl);
     } else if (item === 'Помесячная группировка') {
-
+      // Выключаем фильтр
+      this.filterMode = false;
+      this.filterButtonText = 'ПОИСК/ФИЛЬТР';
       this.getWishesWithMonthGroupping('?sortType=all');
       this.setUserViewMode('TREE');
 
     } else {
-      this.apiUrl = this.priorityWishesUrl;
+      this.getWishes(this.priorityWishesUrl);
     }
-    this.getWishes(this.apiUrl);
   }
 
-  up(event: any, item: Wish) {
+  /*up(event: any, item: Wish) {
     item.priority = item.priority + 1;
     this.wishes.sort((a, b) => a.priority - b.priority);
   }
@@ -399,7 +402,7 @@ export class MainComponent implements OnInit {
       item.priority = 1;
     }
     this.wishes.sort((a, b) => a.priority - b.priority);
-  }
+  }*/
 
 
   isCrypto() {
@@ -447,17 +450,58 @@ export class MainComponent implements OnInit {
         return this.errorHandler(err, 'Невозможно получить желания!');
       })
     ).subscribe(data => {
-      this.wishes = data['list'];
+      this.wishes = null;
+      this.wishes = data.list;
       console.log(this.wishes);
+
       if (this.isUserCrypto) {
         console.log('decrypt-mode');
         this.decryptWishes();
       }
       console.log('SORTING:' + this.sortMode);
-      console.log('FILTERING:' + this.apiUrl);
-      this.sortMainList(this.sortMode);
     });
 
+    this.httpService.getData(this.apiGetSumm).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно посчитать итоговые стоимости!');
+      })
+    ).subscribe(data => {
+      this.summAll = data.all;
+      this.summPriority = data.priority;
+      this.periodAll = data.allPeriodForImplementation;
+      this.periodPriority = data.priorityPeriodForImplementation;
+      this.implementationPeriod = data.averageImplementationTime;
+
+      this.implemetedSummAllTime = data.implemetedSummAllTime;
+      this.implemetedSummMonth = data.implemetedSummMonth;
+
+      this.isSalaryExists = true;
+      this.lastSalary = data.lastSalary;
+      this.filters = ['Все', 'Приоритет', 'Помесячная группировка'];
+      console.log('Sal: ' + data.lastSalary);
+    });
+  }
+
+  getWishesWithSort(url: string, sortType: string) {
+
+    this.isCrypto();
+    url = url + '?changeSortType=' + sortType;
+    this.httpService.getData(url).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить желания!');
+      })
+    ).subscribe(data => {
+      this.wishes = data.list;
+      console.log(this.wishes);
+
+      if (this.isUserCrypto) {
+        console.log('decrypt-mode');
+        this.decryptWishes();
+      }
+      this.sortMode = sortType;
+      console.log('SORTING:' + this.sortMode);
+      // console.log('FILTERING:' + this.apiUrl);
+    });
 
     this.httpService.getData(this.apiGetSumm).pipe(
       catchError(err => {
@@ -492,10 +536,8 @@ export class MainComponent implements OnInit {
   }
 
   toMainTableMode() {
-
     this.monthOrdermode = false;
     this.setUserViewMode('TABLE');
-
   }
 
   errorHandler(err, message: string) {
@@ -522,8 +564,25 @@ export class MainComponent implements OnInit {
     return throwError(err);
   }
 
-  openEditWish(event: any, item: Wish, isedit: number) {
+  /**
+   * Обновить желания.
+   */
+  updateWishTable() {
+    // Выключаем фильтр
+    this.filterMode = false;
+    this.filterButtonText = 'ПОИСК/ФИЛЬТР';
 
+    /*this.wishes = this.wishes.filter(
+      wish => wish.wish.toLowerCase().includes(''));*/
+
+    this.getWishes(this.apiUrl);
+  }
+
+  openEditWish(event: any, item: Wish, isedit: number) { // todo: это ПОЛНЕЙШИЙ пиздец - один метод и для добавления и для правки. А на фронте глянь - там вообще с ним жопа!!!!!
+
+    // Выключаем фильтр
+    this.filterMode = false;
+    this.filterButtonText = 'ПОИСК/ФИЛЬТР';
 
     // Если это юзер с шифрованием на фронте и при этом у него не задан ключ
     if ((!this.cryptokey) && (this.isUserCrypto)) {
@@ -562,7 +621,6 @@ export class MainComponent implements OnInit {
           price: 0,
           creationDate: this.curDateFormated
         });
-
       }
     }
   }
@@ -591,8 +649,13 @@ export class MainComponent implements OnInit {
 
   }
 
-  // Открыть диалог выбора csv-файла для парсинга на сервере.
+  /**
+   * Открыть диалог выбора csv-файла для парсинга на сервере.
+   */
   openParseCsv(event: any) {
+    // Выключаем фильтр
+    this.filterMode = false;
+    this.filterButtonText = 'ПОИСК/ФИЛЬТР';
     this.isCsvParse = true;
   }
 
@@ -602,12 +665,16 @@ export class MainComponent implements OnInit {
 
     const reader = new FileReader();
     const file = this.csvForm.value.csvfile;
-    reader.readAsArrayBuffer(file)
+    reader.readAsArrayBuffer(file);
     console.log(file.name);
     this.isCsvParse = false;
   }
 
   openAddSalaryModal(event: any) {
+
+    // Выключаем фильтр
+    this.filterMode = false;
+    this.filterButtonText = 'ПОИСК/ФИЛЬТР';
 
     this.isSalaryAdd = true;
     this.isEditMode = false;
@@ -640,11 +707,9 @@ export class MainComponent implements OnInit {
 
     this.httpService.sendSalary(salary, this.apiSalary).pipe(
       catchError(err => {
-
         return this.errorHandler(err, 'Невозможно добавить зарплату!');
       })
     ).subscribe(hero => {
-
       this.showAlert('Зарплата успешно обновлена!', 'ADD MODE', hero);
       this.getWishes(this.apiUrl);
     });
@@ -753,20 +818,20 @@ export class MainComponent implements OnInit {
   }
 
 
-  changePriorityMonth(item: WishGroupItem, move: string) {
+  changePriorityMonth(item: WishGroupItem, move: string) { // todo: переименовать
 
-    console.log('URL ->' + this.changePriorityMonthUrl + '/' + item.id + '/' + move);
-    this.httpService.getData(this.changePriorityMonthUrl + '/' + item.id + '/' + move).pipe(
+    console.log('Меняем месяц для желания с ID: ', item);
+    const moveWish = new ChangeWishMonthOrderDto(item.id);
+    moveWish.setStep(move);
+    this.httpService.changeMonthOrder(moveWish, this.changeMonthOrderUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно изменить приоритет!');
       })
     ).subscribe(res => {
       console.log(res);
       this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
-
       this.getWishes(this.apiUrl);
       this.getWishesWithMonthGroupping('?sortType=all');
-
     });
   }
 
@@ -776,15 +841,17 @@ export class MainComponent implements OnInit {
     if (!this.filterMode) {
       this.isFilterModal = true;
     } else {
+     // this.wishes = null;
       this.getWishes(this.apiUrl);
       this.filterMode = false;
       this.filterButtonText = 'ПОИСК/ФИЛЬТР';
+      console.log('WISHES: ', this.wishes);
     }
   }
 
   // Показать окно c итогами: стоимость всех желаний, время реализации и все такое
   summInfo() {
-      this.isSummInfoForm = true;
+    this.isSummInfoForm = true;
   }
 
 
@@ -813,7 +880,22 @@ export class MainComponent implements OnInit {
     this.filterMode = true; // включаем filtermode
     this.filterButtonText = 'ВЫКЛЮЧИТЬ ФИЛЬТР'; // период реализации для приоритетного
 
-    this.wishes = this.wishes.filter(
-      wish => wish.wish.toLowerCase().includes(this.filterForm.value.wish.toLowerCase()));
+    this.httpService.getData(this.searchWishUrl + '?keyword=' + this.filterForm.value.wish.toLowerCase()).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Ошибка поиска!');
+      })
+    ).subscribe(data => {
+      this.wishes = null;
+      this.wishes = data.list;
+      console.log(this.wishes);
+
+      if (this.isUserCrypto) {
+        console.log('decrypt-mode');
+        this.decryptWishes();
+      }
+    });
+
+    /*this.wishes = this.wishes.filter(
+      wish => wish.wish.toLowerCase().includes(this.filterForm.value.wish.toLowerCase()));*/
   }
 }

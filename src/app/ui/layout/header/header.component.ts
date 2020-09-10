@@ -249,11 +249,7 @@ changeUserData()
   }
 }
 
-sendMessagePush(message
-:
-string
-)
-{
+sendMessagePush(message: string) {
   const errorType = new MessageCode();
 
   errorType.messageType = message;
@@ -261,8 +257,7 @@ string
   this.commonService.pushError(errorType);
 }
 
-register()
-{
+register() {
 
   const newUser = new User();
   newUser.login = this.registerForm.value.login;
