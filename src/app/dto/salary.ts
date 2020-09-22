@@ -1,10 +1,10 @@
 export class Salary {
 
-  constructor(fullsalary: number, residualSalary: number) {
-    this.fullsalary = fullsalary;
+  constructor(fullSalary: number, residualSalary: number) {
+    this.fullSalary = fullSalary;
     this.residualSalary = residualSalary;
   }
 
-  fullsalary: number;
+  fullSalary: number;
   residualSalary: number;
 }

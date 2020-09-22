@@ -43,6 +43,15 @@ export class HttpService { // todo: навести порядок во всем 
     return this.http.post<Wish>(url, wish, httpOptions);
   }
 
+  public findWish(wish: Wish, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<Wish>(url, wish, httpOptions);
+  }
+
   public sendFile(formData: FormData, url: string): Observable<any> {
     return this.http.post<any>(url, formData);
   }

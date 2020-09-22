@@ -60,7 +60,7 @@
                   aria-label="Добавить желание">
             <clr-icon shape="plus"></clr-icon>
           </button>
-          <button type="button" class="btn btn-icon" (click)="getWishes(apiUrl)" aria-label="Обновить">
+          <button type="button" class="btn btn-icon" (click)="getWishes(wishListUrl)" aria-label="Обновить">
             <clr-icon shape="refresh"></clr-icon>
           </button>
           <div class="ar-360-hide">
@@ -160,7 +160,7 @@
 
   <div class="ar-900-hide">
     <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
-    <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=all')"> Обновить</button>
+    <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=ALL')"> Обновить</button>
     <clr-dropdown>
       <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
         СОРТИРОВКА
@@ -178,7 +178,7 @@
     <button type="button" class="btn btn-icon" (click)="toMainTableMode()" aria-label="Вернуться в табличный режим">
       <clr-icon shape="undo"></clr-icon>
     </button>
-    <button type="button" class="btn btn-icon" (click)="getWishesWithMonthGroupping('?sortType=all')"
+    <button type="button" class="btn btn-icon" (click)="getWishesWithMonthGroupping('?sortType=ALL')"
             aria-label="Обновить">
       <clr-icon shape="refresh"></clr-icon>
     </button>
@@ -193,9 +193,9 @@
       <a [routerLink]="" (click)="editMonthGroupItem(items)">
         <div class="string-truncate">{{items.wish}}</div>
       </a>{{'&nbsp;| ' + items.price + ' |'}}
-      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
+      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'UP')"></clr-icon>
       |
-      <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
+      <clr-icon shape="download" (click)="changePriorityMonth(items, 'DOWN')"></clr-icon>
     </clr-tree-node>
 
   </clr-tree-node>
