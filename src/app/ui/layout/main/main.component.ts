@@ -27,12 +27,12 @@ export class MainComponent implements OnInit {
 
   SERVER_URL: string = environment.serverUrl;
   wishApiUrl = this.SERVER_URL + '/wish'; // контроллер Желаний
-  wishListUrl = this.wishApiUrl + '?type=all'; // все желания. Основная ссылка на api
-  priorityWishesUrl = this.wishApiUrl + '?type=priority'; // приоритетные желания
+  wishListUrl = this.wishApiUrl + '?filterType=DEFAULT&sortType=DEFAULT'; // все желания. Основная ссылка на api
+  priorityWishesUrl = this.wishApiUrl + '?filterType=PRIORITY&sortType=DEFAULT'; // приоритетные желания
   userViewModeUrl = this.SERVER_URL + '/user/mode';
   currentUserUrl = this.SERVER_URL + '/user/current';
 
-  allWishesUrl = this.wishApiUrl + '/all'; // все желания
+  allWishesUrl = this.wishApiUrl + '?filterType=ALL&sortType=DEFAULT'; // все желания
   apiGetSumm = this.SERVER_URL + '/statistic/sum'; // ссылка для получения сумм
   apiSalary = this.SERVER_URL + '/salary'; // ссылка для получения последней зарплаты
   parseUrl = this.wishApiUrl + '/parsecsv'; // url для парсинга csv
@@ -224,7 +224,7 @@ export class MainComponent implements OnInit {
       console.log('data.viewMode => ' + data.viewMode);
       if (data.viewMode === 'TREE') {
         this.monthOrdermode = true;
-        this.getWishesWithMonthGroupping('?sortType=ALL'); // todo - это конечно полный пиздец!!!!!!
+        this.getWishesWithMonthGroupping('?sortType=DEFAULT');
       } else {
         this.monthOrdermode = false;
       }
@@ -286,7 +286,7 @@ export class MainComponent implements OnInit {
       console.log(res);
       this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
       this.getWishes(this.wishListUrl);
-      this.getWishesWithMonthGroupping('?sortType=ALL');
+      this.getWishesWithMonthGroupping('?sortType=DEFAULT');
       this.isMonthGroupModeWishEdit = false;
     });
   }
@@ -306,35 +306,13 @@ export class MainComponent implements OnInit {
   // Изменить сортировку помесячной группировки
   sortGroupList(item: string) {
     if (item === 'По имени') {
-      /*this.wishGroups.forEach((element) => {
-        element.wishList.sort((a, b): number => {
-         // localStorage.setItem('monthGroupSort', 'NAME');
-          if (a.wish < b.wish) return -1;
-          if (a.wish > b.wish) return 1;
-          return 0;
-        });
-      });*/
       this.getWishesWithMonthGroupping('?sortType=NAME');
     } else if (item === 'По сумме [1..10]') {
       this.getWishesWithMonthGroupping('?sortType=PRICE_ASC');
-      /*  this.wishGroups.forEach((element) => {
-          element.wishList.sort((a, b): number => {
-         //   localStorage.setItem('monthGroupSort', 'PRICE-ASC');
-            if (a.price < b.price) return -1;
-            if (a.price > b.price) return 1;
-            return 0;
-          });
-        });*/
     } else if (item === 'Без сортировки') {
-      this.getWishesWithMonthGroupping('?sortType=ALL');
+      this.getWishesWithMonthGroupping('?sortType=DEFAULT');
     } else {
       this.getWishesWithMonthGroupping('?sortType=PRICE_DESC');
-      /*this.wishGroups.forEach((element) => {
-        element.wishList.sort((a, b): number => {
-      //    localStorage.setItem('monthGroupSort', 'PRICE-DESC');
-          return b.price - a.price;
-        });
-      });*/
     }
   }
 
@@ -357,18 +335,18 @@ export class MainComponent implements OnInit {
   sortMainList(item: string) {
     if (item === 'По имени') {
       console.log('Сортировка по имени - name');
-      this.getWishesWithSort(this.wishListUrl, 'NAME');
+      this.getWishesWithSort(this.wishApiUrl, 'NAME');
     } else if (item === 'По сумме [1..10]') {
-      this.getWishesWithSort(this.wishListUrl, 'PRICE_ASC');
+      this.getWishesWithSort(this.wishApiUrl, 'PRICE_ASC');
       console.log('Сортировка по стоимости - price-asc');
     } else if (item === 'По сумме [10..1]') {
-      this.getWishesWithSort(this.wishListUrl, 'PRICE_DESC');
+      this.getWishesWithSort(this.wishApiUrl, 'PRICE_DESC');
       console.log('Сортировка по стоимости - price-desc');
     } else if (item === 'По приоритету') {
-      this.getWishesWithSort(this.wishListUrl, 'PRIORITY');
+      this.getWishesWithSort(this.wishApiUrl, 'PRIORITY');
       console.log('Сортировка по приоритету');
     } else { // Без сортировки
-      this.getWishesWithSort(this.wishListUrl, 'ALL');
+      this.getWishesWithSort(this.wishApiUrl, 'ALL');
       console.log('Без сортировки');
     }
   }
@@ -381,7 +359,7 @@ export class MainComponent implements OnInit {
       // Выключаем фильтр
       this.filterMode = false;
       this.filterButtonText = 'ПОИСК/ФИЛЬТР';
-      this.getWishesWithMonthGroupping('?sortType=ALL');
+      this.getWishesWithMonthGroupping('?sortType=DEFAULT');
       this.setUserViewMode('TREE');
 
     } else {
@@ -485,7 +463,7 @@ export class MainComponent implements OnInit {
   getWishesWithSort(url: string, sortType: string) {
 
     this.isCrypto();
-    url = url + '&changeSortType=' + sortType;
+    url = url + '?filterType=DEFAULT&sortType=' + sortType;
     this.httpService.getData(url).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
@@ -829,7 +807,7 @@ export class MainComponent implements OnInit {
       console.log(res);
       this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
       this.getWishes(this.wishListUrl);
-      this.getWishesWithMonthGroupping('?sortType=all');
+      this.getWishesWithMonthGroupping('?sortType=DEFAULT');
     });
   }
 

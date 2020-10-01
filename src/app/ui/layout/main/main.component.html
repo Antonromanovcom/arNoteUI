@@ -160,7 +160,7 @@
 
   <div class="ar-900-hide">
     <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
-    <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=ALL')"> Обновить</button>
+    <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=DEFAULT')"> Обновить</button>
     <clr-dropdown>
       <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
         СОРТИРОВКА
@@ -178,7 +178,7 @@
     <button type="button" class="btn btn-icon" (click)="toMainTableMode()" aria-label="Вернуться в табличный режим">
       <clr-icon shape="undo"></clr-icon>
     </button>
-    <button type="button" class="btn btn-icon" (click)="getWishesWithMonthGroupping('?sortType=ALL')"
+    <button type="button" class="btn btn-icon" (click)="getWishesWithMonthGroupping('?sortType=DEFAULT')"
             aria-label="Обновить">
       <clr-icon shape="refresh"></clr-icon>
     </button>
@@ -193,9 +193,9 @@
       <a [routerLink]="" (click)="editMonthGroupItem(items)">
         <div class="string-truncate">{{items.wish}}</div>
       </a>{{'&nbsp;| ' + items.price + ' |'}}
-      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'UP')"></clr-icon>
+      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'DOWN')"></clr-icon>
       |
-      <clr-icon shape="download" (click)="changePriorityMonth(items, 'DOWN')"></clr-icon>
+      <clr-icon shape="download" (click)="changePriorityMonth(items, 'UP')"></clr-icon>
     </clr-tree-node>
 
   </clr-tree-node>
