@@ -9,8 +9,8 @@ http://localhost:4200/
 
 # Запуск 
 - npm install
-- ng serve
 - npm run build --prod
+- ng serve
 
 
 #Что сделали:

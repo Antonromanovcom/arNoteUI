@@ -4,8 +4,9 @@
   </clr-header>
   <div class="content-container">
     <clr-vertical-nav [clr-nav-level]="1">
-      <a clrVerticalNavLink routerLink="../401" routerLinkActive="active">О проекте</a>
-      <a *ngIf="idToken" clrVerticalNavLink routerLink="../" routerLinkActive="active">Главная</a>
+      <a clrVerticalNavLink routerLink="../401">О проекте</a>
+      <a *ngIf="idToken" clrVerticalNavLink routerLink="../" >Главная</a>
+      <a *ngIf="idToken" clrVerticalNavLink routerLink="../investing">Инвестиции</a>
     </clr-vertical-nav>
     <div class="content-area">
       <router-outlet></router-outlet>

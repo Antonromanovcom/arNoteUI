@@ -11,10 +11,7 @@ import {environment} from '../../environments/environment';
 export class HttpService {
 
   SERVER_URL: string = environment.serverUrl;
-
-  _loginURL = 'http://localhost:8080/login?';
   loginURL = this.SERVER_URL + '/login?';
-  _isCryptoUserUrl = 'http://localhost:8080/rest/wishes/users/getcurrent';
   isCryptoUserUrl = this.SERVER_URL + '/rest/wishes/users/getcurrent';
 
 

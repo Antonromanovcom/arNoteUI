@@ -11,10 +11,13 @@ import {JwtHelperService} from '@auth0/angular-jwt';
 })
 export class LayoutComponent implements OnInit {
 
+  private idToken: string;
+
   constructor() {
   }
 
   ngOnInit() {
+    this.idToken = localStorage.getItem('token');
   }
 
 }

@@ -1,0 +1,66 @@
+<div class="content-container">
+  <div class="content-area">
+
+    <clr-alert [clrAlertType]="'success'" *ngIf="result">
+      <clr-alert-item>
+        <span class="alert-text">
+            {{result}}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+
+    <clr-alert [clrAlertType]="'danger'" *ngIf="error">
+      <clr-alert-item>
+        <span class="alert-text">
+            {{error}}
+        </span>
+      </clr-alert-item>
+    </clr-alert>
+
+
+    <clr-datagrid>
+      <clr-dg-action-bar>
+      </clr-dg-action-bar>
+      <clr-dg-column>Тикер</clr-dg-column>
+      <clr-dg-column>Тип</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Описание</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Дивиденд</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">%</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Биржа</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Цена</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Лот</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Итого</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Рост</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Факт/План</clr-dg-column>
+      <clr-dg-column  class="hidden-md-down">Рост сегодня</clr-dg-column>
+
+      <clr-dg-row *clrDgItems="let item of bonds" [clrDgItem]="item">
+        <clr-dg-cell>{{item.ticker}}</clr-dg-cell>
+        <clr-dg-cell>{{item}}</clr-dg-cell>
+        <clr-dg-cell>{{item.description}}</clr-dg-cell>
+        <clr-dg-cell>{{item.dividends.divSum}}</clr-dg-cell>
+        <clr-dg-cell>{{item.dividends.percent}}</clr-dg-cell>
+        <clr-dg-cell>{{item.stockExchange}}</clr-dg-cell>
+        <clr-dg-cell>{{item.currentPrice}}</clr-dg-cell>
+        <clr-dg-cell>{{item.minLot}}</clr-dg-cell>
+        <clr-dg-cell>{{item.finalPrice}}</clr-dg-cell>
+        <clr-dg-cell>{{item.delta.deltaInRubles}}</clr-dg-cell>
+        <clr-dg-cell><span *ngIf="item.isBought" class="badge badge-info">PLAN</span><span *ngIf="!item.isBought" class="badge badge-orange">FACT</span></clr-dg-cell>
+        <clr-dg-cell [ngStyle]="{'color': item.delta.tinkoffDelta >= 0 ? '#2ecc71' : '#e70c25'}">
+          <svg *ngIf="item.delta.tinkoffDelta<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+               fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+          </svg>
+          <svg *ngIf="item.delta.tinkoffDelta>=0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+               fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+          </svg>
+          {{item.delta.tinkoffDelta}} ({{item.delta.percent}}%)
+        </clr-dg-cell>
+      </clr-dg-row>
+    </clr-datagrid>
+
+  </div>
+</div>
