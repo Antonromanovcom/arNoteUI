@@ -620,9 +620,6 @@ export class MainComponent implements OnInit {
   }
 
   showAlert(text: string, mode: string, result: any) {
-    console.log(mode);
-    console.log(result);
-
     this.isEdit = false;
     this.isSalaryAdd = false;
     this.isCsvParse = false;
@@ -636,19 +633,15 @@ export class MainComponent implements OnInit {
     const salary = new Salary(this.salaryForm.value.salary,
       this.salaryForm.value.residualSalary);
 
-    console.log(salary);
-
     this.httpService.sendSalary(salary, this.apiSalary).pipe(
       catchError(err => {
 
         return this.errorHandler(err, 'Невозможно добавить зарплату!');
       })
     ).subscribe(hero => {
-
       this.showAlert('Зарплата успешно обновлена!', 'ADD MODE', hero);
       this.getWishes(this.apiUrl);
     });
-
   }
 
   realizeWish() {
@@ -722,15 +715,11 @@ export class MainComponent implements OnInit {
       });
 
     } else {
-
       this.httpService.sendData(wish, this.myBaseUrl).pipe(
         catchError(err => {
-
-
           return this.errorHandler(err, 'Невозможно добавить желание!');
         })
       ).subscribe(hero => {
-
         this.showAlert('Желание успешно добавлено!', 'ADD MODE', hero);
         this.getWishes(this.apiUrl);
       });

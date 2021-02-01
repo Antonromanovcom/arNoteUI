@@ -17,26 +17,33 @@
       </clr-alert-item>
     </clr-alert>
 
-
-    <clr-datagrid>
+    <clr-datagrid [(clrDgSingleSelected)]="selectedPaper">
       <clr-dg-action-bar>
+        <div class="actions-container">
+          <div class="ar-900-hide">
+            <button class="btn btn-primary" (click)="openAddInstrument($event)">Добавить</button>
+            <button class="btn btn-secondary" (click)="getBonds(this.GET_BONDS_URL)">Обновить</button>
+            <button class="btn btn-danger" [disabled]="!selectedPaper" (click)="deleteBond()">Удалить</button>
+          </div>
+        </div>
       </clr-dg-action-bar>
       <clr-dg-column>Тикер</clr-dg-column>
       <clr-dg-column>Тип</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Описание</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Дивиденд</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">%</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Биржа</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Цена</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Лот</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Итого</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Рост</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Факт/План</clr-dg-column>
-      <clr-dg-column  class="hidden-md-down">Рост сегодня</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Описание</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Дивиденд</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">%</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Биржа</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Цена</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Лот / Куплено</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Итого</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Рост</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Факт/План</clr-dg-column>
+      <clr-dg-column class="hidden-md-down">Рост сегодня</clr-dg-column>
 
-      <clr-dg-row *clrDgItems="let item of bonds" [clrDgItem]="item">
+      <clr-dg-row *clrDgItems="let item of bonds" [clrDgItem]="item" >
         <clr-dg-cell>{{item.ticker}}</clr-dg-cell>
-        <clr-dg-cell>{{item}}</clr-dg-cell>
+        <clr-dg-cell><span *ngIf="item.type=='SHARE'" class="badge badge-success">{{item.type}}</span>
+          <span *ngIf="item.type=='BOND'" class="badge badge-gray">{{item.type}}</span></clr-dg-cell>
         <clr-dg-cell>{{item.description}}</clr-dg-cell>
         <clr-dg-cell>{{item.dividends.divSum}}</clr-dg-cell>
         <clr-dg-cell>{{item.dividends.percent}}</clr-dg-cell>
@@ -44,23 +51,129 @@
         <clr-dg-cell>{{item.currentPrice}}</clr-dg-cell>
         <clr-dg-cell>{{item.minLot}}</clr-dg-cell>
         <clr-dg-cell>{{item.finalPrice}}</clr-dg-cell>
-        <clr-dg-cell>{{item.delta.deltaInRubles}}</clr-dg-cell>
-        <clr-dg-cell><span *ngIf="item.isBought" class="badge badge-info">PLAN</span><span *ngIf="!item.isBought" class="badge badge-orange">FACT</span></clr-dg-cell>
-        <clr-dg-cell [ngStyle]="{'color': item.delta.tinkoffDelta >= 0 ? '#2ecc71' : '#e70c25'}">
-          <svg *ngIf="item.delta.tinkoffDelta<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-               fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
-            <path fill-rule="evenodd"
-                  d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
-          </svg>
-          <svg *ngIf="item.delta.tinkoffDelta>=0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-               fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
-            <path fill-rule="evenodd"
-                  d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
-          </svg>
-          {{item.delta.tinkoffDelta}} ({{item.delta.percent}}%)
+        <clr-dg-cell [ngStyle]="{'color': item.delta.deltaInRubles > 0 ? '#2ecc71' : item.delta.deltaInRubles < 0 ? '#e70c25' : '#faf9f9'}">
+          <span *ngIf="item.type=='SHARE'">
+            <svg *ngIf="item.delta.deltaInRubles<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+            </svg>
+            <svg *ngIf="item.delta.deltaInRubles>0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+            </svg>
+            {{item.delta.deltaInRubles}} ({{item.delta.totalPercent}})%
+          </span>
+          <span *ngIf="item.type=='BOND'">-</span>
+        </clr-dg-cell>
+        <clr-dg-cell><span *ngIf="!item.isBought" class="badge badge-info">PLAN</span><span *ngIf="item.isBought"
+                                                                                            class="badge badge-orange">FACT</span>
+        </clr-dg-cell>
+        <clr-dg-cell
+          [ngStyle]="{'color': item.delta.tinkoffDelta > 0 ? '#2ecc71' : item.delta.tinkoffDelta < 0 ? '#e70c25' : '#faf9f9'}">
+          <div *ngIf="item.type=='SHARE'">
+            <svg *ngIf="item.delta.tinkoffDelta<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+            </svg>
+            <svg *ngIf="item.delta.tinkoffDelta>0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+            </svg>
+            {{item.delta.tinkoffDelta}} ({{item.delta.percent}}%)
+          </div>
+          <div *ngIf="item.type=='BOND'">-</div>
         </clr-dg-cell>
       </clr-dg-row>
     </clr-datagrid>
+
+    <clr-modal [(clrModalOpen)]="isAddDialogShown">
+      <h3 class="modal-title">Добавить инструмент</h3>
+      <div class="modal-body">
+        <form clrForm [formGroup]="addInstrumentForm">
+
+          <!--ПОЛЕ ТИКЕР-->
+
+              <clr-input-container>
+                <label #label for="ticker" class="input-label clr-col-12">Тикер или название</label>
+                <input type="text"
+                       clrInput
+                       formControlName="ticker"
+                       id="ticker"
+                       name="ticker"
+                       autocomplete="off" required size="100" (input)="onTickerFieldChangeForNewInstrumentDlg($event.target.value)">
+                <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+              </clr-input-container>
+
+          <clr-datagrid *ngIf="isFoundInstrumentsBlockShown" [(clrDgSingleSelected)]="selectedInstrument" (clrDgSingleSelectedChange)="selectionChanged($event)">
+            <clr-dg-column>Тикер</clr-dg-column>
+            <clr-dg-column>Название</clr-dg-column>
+            <clr-dg-column>Тип</clr-dg-column>
+            <clr-dg-column>Биржа</clr-dg-column>
+
+            <clr-dg-row *ngFor="let element of instruments" [clrDgItem]="element">
+              <clr-dg-cell>{{element.ticker}}</clr-dg-cell>
+              <clr-dg-cell>{{element.description}}</clr-dg-cell>
+              <clr-dg-cell>{{element.type}}</clr-dg-cell>
+              <clr-dg-cell>{{element.stockExchange}}</clr-dg-cell>
+            </clr-dg-row>
+          </clr-datagrid>
+
+          <!-- Цена покупки -->
+          <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+            <label #label for="price" class="input-label clr-col-12">Цена</label>
+            <input type="text"
+                   clrInput
+                   formControlName="price"
+                   id="price"
+                   name="price"
+                   autocomplete="off" required size="100">
+            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+          </clr-input-container>
+
+          <!-- Лот -->
+          <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+            <label #label for="lot" class="input-label clr-col-12">Лот / Кол-во</label>
+            <input type="text"
+                   clrInput
+                   formControlName="lot"
+                   id="lot"
+                   name="lot"
+                   autocomplete="off" required size="100">
+            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+          </clr-input-container>
+
+          <!-- Дата покупки -->
+              <clr-date-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+                <label>Дата покупки</label>
+                <input type="date" clrDate name="purchaseDate"
+                       formControlName="purchaseDate"
+                       id="purchaseDate"
+                       min="2019-01-01" (clrDateChange)="getPriceForCurrentDate($event)"/>
+              </clr-date-container>
+
+          <!-- Переключатель isPlan -->
+          <clr-toggle-container *ngIf="selectedInstrument">
+            <clr-toggle-wrapper>
+              <input type="checkbox" clrToggle formControlName="isPlan"
+                     id="isPlan"
+                     name="isPlan" />
+              <label>План?</label>
+            </clr-toggle-wrapper>
+          </clr-toggle-container>
+
+
+        </form>
+
+        <div class="row" *ngIf="selectedInstrument">
+          <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument()" class="btn btn-primary mt-1">Добавить</button>
+        </div>
+
+      </div>
+    </clr-modal>
 
   </div>
 </div>

@@ -5,6 +5,8 @@ import {Wish} from '../dto/wish';
 import {Salary} from '../dto/salary';
 import {User} from '../dto/user';
 import {environment} from '../../environments/environment';
+import {NewInstrumentRq} from '../dto/NewInstrumentRq';
+import {Bond} from '../dto/bond';
 
 
 @Injectable()
@@ -23,7 +25,6 @@ export class HttpService {
   }
 
   public sendData(wish: Wish, url: string): Observable<Wish> {
-
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -31,6 +32,26 @@ export class HttpService {
     };
 
     return this.http.post<Wish>(url, wish, httpOptions);
+  }
+
+  public addInstrument(instrument: NewInstrumentRq, url: string): Observable<Bond> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<Bond>(url, instrument, httpOptions);
+  }
+
+  public deleteInstrument(ticker: string, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.delete(url + '?ticker=' + ticker, httpOptions);
   }
 
   public sendFile(formData: FormData, url: string): Observable<any> {
@@ -96,6 +117,4 @@ export class HttpService {
 
     return this.http.put<User>(url, user, httpOptions);
   }
-
-  // 'assets/data/test.json'
 }
