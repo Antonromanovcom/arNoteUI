@@ -43,7 +43,7 @@
       </clr-dg-column>
       <clr-dg-column><ng-container *clrDgHideableColumn="{hidden: false}">Описание</ng-container></clr-dg-column>
       <clr-dg-column [clrDgField]="'dividends.divSum'" [clrDgSortBy]="divComparator">Дивиденд</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">%</clr-dg-column>
+      <clr-dg-column [clrDgField]="'dividends.percent'" [clrDgSortBy]="divPercentComparator">%</clr-dg-column>
       <clr-dg-column>
         <ng-container *clrDgHideableColumn="{hidden: false}">Биржа</ng-container>
         <clr-dg-filter [clrDgFilter]="customSOFilter">
@@ -57,10 +57,14 @@
           </clr-checkbox-wrapper>
         </clr-dg-filter>
       </clr-dg-column>
-      <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Цена</ng-container></clr-dg-column>
+      <clr-dg-column [clrDgField]="'currentPrice'" [clrDgSortBy]="priceComparator">
+        <ng-container *clrDgHideableColumn="{hidden: false}">Цена</ng-container>
+      </clr-dg-column>
       <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Лот / Куплено</ng-container></clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Итого</clr-dg-column>
-      <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Рост</ng-container></clr-dg-column>
+      <clr-dg-column [clrDgField]="'finalPrice'" [clrDgSortBy]="finalPriceComparator">Итого</clr-dg-column>
+      <clr-dg-column [clrDgField]="'delta.deltaInRubles'" [clrDgSortBy]="deltaComparator">
+        <ng-container *clrDgHideableColumn="{hidden: false}">Рост</ng-container>
+      </clr-dg-column>
       <clr-dg-column class="hidden-md-down">
         <ng-container *clrDgHideableColumn="{hidden: false}">Факт/План</ng-container>
         <clr-dg-filter [clrDgFilter]="customStatusFilter">

@@ -80,6 +80,42 @@ export class DividendComparator implements ClrDatagridComparatorInterface<Bond> 
   }
 }
 
+/**
+ * Класс сортировки по дивидендам в процентах
+ */
+export class DivPercentComparator implements ClrDatagridComparatorInterface<Bond> {
+  compare(a: Bond, b: Bond) {
+    return a.dividends.percent - b.dividends.percent;
+  }
+}
+
+/**
+ * Класс сортировки по текущей цене
+ */
+export class CurrentPriceComparator implements ClrDatagridComparatorInterface<Bond> {
+  compare(a: Bond, b: Bond) {
+    return a.currentPrice - b.currentPrice;
+  }
+}
+
+/**
+ * Класс сортировки по итоговой цене
+ */
+export class FinalPriceComparator implements ClrDatagridComparatorInterface<Bond> {
+  compare(a: Bond, b: Bond) {
+    return a.finalPrice - b.finalPrice;
+  }
+}
+
+/**
+ * Компаратор для сортировки по росту
+ */
+export class DeltaComparator implements ClrDatagridComparatorInterface<Bond> {
+  compare(a: Bond, b: Bond) {
+    return a.delta.deltaInRubles - b.delta.deltaInRubles;
+  }
+}
+
 
 @Component({
   selector: 'app-invest',
@@ -141,14 +177,22 @@ export class InvestingComponent implements OnInit {
 
   // ---------------------------------- КОМПАРАТОРЫ ----------------------------------------
   divComparator: DividendComparator;
+  divPercentComparator: DivPercentComparator;
+  priceComparator: CurrentPriceComparator;
+  finalPriceComparator: FinalPriceComparator;
+  deltaComparator: DeltaComparator;
 
 
-  constructor(private commonService: CommonService, private route: ActivatedRoute,
-              private httpService: HttpService, private fb: FormBuilder) {
+  constructor(private commonService: CommonService, private route: ActivatedRoute, private httpService: HttpService,
+              private fb: FormBuilder) {
     this.customTypeFilter = new TypeFilter();
     this.customStatusFilter = new StatusFilter();
     this.customSOFilter = new StockExchangeFilter();
     this.divComparator = new DividendComparator();
+    this.divPercentComparator = new DivPercentComparator();
+    this.priceComparator = new CurrentPriceComparator();
+    this.finalPriceComparator = new FinalPriceComparator();
+    this.deltaComparator = new DeltaComparator();
   }
 
   ngOnInit() {
