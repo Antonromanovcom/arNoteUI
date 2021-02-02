@@ -14,7 +14,7 @@ import {CurrentPrice} from '../../../dto/CurrentPrice';
 import {NewInstrumentRq} from '../../../dto/NewInstrumentRq';
 import * as moment from 'moment';
 import {Moment} from 'moment';
-import {ClrDatagridFilterInterface} from '@clr/angular';
+import {ClrDatagridComparatorInterface, ClrDatagridFilterInterface} from '@clr/angular';
 
 // --------------------------------- Классы фильтров -----------------------------------
 
@@ -66,6 +66,17 @@ export class StockExchangeFilter implements ClrDatagridFilterInterface<Bond> {
 
   public accepts(bond: Bond): boolean {
     return this.selectedSO.indexOf(bond.stockExchange) > -1;
+  }
+}
+
+// --------------------------------- Классы Компараторов для сортировки -----------------------------------
+
+/**
+ * Класс сортировки по дивидендам
+ */
+export class DividendComparator implements ClrDatagridComparatorInterface<Bond> {
+  compare(a: Bond, b: Bond) {
+    return a.dividends.divSum - b.dividends.divSum;
   }
 }
 
@@ -128,12 +139,16 @@ export class InvestingComponent implements OnInit {
   customStatusFilter: StatusFilter;
   customSOFilter: StockExchangeFilter;
 
+  // ---------------------------------- КОМПАРАТОРЫ ----------------------------------------
+  divComparator: DividendComparator;
+
 
   constructor(private commonService: CommonService, private route: ActivatedRoute,
               private httpService: HttpService, private fb: FormBuilder) {
     this.customTypeFilter = new TypeFilter();
     this.customStatusFilter = new StatusFilter();
     this.customSOFilter = new StockExchangeFilter();
+    this.divComparator = new DividendComparator();
   }
 
   ngOnInit() {
