@@ -28,16 +28,52 @@
         </div>
       </clr-dg-action-bar>
       <clr-dg-column>Тикер</clr-dg-column>
-      <clr-dg-column>Тип</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Описание</clr-dg-column>
+      <clr-dg-column>
+        <ng-container *clrDgHideableColumn="{hidden: false}">Тип</ng-container>
+        <clr-dg-filter [clrDgFilter]="customTypeFilter">
+          <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox value="SHARE" name="options" (change)="toggleFilterForInstrumentType($event)" />
+            <label>SHARE</label>
+          </clr-checkbox-wrapper>
+          <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox value="BOND" name="options" (change)="toggleFilterForInstrumentType($event)" />
+            <label>BOND</label>
+          </clr-checkbox-wrapper>
+        </clr-dg-filter>
+      </clr-dg-column>
+      <clr-dg-column><ng-container *clrDgHideableColumn="{hidden: false}">Описание</ng-container></clr-dg-column>
       <clr-dg-column class="hidden-md-down">Дивиденд</clr-dg-column>
       <clr-dg-column class="hidden-md-down">%</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Биржа</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Цена</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Лот / Куплено</clr-dg-column>
+      <clr-dg-column>
+        <ng-container *clrDgHideableColumn="{hidden: false}">Биржа</ng-container>
+        <clr-dg-filter [clrDgFilter]="customSOFilter">
+          <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox value="MOEX" name="options" (change)="toggleStockExchangeFilter($event)" />
+            <label>MOEX</label>
+          </clr-checkbox-wrapper>
+          <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox value="SPB" name="options" (change)="toggleStockExchangeFilter($event)" />
+            <label>SPB</label>
+          </clr-checkbox-wrapper>
+        </clr-dg-filter>
+      </clr-dg-column>
+      <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Цена</ng-container></clr-dg-column>
+      <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Лот / Куплено</ng-container></clr-dg-column>
       <clr-dg-column class="hidden-md-down">Итого</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Рост</clr-dg-column>
-      <clr-dg-column class="hidden-md-down">Факт/План</clr-dg-column>
+      <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Рост</ng-container></clr-dg-column>
+      <clr-dg-column class="hidden-md-down">
+        <ng-container *clrDgHideableColumn="{hidden: false}">Факт/План</ng-container>
+        <clr-dg-filter [clrDgFilter]="customStatusFilter">
+          <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox value="PLAN" name="options1" (change)="toggleStatusFilter($event)" />
+            <label>PLAN</label>
+          </clr-checkbox-wrapper>
+          <clr-checkbox-wrapper>
+            <input type="checkbox" clrCheckbox value="FACT" name="options1" (change)="toggleStatusFilter($event)" />
+            <label>FACT</label>
+          </clr-checkbox-wrapper>
+        </clr-dg-filter>
+      </clr-dg-column>
       <clr-dg-column class="hidden-md-down">Рост сегодня</clr-dg-column>
 
       <clr-dg-row *clrDgItems="let item of bonds" [clrDgItem]="item" >
@@ -88,6 +124,14 @@
           <div *ngIf="item.type=='BOND'">-</div>
         </clr-dg-cell>
       </clr-dg-row>
+      <clr-dg-footer>
+        <!-- Optional customization of hide/show columns toggle -->
+        <clr-dg-column-toggle>
+          <clr-dg-column-toggle-title>Отобразить столбцы</clr-dg-column-toggle-title>
+         <!-- <clr-dg-column-toggle-button clrType="selectAll">Alle auswählen!</clr-dg-column-toggle-button>
+          <clr-dg-column-toggle-button clrType="ok"><clr-icon shape="check"></clr-icon></clr-dg-column-toggle-button>-->
+        </clr-dg-column-toggle>
+      </clr-dg-footer>
     </clr-datagrid>
 
     <clr-modal [(clrModalOpen)]="isAddDialogShown">

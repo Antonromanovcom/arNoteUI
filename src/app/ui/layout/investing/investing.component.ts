@@ -3,17 +3,71 @@ import {Subscription} from 'rxjs/Subscription';
 import {MessageCode} from '../../../service/message.code';
 import {CommonService} from '../../../service/common.service';
 import {ActivatedRoute} from '@angular/router';
-import {throwError, timer} from 'rxjs';
+import {Subject, throwError, timer} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {HttpService} from '../../../service/http.service';
 import {environment} from '../../../../environments/environment';
 import {Bond} from '../../../dto/bond';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {FoundInstrument} from '../../../dto/FoundInstrument';
 import {CurrentPrice} from '../../../dto/CurrentPrice';
 import {NewInstrumentRq} from '../../../dto/NewInstrumentRq';
 import * as moment from 'moment';
 import {Moment} from 'moment';
+import {ClrDatagridFilterInterface} from '@clr/angular';
+
+// --------------------------------- Классы фильтров -----------------------------------
+
+/**
+ * Класс для фильтрации по типу бумаги: Акция или Облигация
+ */
+export class TypeFilter implements ClrDatagridFilterInterface<Bond> {
+  public selectedTypes: string[] = [];
+
+  public changes = new Subject<any>();
+
+  public isActive(): boolean {
+    return this.selectedTypes.length > 0;
+  }
+
+  public accepts(bond: Bond): boolean {
+    return this.selectedTypes.indexOf(bond.type) > -1;
+  }
+}
+
+/**
+ * Класс для фильтрации по статусу бумаги: план или факт
+ */
+export class StatusFilter implements ClrDatagridFilterInterface<Bond> {
+  public selectedStatus: string[] = [];
+
+  public changes = new Subject<any>();
+
+  public isActive(): boolean {
+    return this.selectedStatus.length > 0;
+  }
+
+  public accepts(bond: Bond): boolean {
+     return this.selectedStatus.indexOf(bond.isBought ? 'FACT' : 'PLAN') > -1;
+  }
+}
+
+/**
+ * Класс для фильтрации по Бирже
+ */
+export class StockExchangeFilter implements ClrDatagridFilterInterface<Bond> {
+  public selectedSO: string[] = [];
+
+  public changes = new Subject<any>();
+
+  public isActive(): boolean {
+    return this.selectedSO.length > 0;
+  }
+
+  public accepts(bond: Bond): boolean {
+    return this.selectedSO.indexOf(bond.stockExchange) > -1;
+  }
+}
 
 
 @Component({
@@ -68,10 +122,18 @@ export class InvestingComponent implements OnInit {
     isPlan: [false, []]
   });
 
+  // ---------------------------------- ФИЛЬТРЫ ----------------------------------------
+
+  customTypeFilter: TypeFilter;
+  customStatusFilter: StatusFilter;
+  customSOFilter: StockExchangeFilter;
 
 
   constructor(private commonService: CommonService, private route: ActivatedRoute,
               private httpService: HttpService, private fb: FormBuilder) {
+    this.customTypeFilter = new TypeFilter();
+    this.customStatusFilter = new StatusFilter();
+    this.customSOFilter = new StockExchangeFilter();
   }
 
   ngOnInit() {
@@ -306,6 +368,58 @@ export class InvestingComponent implements OnInit {
     ).subscribe(data => {
       this.getBonds(this.GET_BONDS_URL);
     });
+  }
+
+  /**
+   * Метод, обрабатывающий выбор типов фильтрации для типов бумаг: акция / облигация
+   * event
+   */
+  toggleFilterForInstrumentType(event: any) {
+    if (event.target.checked) {
+      this.customTypeFilter.selectedTypes.push(event.target.value);
+    } else {
+      const colorName = event.target.value;
+      const index = this.customTypeFilter.selectedTypes.indexOf(colorName);
+      if (index > -1) {
+        this.customTypeFilter.selectedTypes.splice(index, 1);
+      }
+    }
+    this.customTypeFilter.changes.next(true);
+  }
+
+
+  /**
+   * Метод, обрабатывающий выбор статуса бумаги: План / Факт
+   * event
+   */
+  toggleStatusFilter(event: any) {
+    if (event.target.checked) {
+      this.customStatusFilter.selectedStatus.push(event.target.value);
+    } else {
+      const statusName = event.target.value;
+      const index = this.customStatusFilter.selectedStatus.indexOf(statusName);
+      if (index > -1) {
+        this.customStatusFilter.selectedStatus.splice(index, 1);
+      }
+    }
+    this.customStatusFilter.changes.next(true);
+  }
+
+  /**
+   * Метод, обрабатывающий фильтрацию по Бирже
+   * event
+   */
+  toggleStockExchangeFilter(event: any) {
+    if (event.target.checked) {
+      this.customSOFilter.selectedSO.push(event.target.value);
+    } else {
+      const statusName = event.target.value;
+      const index = this.customSOFilter.selectedSO.indexOf(statusName);
+      if (index > -1) {
+        this.customSOFilter.selectedSO.splice(index, 1);
+      }
+    }
+    this.customSOFilter.changes.next(true);
   }
 
   errorHandler(err, message: string) {
