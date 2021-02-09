@@ -20,67 +20,138 @@
     <clr-datagrid [(clrDgSingleSelected)]="selectedPaper">
       <clr-dg-action-bar>
         <div class="actions-container">
-          <div class="ar-900-hide">
+          <div class="row">
             <button class="btn btn-primary" (click)="openAddInstrument($event)">Добавить</button>
             <button class="btn btn-secondary" (click)="getBonds(this.GET_BONDS_URL)">Обновить</button>
             <button class="btn btn-danger" [disabled]="!selectedPaper" (click)="deleteBond()">Удалить</button>
+            <button class="btn btn-success" [disabled]="!isDivsExist()"
+                    (click)="isDivAndCouponModalShown = true">{{getDivButtonName()}}</button>
+            <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="isReturnsInfoShown = true">Доходы</button>
+            <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="openCalendarAndLoadData()">Календарь</button>
+
+            <!--  Список фильтрации -->
+            <clr-dropdown>
+              <button type="button" class="btn btn-outline-primary" clrDropdownToggle [disabled]="bonds.length<1">Фильтр
+                <clr-icon shape="caret down"></clr-icon>
+              </button>
+              <clr-dropdown-menu *clrIfOpen>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>Тип бумаги</button>
+                  <clr-dropdown-menu>
+                    <a *ngFor="let item of filtersForInstrumentType" (click)="changeTypeFilter(item)"
+                       clrDropdownItem>{{item}}</a>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>План / Факт</button>
+                  <clr-dropdown-menu>
+                    <a *ngFor="let item of filtersForStatus" clrDropdownItem>{{item}}</a>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item" (click)="clearFilters()">Сбросить фильтры</button>
+              </clr-dropdown-menu>
+            </clr-dropdown>
+
+            <!--  Сортировка -->
+            <clr-dropdown>
+              <button type="button" class="btn btn-outline-primary" clrDropdownToggle [disabled]="bonds.length<1">Сортировка
+                <clr-icon shape="caret down"></clr-icon>
+              </button>
+              <clr-dropdown-menu *clrIfOpen>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>Тикер</button>
+                  <clr-dropdown-menu>
+                    <a *ngFor="let item of sortModes" (click)="changeSort(item, 'TICKER')" clrDropdownItem>{{item}}</a>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>Дивиденд</button>
+                  <clr-dropdown-menu>
+                    <clr-dropdown>
+                      <button type="button" clrDropdownTrigger>В рублях</button>
+                      <clr-dropdown-menu clrPosition="left-top">
+                        <a *ngFor="let item of sortModes" (click)="changeSort(item, 'DIV-RUB')"
+                           clrDropdownItem>{{item}}</a>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
+                    <clr-dropdown>
+                      <button type="button" clrDropdownTrigger>В %</button>
+                      <clr-dropdown-menu clrPosition="left-top">
+                        <a *ngFor="let item of sortModes" (click)="changeSort(item, 'DIV-PRCNT')"
+                           clrDropdownItem>{{item}}</a>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>Цена</button>
+                  <clr-dropdown-menu>
+                    <clr-dropdown>
+                      <button type="button" clrDropdownTrigger>Текущая</button>
+                      <clr-dropdown-menu clrPosition="left-top">
+                        <a *ngFor="let item of sortModes" (click)="changeSort(item, 'CUR-PRICE')"
+                           clrDropdownItem>{{item}}</a>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
+                    <clr-dropdown>
+                      <button type="button" clrDropdownTrigger>Итоговая</button>
+                      <clr-dropdown-menu clrPosition="left-top">
+                        <a *ngFor="let item of sortModes" (click)="changeSort(item, 'FINAL-PRICE')"
+                           clrDropdownItem>{{item}}</a>
+                      </clr-dropdown-menu>
+                    </clr-dropdown>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>Рост всего</button>
+                  <clr-dropdown-menu>
+                    <a *ngFor="let item of sortModes" (click)="changeSort(item, 'TOTAL-GROW')"
+                       clrDropdownItem>{{item}}</a>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <clr-dropdown>
+                  <button type="button" clrDropdownTrigger>Рост сегодня</button>
+                  <clr-dropdown-menu>
+                    <a *ngFor="let item of sortModes" (click)="changeSort(item, 'TODAY-GROW')"
+                       clrDropdownItem>{{item}}</a>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item" (click)="clearSorting()">Сбросить сортировку</button>
+              </clr-dropdown-menu>
+            </clr-dropdown>
           </div>
         </div>
       </clr-dg-action-bar>
       <clr-dg-column>Тикер</clr-dg-column>
       <clr-dg-column>
         <ng-container *clrDgHideableColumn="{hidden: false}">Тип</ng-container>
-        <clr-dg-filter [clrDgFilter]="customTypeFilter">
-          <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox value="SHARE" name="options" (change)="toggleFilterForInstrumentType($event)" />
-            <label>SHARE</label>
-          </clr-checkbox-wrapper>
-          <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox value="BOND" name="options" (change)="toggleFilterForInstrumentType($event)" />
-            <label>BOND</label>
-          </clr-checkbox-wrapper>
-        </clr-dg-filter>
       </clr-dg-column>
-      <clr-dg-column><ng-container *clrDgHideableColumn="{hidden: false}">Описание</ng-container></clr-dg-column>
-      <clr-dg-column [clrDgField]="'dividends.divSum'" [clrDgSortBy]="divComparator">Дивиденд</clr-dg-column>
-      <clr-dg-column [clrDgField]="'dividends.percent'" [clrDgSortBy]="divPercentComparator">%</clr-dg-column>
+      <clr-dg-column>
+        <ng-container *clrDgHideableColumn="{hidden: false}">Описание</ng-container>
+      </clr-dg-column>
+      <clr-dg-column>Дивиденд</clr-dg-column>
+      <clr-dg-column>%</clr-dg-column>
       <clr-dg-column>
         <ng-container *clrDgHideableColumn="{hidden: false}">Биржа</ng-container>
-        <clr-dg-filter [clrDgFilter]="customSOFilter">
-          <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox value="MOEX" name="options" (change)="toggleStockExchangeFilter($event)" />
-            <label>MOEX</label>
-          </clr-checkbox-wrapper>
-          <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox value="SPB" name="options" (change)="toggleStockExchangeFilter($event)" />
-            <label>SPB</label>
-          </clr-checkbox-wrapper>
-        </clr-dg-filter>
       </clr-dg-column>
-      <clr-dg-column [clrDgField]="'currentPrice'" [clrDgSortBy]="priceComparator">
+      <clr-dg-column>
         <ng-container *clrDgHideableColumn="{hidden: false}">Цена</ng-container>
       </clr-dg-column>
-      <clr-dg-column class="hidden-md-down"><ng-container *clrDgHideableColumn="{hidden: false}">Лот / Куплено</ng-container></clr-dg-column>
-      <clr-dg-column [clrDgField]="'finalPrice'" [clrDgSortBy]="finalPriceComparator">Итого</clr-dg-column>
-      <clr-dg-column [clrDgField]="'delta.deltaInRubles'" [clrDgSortBy]="deltaComparator">
+      <clr-dg-column class="hidden-md-down">
+        <ng-container *clrDgHideableColumn="{hidden: false}">Лот / Куплено</ng-container>
+      </clr-dg-column>
+      <clr-dg-column>Итого</clr-dg-column>
+      <clr-dg-column>
         <ng-container *clrDgHideableColumn="{hidden: false}">Рост</ng-container>
       </clr-dg-column>
       <clr-dg-column class="hidden-md-down">
         <ng-container *clrDgHideableColumn="{hidden: false}">Факт/План</ng-container>
-        <clr-dg-filter [clrDgFilter]="customStatusFilter">
-          <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox value="PLAN" name="options1" (change)="toggleStatusFilter($event)" />
-            <label>PLAN</label>
-          </clr-checkbox-wrapper>
-          <clr-checkbox-wrapper>
-            <input type="checkbox" clrCheckbox value="FACT" name="options1" (change)="toggleStatusFilter($event)" />
-            <label>FACT</label>
-          </clr-checkbox-wrapper>
-        </clr-dg-filter>
       </clr-dg-column>
       <clr-dg-column class="hidden-md-down">Рост сегодня</clr-dg-column>
 
-      <clr-dg-row *clrDgItems="let item of bonds" [clrDgItem]="item" >
+      <clr-dg-row *clrDgItems="let item of bonds" [clrDgItem]="item">
         <clr-dg-cell>{{item.ticker}}</clr-dg-cell>
         <clr-dg-cell><span *ngIf="item.type=='SHARE'" class="badge badge-success">{{item.type}}</span>
           <span *ngIf="item.type=='BOND'" class="badge badge-gray">{{item.type}}</span></clr-dg-cell>
@@ -91,7 +162,8 @@
         <clr-dg-cell>{{item.currentPrice}}</clr-dg-cell>
         <clr-dg-cell>{{item.minLot}}</clr-dg-cell>
         <clr-dg-cell>{{item.finalPrice}}</clr-dg-cell>
-        <clr-dg-cell [ngStyle]="{'color': item.delta.deltaInRubles > 0 ? '#2ecc71' : item.delta.deltaInRubles < 0 ? '#e70c25' : '#faf9f9'}">
+        <clr-dg-cell
+          [ngStyle]="{'color': item.delta.deltaInRubles > 0 ? '#2ecc71' : item.delta.deltaInRubles < 0 ? '#e70c25' : '#faf9f9'}">
           <span *ngIf="item.type=='SHARE'">
             <svg *ngIf="item.delta.deltaInRubles<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                  fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
@@ -129,14 +201,13 @@
         </clr-dg-cell>
       </clr-dg-row>
       <clr-dg-footer>
-        <!-- Optional customization of hide/show columns toggle -->
         <clr-dg-column-toggle>
           <clr-dg-column-toggle-title>Отобразить столбцы</clr-dg-column-toggle-title>
-         <!-- <clr-dg-column-toggle-button clrType="selectAll">Alle auswählen!</clr-dg-column-toggle-button>
-          <clr-dg-column-toggle-button clrType="ok"><clr-icon shape="check"></clr-icon></clr-dg-column-toggle-button>-->
         </clr-dg-column-toggle>
       </clr-dg-footer>
     </clr-datagrid>
+
+    <!--    МОДАЛ С ДОБАВЛЕНИЕМ НОВОГО ИНСТРУМЕНТА-->
 
     <clr-modal [(clrModalOpen)]="isAddDialogShown">
       <h3 class="modal-title">Добавить инструмент</h3>
@@ -145,18 +216,20 @@
 
           <!--ПОЛЕ ТИКЕР-->
 
-              <clr-input-container>
-                <label #label for="ticker" class="input-label clr-col-12">Тикер или название</label>
-                <input type="text"
-                       clrInput
-                       formControlName="ticker"
-                       id="ticker"
-                       name="ticker"
-                       autocomplete="off" required size="100" (input)="onTickerFieldChangeForNewInstrumentDlg($event.target.value)">
-                <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-              </clr-input-container>
+          <clr-input-container>
+            <label #label for="ticker" class="input-label clr-col-12">Тикер или название</label>
+            <input type="text"
+                   clrInput
+                   formControlName="ticker"
+                   id="ticker"
+                   name="ticker"
+                   autocomplete="off" required size="100"
+                   (input)="onTickerFieldChangeForNewInstrumentDlg($event.target.value)">
+            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+          </clr-input-container>
 
-          <clr-datagrid *ngIf="isFoundInstrumentsBlockShown" [(clrDgSingleSelected)]="selectedInstrument" (clrDgSingleSelectedChange)="selectionChanged($event)">
+          <clr-datagrid *ngIf="isFoundInstrumentsBlockShown" [(clrDgSingleSelected)]="selectedInstrument"
+                        (clrDgSingleSelectedChange)="selectionChanged($event)">
             <clr-dg-column>Тикер</clr-dg-column>
             <clr-dg-column>Название</clr-dg-column>
             <clr-dg-column>Тип</clr-dg-column>
@@ -195,20 +268,20 @@
           </clr-input-container>
 
           <!-- Дата покупки -->
-              <clr-date-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
-                <label>Дата покупки</label>
-                <input type="date" clrDate name="purchaseDate"
-                       formControlName="purchaseDate"
-                       id="purchaseDate"
-                       min="2019-01-01" (clrDateChange)="getPriceForCurrentDate($event)"/>
-              </clr-date-container>
+          <clr-date-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+            <label>Дата покупки</label>
+            <input type="date" clrDate name="purchaseDate"
+                   formControlName="purchaseDate"
+                   id="purchaseDate"
+                   min="2019-01-01" (clrDateChange)="getPriceForCurrentDate($event)"/>
+          </clr-date-container>
 
           <!-- Переключатель isPlan -->
-          <clr-toggle-container *ngIf="selectedInstrument">
+          <clr-toggle-container *ngIf="selectedInstrument && isPlanAvailable()">
             <clr-toggle-wrapper>
               <input type="checkbox" clrToggle formControlName="isPlan"
                      id="isPlan"
-                     name="isPlan" />
+                     name="isPlan"/>
               <label>План?</label>
             </clr-toggle-wrapper>
           </clr-toggle-container>
@@ -217,9 +290,109 @@
         </form>
 
         <div class="row" *ngIf="selectedInstrument">
-          <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument()" class="btn btn-primary mt-1">Добавить</button>
+          <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument()"
+                  class="btn btn-primary mt-1">Добавить
+          </button>
         </div>
 
+      </div>
+    </clr-modal>
+
+    <!--    МОДАЛ С ИНФОЙ ПО КУПОНАМ / ДИВАМ -->
+
+    <clr-modal [(clrModalOpen)]="isDivAndCouponModalShown">
+      <h3 class="modal-title">{{getModalFormName()}}</h3>
+      <div class="modal-body">
+        <clr-datagrid
+          *ngIf="selectedPaper && selectedPaper.dividends && selectedPaper.dividends.dividendList.length > 0">
+          <clr-dg-column>Дата</clr-dg-column>
+          <clr-dg-column>Сумма</clr-dg-column>
+          <clr-dg-column>Валюта</clr-dg-column>
+
+          <clr-dg-row *ngFor="let element of selectedPaper.dividends.dividendList">
+            <clr-dg-cell>{{element.registryCloseDate}}</clr-dg-cell>
+            <clr-dg-cell>{{element.value}}</clr-dg-cell>
+            <clr-dg-cell>{{element.currencyId}}</clr-dg-cell>
+          </clr-dg-row>
+        </clr-datagrid>
+      </div>
+    </clr-modal>
+
+    <!--    МОДАЛ С ИНФОЙ ПО ДОХОДАМ -->
+
+    <clr-modal [(clrModalOpen)]="isReturnsInfoShown">
+      <h3 class="modal-title">Доходы</h3>
+      <div class="modal-body">
+
+        <clr-tabs>
+          <clr-tab>
+            <button clrTabLink id="link1">Доходы</button>
+            <clr-tab-content id="content1" *clrIfActive>
+              <clr-datagrid *ngIf="returns">
+                <clr-dg-column>Инвестировано</clr-dg-column>
+                <clr-dg-column>Купоны</clr-dg-column>
+                <clr-dg-column>Дивы</clr-dg-column>
+                <clr-dg-column>Рост акций</clr-dg-column>
+                <clr-dg-column>Итого</clr-dg-column>
+
+                <clr-dg-row>
+                  <clr-dg-cell>{{returns.invested}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.bondsReturns}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.sharesReturns}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.sharesDelta}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.sum}}</clr-dg-cell>
+                </clr-dg-row>
+              </clr-datagrid>
+
+            </clr-tab-content>
+          </clr-tab>
+          <clr-tab>
+            <button clrTabLink>Нужно вложить</button>
+            <clr-tab-content *clrIfActive="true">
+              <clr-datagrid *ngIf="returns">
+                <clr-dg-column>1000 руб.</clr-dg-column>
+                <clr-dg-column>5000 руб.</clr-dg-column>
+                <clr-dg-column>10 000 руб.</clr-dg-column>
+                <clr-dg-column>30 000 руб.</clr-dg-column>
+                <clr-dg-column>60 000 руб.</clr-dg-column>
+
+                <clr-dg-row>
+                  <clr-dg-cell>{{returns.targets.ONE_THOUSAND_ROUBLES}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.targets.FIVE_THOUSANDS_ROUBLES}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.targets.TEN_THOUSANDS_ROUBLES}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.targets.THIRTY_THOUSANDS_ROUBLES}}</clr-dg-cell>
+                  <clr-dg-cell>{{returns.targets.SIXTY_THOUSANDS_ROUBLES}}</clr-dg-cell>
+                </clr-dg-row>
+              </clr-datagrid>
+            </clr-tab-content>
+          </clr-tab>
+        </clr-tabs>
+      </div>
+    </clr-modal>
+
+    <!--    МОДАЛ С КАЛЕНДАРЕМ -->
+
+    <clr-modal [(clrModalOpen)]="isCalendarShown">
+      <h3 class="modal-title">Календарь</h3>
+      <div class="modal-body">
+
+        <clr-stack-view>
+
+          <clr-stack-block *ngFor="let block of calc">
+            <clr-stack-label>{{block.monthRussianName}}</clr-stack-label>
+            <clr-stack-block *ngFor="let child of block.data">
+              <clr-stack-label>{{child.registryCloseDate}}</clr-stack-label>
+              <clr-stack-content>
+                <span class="label label-info">{{child.ticker}}</span>
+                <span class="label label-success">{{child.value | number:'2.'}}<span
+                  class="badge badge-orange">{{child.currencyId}}
+                </span></span>
+                <span *ngIf="child.type === 'SHARE'" class="badge badge-gray">{{child.type}}</span>
+                <span *ngIf="child.type === 'BOND'" class="badge badge-purple">{{child.type}}</span>
+              </clr-stack-content>
+            </clr-stack-block>
+          </clr-stack-block>
+        </clr-stack-view>
       </div>
     </clr-modal>
 

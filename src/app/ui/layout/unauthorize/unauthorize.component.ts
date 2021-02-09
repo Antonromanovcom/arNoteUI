@@ -24,12 +24,6 @@ export class UnauthorizeComponent implements OnInit {
 
   ngOnInit() {
 
-    this.route.queryParams.subscribe(params => {
-      const date = params['startdate'];
-      console.log(date);
-    });
-
-
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
 

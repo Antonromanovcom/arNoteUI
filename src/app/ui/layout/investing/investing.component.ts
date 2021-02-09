@@ -3,7 +3,7 @@ import {Subscription} from 'rxjs/Subscription';
 import {MessageCode} from '../../../service/message.code';
 import {CommonService} from '../../../service/common.service';
 import {ActivatedRoute} from '@angular/router';
-import {Subject, throwError, timer} from 'rxjs';
+import {throwError, timer} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {HttpService} from '../../../service/http.service';
 import {environment} from '../../../../environments/environment';
@@ -14,114 +14,14 @@ import {CurrentPrice} from '../../../dto/CurrentPrice';
 import {NewInstrumentRq} from '../../../dto/NewInstrumentRq';
 import * as moment from 'moment';
 import {Moment} from 'moment';
-import {ClrDatagridComparatorInterface, ClrDatagridFilterInterface} from '@clr/angular';
-
-// --------------------------------- Классы фильтров -----------------------------------
-
-/**
- * Класс для фильтрации по типу бумаги: Акция или Облигация
- */
-export class TypeFilter implements ClrDatagridFilterInterface<Bond> {
-  public selectedTypes: string[] = [];
-
-  public changes = new Subject<any>();
-
-  public isActive(): boolean {
-    return this.selectedTypes.length > 0;
-  }
-
-  public accepts(bond: Bond): boolean {
-    return this.selectedTypes.indexOf(bond.type) > -1;
-  }
-}
-
-/**
- * Класс для фильтрации по статусу бумаги: план или факт
- */
-export class StatusFilter implements ClrDatagridFilterInterface<Bond> {
-  public selectedStatus: string[] = [];
-
-  public changes = new Subject<any>();
-
-  public isActive(): boolean {
-    return this.selectedStatus.length > 0;
-  }
-
-  public accepts(bond: Bond): boolean {
-     return this.selectedStatus.indexOf(bond.isBought ? 'FACT' : 'PLAN') > -1;
-  }
-}
-
-/**
- * Класс для фильтрации по Бирже
- */
-export class StockExchangeFilter implements ClrDatagridFilterInterface<Bond> {
-  public selectedSO: string[] = [];
-
-  public changes = new Subject<any>();
-
-  public isActive(): boolean {
-    return this.selectedSO.length > 0;
-  }
-
-  public accepts(bond: Bond): boolean {
-    return this.selectedSO.indexOf(bond.stockExchange) > -1;
-  }
-}
-
-// --------------------------------- Классы Компараторов для сортировки -----------------------------------
-
-/**
- * Класс сортировки по дивидендам
- */
-export class DividendComparator implements ClrDatagridComparatorInterface<Bond> {
-  compare(a: Bond, b: Bond) {
-    return a.dividends.divSum - b.dividends.divSum;
-  }
-}
-
-/**
- * Класс сортировки по дивидендам в процентах
- */
-export class DivPercentComparator implements ClrDatagridComparatorInterface<Bond> {
-  compare(a: Bond, b: Bond) {
-    return a.dividends.percent - b.dividends.percent;
-  }
-}
-
-/**
- * Класс сортировки по текущей цене
- */
-export class CurrentPriceComparator implements ClrDatagridComparatorInterface<Bond> {
-  compare(a: Bond, b: Bond) {
-    return a.currentPrice - b.currentPrice;
-  }
-}
-
-/**
- * Класс сортировки по итоговой цене
- */
-export class FinalPriceComparator implements ClrDatagridComparatorInterface<Bond> {
-  compare(a: Bond, b: Bond) {
-    return a.finalPrice - b.finalPrice;
-  }
-}
-
-/**
- * Компаратор для сортировки по росту
- */
-export class DeltaComparator implements ClrDatagridComparatorInterface<Bond> {
-  compare(a: Bond, b: Bond) {
-    return a.delta.deltaInRubles - b.delta.deltaInRubles;
-  }
-}
-
+import {Returns} from '../../../dto/returns';
+import {Calendar} from '../../../dto/calendar';
 
 @Component({
   selector: 'app-invest',
   templateUrl: './investing.component.html',
   providers: [HttpService],
-  styleUrls: ['./investing.component.css']
+  styleUrls: ['./../main/main.component.css']
 })
 export class InvestingComponent implements OnInit {
 
@@ -130,13 +30,20 @@ export class InvestingComponent implements OnInit {
   SERVER_URL: string = environment.serverUrl;
   BASE_URL = this.SERVER_URL + '/investing';
   GET_BONDS_URL = this.BASE_URL + '/consolidated'; // все бумаги
+  GET_BONDS_URL_WITH_FILTERING = this.BASE_URL + '/consolidated?filter='; // все бумаги
+  GET_BONDS_URL_WITH_SORT = this.BASE_URL + '/consolidated?sort='; // все бумаги
   FIND_INSTRUMENTS_URL = this.BASE_URL + '/search'; // найти инструменты
   GET_CURRENT_PRICE_BY_TICKER_URL = this.BASE_URL + '/price'; // текущая цена по тикеру
   GET_PRICE_BY_TICKER_AND_DATE_URL = this.BASE_URL + '/price-by-date'; // текущая цена по тикеру
+  GET_RETURNS = this.BASE_URL + '/returns'; // доходы
+  CALENDAR = this.BASE_URL + '/calendar'; // календарь
 
   // --------------------------------- ХРАНИЛИЩА ------------------------------------
 
   bonds: Bond[] = []; // контейнер бумаг
+  returns: Returns; // доходы
+  calc: Calendar[] = []; // календарь
+
   instruments: FoundInstrument[] = [];
   currentPrice: CurrentPrice;
   selectedInstrument: any; // выбранный инструмент. Используется при поиске инструментов.
@@ -149,6 +56,9 @@ export class InvestingComponent implements OnInit {
   // --------------------------------- ПЕРЕКЛЮЧАТЕЛИ МОДАЛОВ -------------------------
 
   isAddDialogShown: boolean; // открытие диалога добавления инструмента.
+  isDivAndCouponModalShown: boolean; // открытие диалога с инфой по купонам / модалам
+  isReturnsInfoShown: boolean; // открытие диалога с инфой по доходам
+  isCalendarShown: boolean; // открытие диалога с инфой по доходам
   isFoundInstrumentsBlockShown: boolean; // ???
 
   // ---------------------------------- ФОРМЫ ----------------------------------------
@@ -171,46 +81,28 @@ export class InvestingComponent implements OnInit {
 
   // ---------------------------------- ФИЛЬТРЫ ----------------------------------------
 
-  customTypeFilter: TypeFilter;
-  customStatusFilter: StatusFilter;
-  customSOFilter: StockExchangeFilter;
-
-  // ---------------------------------- КОМПАРАТОРЫ ----------------------------------------
-  divComparator: DividendComparator;
-  divPercentComparator: DivPercentComparator;
-  priceComparator: CurrentPriceComparator;
-  finalPriceComparator: FinalPriceComparator;
-  deltaComparator: DeltaComparator;
-
+  filtersForInstrumentType = ['Акция', 'Облигация'];
+  filtersForStatus = ['План', 'Факт']; // фильтры
+  sortModes = ['По возрастанию [A-z / 1-10]', 'По убыванию [Z-a / 10-1]'];
 
   constructor(private commonService: CommonService, private route: ActivatedRoute, private httpService: HttpService,
               private fb: FormBuilder) {
-    this.customTypeFilter = new TypeFilter();
-    this.customStatusFilter = new StatusFilter();
-    this.customSOFilter = new StockExchangeFilter();
-    this.divComparator = new DividendComparator();
-    this.divPercentComparator = new DivPercentComparator();
-    this.priceComparator = new CurrentPriceComparator();
-    this.finalPriceComparator = new FinalPriceComparator();
-    this.deltaComparator = new DeltaComparator();
   }
 
   ngOnInit() {
-
     this.getBonds(this.GET_BONDS_URL);
-
     this.route.queryParams.subscribe(params => {
       const date = params.startdate;
-      console.log(date);
     });
-
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
         this.globalError = new MessageCode();
         this.globalError.messageType = 'NO ERRORS';
       } else {
         this.globalError = error;
-        if (this.globalError.messageType === this.globalError.REGISTER_OK) {
+        if (this.globalError.messageType === this.globalError.AUTH_LOGIN_OK) {
+          console.log('LOGIN OK');
+        } else if (this.globalError.messageType === this.globalError.REGISTER_OK) {
           this.result = this.globalError.REGISTER_OK;
           timer(4000).subscribe(() => {
             this.result = null;
@@ -234,7 +126,6 @@ export class InvestingComponent implements OnInit {
    */
   openAddInstrument(event: any) {
     this.isAddDialogShown = true;
-
     this.addInstrumentForm.patchValue({
       ticker: '',
       price: ''
@@ -242,7 +133,6 @@ export class InvestingComponent implements OnInit {
   }
 
   selectionChanged(event: any) {
-    console.log(this.selectedInstrument.ticker);
     this.getCurrentPriceAndLot(this.selectedInstrument.ticker);
   }
 
@@ -308,6 +198,9 @@ export class InvestingComponent implements OnInit {
     this.result = text;
     this.selectedInstrument = null;
     this.isAddDialogShown = false;
+    this.isDivAndCouponModalShown = false;
+    this.isReturnsInfoShown = false;
+    this.isCalendarShown = false;
     this.isFoundInstrumentsBlockShown = false;
     this.addInstrumentForm.value.isPlan = false;
 
@@ -335,9 +228,9 @@ export class InvestingComponent implements OnInit {
     console.log('Selected date after format: ', currentDate.format('YYYY-MM-DD'));
 
     if (this.addInstrumentForm.value.isPlan) {
-       payload = new NewInstrumentRq(this.addInstrumentForm.value.ticker,
+      payload = new NewInstrumentRq(this.addInstrumentForm.value.ticker,
         this.addInstrumentForm.value.isPlan,
-         this.selectedInstrument.type,
+        this.selectedInstrument.type,
         null,
         null,
         null,
@@ -403,14 +296,98 @@ export class InvestingComponent implements OnInit {
 
   // Загрузить все бумаги
   getBonds(url: string) {
-
     this.httpService.getData(url).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить бумаги!');
       })
     ).subscribe(data => {
       this.bonds = data.bonds;
+      if (this.bonds.length < 1) {
+        return this.errorHandler('Невозможно получить бумаги!', 'Невозможно получить бумаги!');
+      }
+      this.getReturns(this.GET_RETURNS);
     });
+  }
+
+  /**
+   * Открыть модал с календарем и подгрузить данные.
+   *
+   */
+  openCalendarAndLoadData() {
+    this.isCalendarShown = true;
+    this.getCalendar(this.CALENDAR);
+  }
+
+
+  /**
+   * Календарь.
+   *
+   * url
+   */
+  getCalendar(url: string) {
+    this.httpService.getData(url).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить календарь!');
+      })
+    ).subscribe(data => {
+      this.calc = data.calendar;
+    });
+  }
+
+  /**
+   * Выгрузить доходы по бумагам.
+   *
+   * url
+   */
+  getReturns(url: string) {
+    this.httpService.getData(url).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно получить доходы!');
+      })
+    ).subscribe(data => {
+      this.returns = data;
+    });
+  }
+
+
+  /**
+   * Реакция на изменение типа фильтрации.
+   *
+   * item
+   */
+  changeTypeFilter(item: string) {
+
+    switch (item) {
+      case 'Акция': {
+        this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'TYPE_SHARE');
+        break;
+      }
+      case 'Облигация': {
+        this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'TYPE_BOND');
+        break;
+      }
+      case 'План': {
+        this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'STATUS_PLAN');
+        break;
+      }
+      case 'Факт': {
+        this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'STATUS_FACT');
+        break;
+      }
+      default: {
+        this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'NONE');
+        break;
+      }
+    }
+  }
+
+  /**
+   * Очистить все фильтры.
+   *
+   * item
+   */
+  clearFilters() {
+    this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'NONE');
   }
 
   /**
@@ -429,66 +406,123 @@ export class InvestingComponent implements OnInit {
     });
   }
 
-  /**
-   * Метод, обрабатывающий выбор типов фильтрации для типов бумаг: акция / облигация
-   * event
-   */
-  toggleFilterForInstrumentType(event: any) {
-    if (event.target.checked) {
-      this.customTypeFilter.selectedTypes.push(event.target.value);
-    } else {
-      const colorName = event.target.value;
-      const index = this.customTypeFilter.selectedTypes.indexOf(colorName);
-      if (index > -1) {
-        this.customTypeFilter.selectedTypes.splice(index, 1);
-      }
-    }
-    this.customTypeFilter.changes.next(true);
-  }
-
-
-  /**
-   * Метод, обрабатывающий выбор статуса бумаги: План / Факт
-   * event
-   */
-  toggleStatusFilter(event: any) {
-    if (event.target.checked) {
-      this.customStatusFilter.selectedStatus.push(event.target.value);
-    } else {
-      const statusName = event.target.value;
-      const index = this.customStatusFilter.selectedStatus.indexOf(statusName);
-      if (index > -1) {
-        this.customStatusFilter.selectedStatus.splice(index, 1);
-      }
-    }
-    this.customStatusFilter.changes.next(true);
-  }
-
-  /**
-   * Метод, обрабатывающий фильтрацию по Бирже
-   * event
-   */
-  toggleStockExchangeFilter(event: any) {
-    if (event.target.checked) {
-      this.customSOFilter.selectedSO.push(event.target.value);
-    } else {
-      const statusName = event.target.value;
-      const index = this.customSOFilter.selectedSO.indexOf(statusName);
-      if (index > -1) {
-        this.customSOFilter.selectedSO.splice(index, 1);
-      }
-    }
-    this.customSOFilter.changes.next(true);
-  }
 
   errorHandler(err, message: string) {
-    console.log('error - ' + err.error);
     this.error = message;
-    console.log(err);
     timer(4000).subscribe(() => {
       this.error = null;
     });
 
     return throwError(err);
+  }
+
+  /**
+   * Переключение режимов сортировки.
+   *
+   * item
+   * type
+   */
+  changeSort(item: string, type: string) {
+    switch (type) {
+      case 'TICKER': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'TICKER_ASC' : 'TICKER_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      case 'DIV-RUB': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'DIV_RUB_ASC' : 'DIV_RUB_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      case 'DIV-PRCNT': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'DIV_PRCNT_ASC' : 'DIV_PRCNT_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      case 'CUR-PRICE': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'CUR_PRICE_ASC' : 'CUR_PRICE_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      case 'FINAL-PRICE': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'FINAL_PRICE_ASC' : 'FINAL_PRICE_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      case 'TOTAL-GROW': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'TOTAL_GROW_ASC' : 'TOTAL_GROW_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      case 'TODAY-GROW': {
+        const s = item === 'По возрастанию [A-z / 1-10]' ? 'TODAY_GROW_ASC' : 'TODAY_GROW_DESC';
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + s);
+        break;
+      }
+      default: {
+        this.getBonds(this.GET_BONDS_URL_WITH_SORT + 'NONE');
+        break;
+      }
+    }
+  }
+
+  /**
+   * Очистка сортировки.
+   *
+   */
+  clearSorting() {
+    this.getBonds(this.GET_BONDS_URL_WITH_SORT + 'NONE');
+  }
+
+  /**
+   * Метод для фронта: проверяем доступность кнопки для вывода дивидендов / купонов
+   */
+  isDivsExist() {
+    return this.selectedPaper
+      && this.selectedPaper.dividends
+      && this.selectedPaper.dividends.dividendList != null
+      && this.selectedPaper.dividends.dividendList.length > 0;
+  }
+
+  /**
+   * Метод для фронта: меняем название кнопки в зависимости от различных данных выбранной бумаги.
+   */
+  getDivButtonName() {
+    if (this.selectedPaper) {
+      if (this.selectedPaper
+        && this.selectedPaper.dividends
+        && this.selectedPaper.dividends.dividendList != null
+        && this.selectedPaper.dividends.dividendList.length > 0) {
+        return this.selectedPaper.type === 'SHARE' ? 'Дивиденды' : 'Купоны';
+      } else {
+        return this.selectedPaper.type === 'SHARE' ? 'Нет дивидендов' : 'Нет купонов';
+      }
+    } else {
+      return 'Купоны / Дивы: выберете бумагу!';
+    }
+  }
+
+  /**
+   * Нельзя создать дубль бумаги в качестве запланированной, если по этой бумаге уже есть покупки.
+   */
+  isPlanAvailable() {
+    if (this.selectedInstrument) {
+      return (this.bonds.find(b => b.ticker === this.selectedInstrument.ticker) == null);
+    } else {
+      return false;
+    }
+    return this.bonds.find(b => b.ticker === 'TBER') == null;
+  }
+
+  /**
+   * Формируем заголовок модальной формы.
+   */
+  getModalFormName() {
+    if (this.selectedPaper) {
+      return this.selectedPaper.type === 'SHARE' ? 'Дивиденды по акции с тикером: ' + this.selectedPaper.ticker :
+        'Купоны по облигации с тикером: ' + this.selectedPaper.ticker;
+    } else {
+      return 'Данные по купонам / дивидендам';
+    }
   }
 }

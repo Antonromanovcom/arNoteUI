@@ -1,0 +1,8 @@
+
+export class Targets {
+  THIRTY_THOUSANDS_ROUBLES: number;
+  FIVE_THOUSANDS_ROUBLES: number;
+  ONE_THOUSAND_ROUBLES: number;
+  SIXTY_THOUSANDS_ROUBLES: number;
+  TEN_THOUSANDS_ROUBLES: number;
+}

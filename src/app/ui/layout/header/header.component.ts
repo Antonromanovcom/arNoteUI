@@ -86,9 +86,7 @@ export class HeaderComponent implements OnInit {
 
     const idToken = localStorage.getItem('token');
     this.cryptokey = localStorage.getItem('cryptokey');
-    console.log('cryptokey is - ' + this.cryptokey);
     this.user = new User();
-
 
     if (idToken) {
       if (this.authService.isAuthenticated()) {
@@ -115,8 +113,7 @@ export class HeaderComponent implements OnInit {
 }
 
 
-clearCryptoKey()
-{
+clearCryptoKey() {
   localStorage.removeItem('cryptokey');
 
   this.userInfoForm.patchValue({
@@ -127,8 +124,7 @@ clearCryptoKey()
 
 }
 
-loadUserData()
-{
+loadUserData() {
 
   this.httpService.isCryptoUser().pipe(
     catchError(err => {
@@ -164,8 +160,7 @@ loadUserData()
 loginIconHandler(item
 :
 string
-)
-{
+) {
   if (item === 'Войти') {
     this.isLogin = true;
   } else if (item === 'Выйти') {
@@ -178,7 +173,7 @@ string
     this.loadUserData();
     this.isUserDataEdit = true;
 
-    let tempKey = localStorage.getItem('cryptokey');
+    const tempKey = localStorage.getItem('cryptokey');
     this.userInfoForm.patchValue({
       cryptkey: tempKey.toString(),
     });
@@ -189,8 +184,7 @@ string
 errorHandler(err, message
 :
 string
-)
-{
+) {
 
   this.isLogin = false;
   this.isUserDataEdit = false;
@@ -210,8 +204,7 @@ string
 }
 
 
-changeUserData()
-{
+changeUserData() {
 
   if ((this.user.login === this.userInfoForm.value.editlogin)
     && (this.user.email === this.userInfoForm.value.email)
@@ -252,8 +245,7 @@ changeUserData()
 sendMessagePush(message
 :
 string
-)
-{
+) {
   const errorType = new MessageCode();
 
   errorType.messageType = message;
@@ -261,8 +253,7 @@ string
   this.commonService.pushError(errorType);
 }
 
-register()
-{
+register() {
 
   const newUser = new User();
   newUser.login = this.registerForm.value.login;
@@ -284,8 +275,7 @@ register()
 }
 
 
-sendLogin()
-{
+sendLogin() {
 
   const body = new HttpParams()
     .set('username', this.loginForm.value.login)

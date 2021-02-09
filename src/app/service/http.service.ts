@@ -7,6 +7,7 @@ import {User} from '../dto/user';
 import {environment} from '../../environments/environment';
 import {NewInstrumentRq} from '../dto/NewInstrumentRq';
 import {Bond} from '../dto/bond';
+import {SearchRq} from '../dto/searchwishes';
 
 
 @Injectable()
@@ -22,6 +23,16 @@ export class HttpService {
 
   public getData(url: string): Observable<any> {
     return this.http.get(url);
+  }
+
+  public searchWishes(request: SearchRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.post<Wish>(url, request, httpOptions);
   }
 
   public sendData(wish: Wish, url: string): Observable<Wish> {

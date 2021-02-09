@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import { UiModule } from './ui/ui.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import { AngularFontAwesomeModule } from 'angular-font-awesome';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {HttpClientModule} from '@angular/common/http';
 import {AuthGuardService} from './service/auth-guard.service';
