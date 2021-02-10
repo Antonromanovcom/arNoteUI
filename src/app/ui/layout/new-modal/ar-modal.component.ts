@@ -54,6 +54,10 @@ export class ArModalComponent implements OnInit, OnDestroy {
 
   // close modal
   close(): void {
+    console.log('cond after= ', this.condition);
+    console.log('id = ', this.id);
+
     this.condition = false;
+    console.log('cond before = ', this.condition);
   }
 }

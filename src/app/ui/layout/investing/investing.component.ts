@@ -128,6 +128,7 @@ export class InvestingComponent implements OnInit {
    */
   openAddInstrument(event: any) {
     this.isAddDialogShown = true;
+    this.modalService.open('add-instrument-modal');
     this.addInstrumentForm.patchValue({
       ticker: '',
       price: ''
@@ -199,7 +200,7 @@ export class InvestingComponent implements OnInit {
 
     this.result = text;
     this.selectedInstrument = null;
-    this.isAddDialogShown = false;
+    this.isAddDialogShown = null;
     this.isDivAndCouponModalShown = false;
     this.isReturnsInfoShown = false;
     this.isCalendarShown = false;
@@ -217,8 +218,9 @@ export class InvestingComponent implements OnInit {
    *
    * payload
    */
-  addInstrument() {
+  addInstrument(id: string) {
 
+    this.modalService.close(id);
     let payload: NewInstrumentRq;
     const DATE_TIME_FORMAT = 'DD/MM/YYYY';
     let currentDate: Moment;
@@ -317,6 +319,7 @@ export class InvestingComponent implements OnInit {
    */
   openCalendarAndLoadData() {
     this.isCalendarShown = true;
+    this.modalService.open('calendar-modal');
     this.getCalendar(this.CALENDAR);
   }
 
@@ -528,12 +531,52 @@ export class InvestingComponent implements OnInit {
     }
   }
 
-  openModal(id: string) {
-   // this.isAddDialogShown = true;
-    this.modalService.open(id);
+  /**
+   * Закрыть модальное окно добавления инструмента.
+   *
+   * addInstrumentModal
+   */
+  closeModal(id: string) {
+    this.modalService.close(id);
   }
 
-  onClose(id: string) {
-    this.modalService.close(id);
+  /**
+   * Закрыть календарь выплат.
+   */
+  closeCalendar() {
+    this.closeModal('calendar-modal');
+    this.isCalendarShown = null;
+  }
+
+  /**
+   * Открыть модал с дивами / купонами.
+   */
+  openDivsModal() {
+    this.isDivAndCouponModalShown = true;
+    this.modalService.open('div-modal');
+  }
+
+  /**
+   * Закрыть модал с дивами / купонами.
+   */
+  closeDivModal() {
+    this.closeModal('div-modal');
+    this.isCalendarShown = null;
+  }
+
+  /**
+   * Открыть модал с доходами.
+   */
+  openReturnsModal() {
+    this.isReturnsInfoShown = true;
+    this.modalService.open('returns-modal');
+  }
+
+  /**
+   * Закрыть модал с доходами.
+   */
+  closeReturnsModal() {
+    this.closeModal('returns-modal');
+    this.isCalendarShown = null;
   }
 }
