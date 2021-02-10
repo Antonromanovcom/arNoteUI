@@ -8,8 +8,8 @@ import {Router, ActivatedRoute, Params} from '@angular/router';
 
 @Component({
   selector: 'app-unauthorize',
-  templateUrl: './unauthorize.component.html',
-  styleUrls: ['./unauthorize.component.css']
+  templateUrl: './investing.component.html',
+  styleUrls: ['./investing.component.css']
 })
 export class UnauthorizeComponent implements OnInit {
 
@@ -23,6 +23,12 @@ export class UnauthorizeComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    this.route.queryParams.subscribe(params => {
+      const date = params['startdate'];
+      console.log(date);
+    });
+
 
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {

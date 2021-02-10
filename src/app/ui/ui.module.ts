@@ -5,6 +5,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LayoutComponent} from './layout/layout.component';
 import {HeaderComponent} from './layout/header/header.component';
 import {SidebarComponent} from './layout/sidebar/sidebar.component';
+import {InvestingComponent} from './layout/investing/investing.component';
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import {ClarityModule} from '@clr/angular';
 import {MainComponent} from './layout/main/main.component';
@@ -18,7 +19,14 @@ import {SessionTimeoutModalComponent} from './layout/session-timeout-modal/sessi
 
 
 @NgModule({
-  declarations: [LayoutComponent, HeaderComponent, SidebarComponent, MainComponent, EditComponent, UnauthorizeComponent, SessionTimeoutModalComponent],
+  declarations: [LayoutComponent,
+    HeaderComponent,
+    SidebarComponent,
+    MainComponent,
+    EditComponent,
+    UnauthorizeComponent,
+    InvestingComponent,
+    SessionTimeoutModalComponent],
   imports: [
     CommonModule,
     BrowserModule,

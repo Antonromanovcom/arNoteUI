@@ -18,7 +18,7 @@
   <clr-dg-action-bar>
     <div class="actions-container">
       <div class="ar-900-hide">
-        <button class="btn btn-primary" (click)="openEditWish($event, item, 2)"> Добавить</button>
+        <button class="btn btn-primary" (click)="openEditWish($event, null, 2)"> Добавить</button>
         <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
         <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату
         </button>
@@ -36,7 +36,7 @@
           </button>
           <clr-dropdown-menu *clrIfOpen>
             <label class="dropdown-header">Режим отображения</label>
-            <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
+            <a *ngFor="let item of filterTypes" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
           </clr-dropdown-menu>
         </clr-dropdown>
 
@@ -56,7 +56,7 @@
 
       <div class="ar-900-show">
         <div class="clr-row" style="margin-left: 1%">
-          <button type="button" class="btn btn-icon" (click)="openEditWish($event, item, 2)"
+          <button type="button" class="btn btn-icon" (click)="openEditWish($event, null, 2)"
                   aria-label="Добавить желание">
             <clr-icon shape="plus"></clr-icon>
           </button>
@@ -85,7 +85,7 @@
             </button>
             <clr-dropdown-menu clrPosition="bottom-right" *clrIfOpen>
               <label class="dropdown-header">Режим отображения</label>
-              <a *ngFor="let item of filters" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
+              <a *ngFor="let item of filterTypes" (click)="changeFilter(item)" clrDropdownItem>{{item}}</a>
             </clr-dropdown-menu>
           </clr-dropdown>
 
@@ -144,7 +144,7 @@
 
       <div>
         <clr-dg-pagination #pagination [clrDgPageSize]="15">
-          <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15, 100]" class="ar-475-hide" style="margin-left: 4%">
+          <clr-dg-page-size [clrPageSizeOptions]="[3,5,10,15,30,50,100]" class="ar-475-hide" style="margin-left: 4%">
             жел/стр.
           </clr-dg-page-size>
           <span class="ar-360-hide"> {{pagination.firstItem + 1}} - {{pagination.lastItem + 1}}
@@ -310,16 +310,14 @@
 
       <clr-input-container>
         <label #label for="salary" class="input-label clr-col-12">Зарплата</label>
-        <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required
-               size="100">
+        <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required size="100">
       </clr-input-container>
 
       <!--ПОЛЕ RESIDUAL SALARY-->
       <clr-input-container>
         <label #label for="residualSalary" class="input-label clr-col-12">Остаточная зарплата</label>
         <input type="text" clrInput formControlName="residualSalary" id="residualSalary" name="residualSalary"
-               autocomplete="off" required
-               size="100">
+               autocomplete="off" required size="100">
       </clr-input-container>
       <br/>
       <span
@@ -410,7 +408,7 @@
       <div>
         <clr-select-container>
           <label #label for="month_field" class="input-label clr-col-12">Месяц</label>
-          <select id="month_field" [ngModel]="month" formControlName="month" clrSelect>
+          <select id="month_field" formControlName="month" clrSelect>
             <option *ngFor="let currentMonth of monthList" [value]="currentMonth">{{currentMonth}}</option>
           </select>
         </clr-select-container>

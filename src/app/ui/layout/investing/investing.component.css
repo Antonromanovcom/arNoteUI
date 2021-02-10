@@ -1,0 +1,11 @@
+@media screen and (max-width: 500px){
+
+  .sidenav {
+    min-width: 1%;
+    visibility: hidden;
+    /*background: #ea1e2c;*/
+  }
+}
+
+:host{
+}

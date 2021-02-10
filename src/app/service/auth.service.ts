@@ -3,8 +3,6 @@ import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
 import {Observable} from 'rxjs';
 import {JwtHelperService} from '@auth0/angular-jwt';
 import {environment} from '../../environments/environment';
-import {Wish} from '../dto/wish';
-import {NewUser} from '../dto/newuser';
 import {User} from '../dto/user';
 
 const helper = new JwtHelperService();
@@ -17,7 +15,6 @@ let isExpired = helper.isTokenExpired(myRawToken);
 export class AuthService {
 
   SERVER_URL: string = environment.serverUrl;
-  _loginURL = 'http://localhost:8080/login?';
   loginURL = this.SERVER_URL + '/login?';
 
 
@@ -52,10 +49,8 @@ export class AuthService {
   }
 
   public refreshToken() {
-
     myRawToken = localStorage.getItem('token');
     isExpired = helper.isTokenExpired(myRawToken);
-
     console.log('TOKEN EXPIRE - ' + isExpired);
   }
 }

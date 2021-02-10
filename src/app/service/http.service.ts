@@ -5,16 +5,16 @@ import {Wish} from '../dto/wish';
 import {Salary} from '../dto/salary';
 import {User} from '../dto/user';
 import {environment} from '../../environments/environment';
+import {NewInstrumentRq} from '../dto/NewInstrumentRq';
+import {Bond} from '../dto/bond';
+import {SearchRq} from '../dto/searchwishes';
 
 
 @Injectable()
 export class HttpService {
 
   SERVER_URL: string = environment.serverUrl;
-
-  _loginURL = 'http://localhost:8080/login?';
   loginURL = this.SERVER_URL + '/login?';
-  _isCryptoUserUrl = 'http://localhost:8080/rest/wishes/users/getcurrent';
   isCryptoUserUrl = this.SERVER_URL + '/rest/wishes/users/getcurrent';
 
 
@@ -25,8 +25,17 @@ export class HttpService {
     return this.http.get(url);
   }
 
-  public sendData(wish: Wish, url: string): Observable<Wish> {
+  public searchWishes(request: SearchRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
 
+    return this.http.post<Wish>(url, request, httpOptions);
+  }
+
+  public sendData(wish: Wish, url: string): Observable<Wish> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
@@ -34,6 +43,26 @@ export class HttpService {
     };
 
     return this.http.post<Wish>(url, wish, httpOptions);
+  }
+
+  public addInstrument(instrument: NewInstrumentRq, url: string): Observable<Bond> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<Bond>(url, instrument, httpOptions);
+  }
+
+  public deleteInstrument(ticker: string, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.delete(url + '?ticker=' + ticker, httpOptions);
   }
 
   public sendFile(formData: FormData, url: string): Observable<any> {
@@ -99,6 +128,4 @@ export class HttpService {
 
     return this.http.put<User>(url, user, httpOptions);
   }
-
-  // 'assets/data/test.json'
 }
