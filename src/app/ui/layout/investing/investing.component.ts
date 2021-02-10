@@ -16,6 +16,7 @@ import * as moment from 'moment';
 import {Moment} from 'moment';
 import {Returns} from '../../../dto/returns';
 import {Calendar} from '../../../dto/calendar';
+import {ModalService} from '../../../service/modal.service';
 
 @Component({
   selector: 'app-invest',
@@ -43,6 +44,7 @@ export class InvestingComponent implements OnInit {
   bonds: Bond[] = []; // контейнер бумаг
   returns: Returns; // доходы
   calc: Calendar[] = []; // календарь
+  nnn: number;
 
   instruments: FoundInstrument[] = [];
   currentPrice: CurrentPrice;
@@ -86,7 +88,7 @@ export class InvestingComponent implements OnInit {
   sortModes = ['По возрастанию [A-z / 1-10]', 'По убыванию [Z-a / 10-1]'];
 
   constructor(private commonService: CommonService, private route: ActivatedRoute, private httpService: HttpService,
-              private fb: FormBuilder) {
+              private modalService: ModalService, private fb: FormBuilder) {
   }
 
   ngOnInit() {
@@ -524,5 +526,14 @@ export class InvestingComponent implements OnInit {
     } else {
       return 'Данные по купонам / дивидендам';
     }
+  }
+
+  openModal(id: string) {
+   // this.isAddDialogShown = true;
+    this.modalService.open(id);
+  }
+
+  onClose(id: string) {
+    this.modalService.close(id);
   }
 }
