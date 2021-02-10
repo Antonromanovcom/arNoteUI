@@ -209,12 +209,22 @@
 
     <!--    МОДАЛ С ДОБАВЛЕНИЕМ НОВОГО ИНСТРУМЕНТА-->
 
-    <clr-modal [(clrModalOpen)]="isAddDialogShown">
+    <!--<div class="modal">
+      <div class="modal-dialog fadeDown in" role="dialog" aria-hidden="true">
+        <div class="modal-content">
+          ...
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop fade in" aria-hidden="true"></div>-->
+
+
+    <!--<clr-modal [(clrModalOpen)]="isAddDialogShown">
       <h3 class="modal-title">Добавить инструмент</h3>
       <div class="modal-body">
         <form clrForm [formGroup]="addInstrumentForm">
 
-          <!--ПОЛЕ ТИКЕР-->
+          &lt;!&ndash;ПОЛЕ ТИКЕР&ndash;&gt;
 
           <clr-input-container>
             <label #label for="ticker" class="input-label clr-col-12">Тикер или название</label>
@@ -243,7 +253,7 @@
             </clr-dg-row>
           </clr-datagrid>
 
-          <!-- Цена покупки -->
+          &lt;!&ndash; Цена покупки &ndash;&gt;
           <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
             <label #label for="price" class="input-label clr-col-12">Цена</label>
             <input type="text"
@@ -255,7 +265,7 @@
             <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
           </clr-input-container>
 
-          <!-- Лот -->
+          &lt;!&ndash; Лот &ndash;&gt;
           <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
             <label #label for="lot" class="input-label clr-col-12">Лот / Кол-во</label>
             <input type="text"
@@ -267,7 +277,7 @@
             <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
           </clr-input-container>
 
-          <!-- Дата покупки -->
+          &lt;!&ndash; Дата покупки &ndash;&gt;
           <clr-date-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
             <label>Дата покупки</label>
             <input type="date" clrDate name="purchaseDate"
@@ -276,7 +286,7 @@
                    min="2019-01-01" (clrDateChange)="getPriceForCurrentDate($event)"/>
           </clr-date-container>
 
-          <!-- Переключатель isPlan -->
+          &lt;!&ndash; Переключатель isPlan &ndash;&gt;
           <clr-toggle-container *ngIf="selectedInstrument && isPlanAvailable()">
             <clr-toggle-wrapper>
               <input type="checkbox" clrToggle formControlName="isPlan"
@@ -296,7 +306,7 @@
         </div>
 
       </div>
-    </clr-modal>
+    </clr-modal>-->
 
     <!--    МОДАЛ С ИНФОЙ ПО КУПОНАМ / ДИВАМ -->
 
