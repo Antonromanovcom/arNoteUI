@@ -24,9 +24,8 @@
             <button class="btn btn-primary" (click)="openAddInstrument($event)">Добавить</button>
             <button class="btn btn-secondary" (click)="getBonds(this.GET_BONDS_URL)">Обновить</button>
             <button class="btn btn-danger" [disabled]="!selectedPaper" (click)="deleteBond()">Удалить</button>
-            <button class="btn btn-success" [disabled]="!isDivsExist()"
-                    (click)="isDivAndCouponModalShown = true">{{getDivButtonName()}}</button>
-            <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="isReturnsInfoShown = true">Доходы</button>
+            <button class="btn btn-success" [disabled]="!isDivsExist()" (click)="openDivsModal()">{{getDivButtonName()}}</button>
+            <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="openReturnsModal()">Доходы</button>
             <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="openCalendarAndLoadData()">Календарь</button>
 
             <!--  Список фильтрации -->
@@ -208,109 +207,125 @@
     </clr-datagrid>
 
     <!--    МОДАЛ С ДОБАВЛЕНИЕМ НОВОГО ИНСТРУМЕНТА-->
+    <app-ar-modal id="add-instrument-modal" *ngIf="isAddDialogShown">
+            <h3 class="modal-title">Добавить инструмент</h3>
+            <div class="modal-body">
+              <form clrForm [formGroup]="addInstrumentForm">
 
-    <!--<div class="modal">
-      <div class="modal-dialog fadeDown in" role="dialog" aria-hidden="true">
-        <div class="modal-content">
-          ...
-        </div>
-      </div>
-    </div>
-    <div class="modal-backdrop fade in" aria-hidden="true"></div>-->
+                <!--ПОЛЕ ТИКЕР-->
 
+                <clr-input-container>
+                  <label #label for="ticker" class="input-label clr-col-12">Тикер или название</label>
+                  <input type="text"
+                         clrInput
+                         formControlName="ticker"
+                         id="ticker"
+                         name="ticker"
+                         autocomplete="off" required size="100"
+                         (input)="onTickerFieldChangeForNewInstrumentDlg($event.target.value)">
+                  <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+                </clr-input-container>
 
-    <!--<clr-modal [(clrModalOpen)]="isAddDialogShown">
-      <h3 class="modal-title">Добавить инструмент</h3>
+                <clr-datagrid *ngIf="isFoundInstrumentsBlockShown" [(clrDgSingleSelected)]="selectedInstrument"
+                              (clrDgSingleSelectedChange)="selectionChanged($event)">
+                  <clr-dg-column>Тикер</clr-dg-column>
+                  <clr-dg-column>Название</clr-dg-column>
+                  <clr-dg-column>Тип</clr-dg-column>
+                  <clr-dg-column>Биржа</clr-dg-column>
+
+                  <clr-dg-row *ngFor="let element of instruments" [clrDgItem]="element">
+                    <clr-dg-cell>{{element.ticker}}</clr-dg-cell>
+                    <clr-dg-cell>{{element.description}}</clr-dg-cell>
+                    <clr-dg-cell>{{element.type}}</clr-dg-cell>
+                    <clr-dg-cell>{{element.stockExchange}}</clr-dg-cell>
+                  </clr-dg-row>
+                </clr-datagrid>
+
+                <!-- Цена покупки -->
+                <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+                  <label #label for="price" class="input-label clr-col-12">Цена</label>
+                  <input type="text"
+                         clrInput
+                         formControlName="price"
+                         id="price"
+                         name="price"
+                         autocomplete="off" required size="100">
+                  <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+                </clr-input-container>
+
+                <!-- Лот -->
+                <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+                  <label #label for="lot" class="input-label clr-col-12">Лот / Кол-во</label>
+                  <input type="text"
+                         clrInput
+                         formControlName="lot"
+                         id="lot"
+                         name="lot"
+                         autocomplete="off" required size="100">
+                  <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
+                </clr-input-container>
+
+                <!-- Дата покупки -->
+                <clr-date-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
+                  <label>Дата покупки</label>
+                  <input type="date" clrDate name="purchaseDate"
+                         formControlName="purchaseDate"
+                         id="purchaseDate"
+                         min="2019-01-01" (clrDateChange)="getPriceForCurrentDate($event)"/>
+                </clr-date-container>
+
+                <!-- Переключатель isPlan -->
+                <clr-toggle-container *ngIf="selectedInstrument && isPlanAvailable()">
+                  <clr-toggle-wrapper>
+                    <input type="checkbox" clrToggle formControlName="isPlan"
+                           id="isPlan"
+                           name="isPlan"/>
+                    <label>План?</label>
+                  </clr-toggle-wrapper>
+                </clr-toggle-container>
+              </form>
+
+              <div class="row">
+                <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument('add-instrument-modal')"
+                        class="btn btn-primary mt-1">Добавить
+                </button>
+                <button type="button" (click)="closeAddInstrumentModal()"
+                        class="btn btn-secondary mt-1">Закрыть</button>
+              </div>
+            </div>
+    </app-ar-modal>
+
+    <!--    МОДАЛ С КАЛЕНДАРЕМ -->
+
+    <app-ar-modal id="calendar-modal" *ngIf="isCalendarShown">
+      <h3 class="modal-title">Календарь</h3>
       <div class="modal-body">
-        <form clrForm [formGroup]="addInstrumentForm">
-
-          &lt;!&ndash;ПОЛЕ ТИКЕР&ndash;&gt;
-
-          <clr-input-container>
-            <label #label for="ticker" class="input-label clr-col-12">Тикер или название</label>
-            <input type="text"
-                   clrInput
-                   formControlName="ticker"
-                   id="ticker"
-                   name="ticker"
-                   autocomplete="off" required size="100"
-                   (input)="onTickerFieldChangeForNewInstrumentDlg($event.target.value)">
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-          </clr-input-container>
-
-          <clr-datagrid *ngIf="isFoundInstrumentsBlockShown" [(clrDgSingleSelected)]="selectedInstrument"
-                        (clrDgSingleSelectedChange)="selectionChanged($event)">
-            <clr-dg-column>Тикер</clr-dg-column>
-            <clr-dg-column>Название</clr-dg-column>
-            <clr-dg-column>Тип</clr-dg-column>
-            <clr-dg-column>Биржа</clr-dg-column>
-
-            <clr-dg-row *ngFor="let element of instruments" [clrDgItem]="element">
-              <clr-dg-cell>{{element.ticker}}</clr-dg-cell>
-              <clr-dg-cell>{{element.description}}</clr-dg-cell>
-              <clr-dg-cell>{{element.type}}</clr-dg-cell>
-              <clr-dg-cell>{{element.stockExchange}}</clr-dg-cell>
-            </clr-dg-row>
-          </clr-datagrid>
-
-          &lt;!&ndash; Цена покупки &ndash;&gt;
-          <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
-            <label #label for="price" class="input-label clr-col-12">Цена</label>
-            <input type="text"
-                   clrInput
-                   formControlName="price"
-                   id="price"
-                   name="price"
-                   autocomplete="off" required size="100">
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-          </clr-input-container>
-
-          &lt;!&ndash; Лот &ndash;&gt;
-          <clr-input-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
-            <label #label for="lot" class="input-label clr-col-12">Лот / Кол-во</label>
-            <input type="text"
-                   clrInput
-                   formControlName="lot"
-                   id="lot"
-                   name="lot"
-                   autocomplete="off" required size="100">
-            <clr-control-error *clrIfError="'required'">Обязательно для заполнения</clr-control-error>
-          </clr-input-container>
-
-          &lt;!&ndash; Дата покупки &ndash;&gt;
-          <clr-date-container *ngIf="selectedInstrument && !addInstrumentForm.value.isPlan">
-            <label>Дата покупки</label>
-            <input type="date" clrDate name="purchaseDate"
-                   formControlName="purchaseDate"
-                   id="purchaseDate"
-                   min="2019-01-01" (clrDateChange)="getPriceForCurrentDate($event)"/>
-          </clr-date-container>
-
-          &lt;!&ndash; Переключатель isPlan &ndash;&gt;
-          <clr-toggle-container *ngIf="selectedInstrument && isPlanAvailable()">
-            <clr-toggle-wrapper>
-              <input type="checkbox" clrToggle formControlName="isPlan"
-                     id="isPlan"
-                     name="isPlan"/>
-              <label>План?</label>
-            </clr-toggle-wrapper>
-          </clr-toggle-container>
-
-
-        </form>
-
-        <div class="row" *ngIf="selectedInstrument">
-          <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument()"
-                  class="btn btn-primary mt-1">Добавить
-          </button>
+        <clr-stack-view>
+          <clr-stack-block *ngFor="let block of calc">
+            <clr-stack-label>{{block.monthRussianName}}</clr-stack-label>
+            <clr-stack-block *ngFor="let child of block.data">
+              <clr-stack-label>{{child.registryCloseDate}}</clr-stack-label>
+              <clr-stack-content>
+                <span class="label label-info">{{child.ticker}}</span>
+                <span class="label label-success">{{child.value | number:'2.'}}<span
+                  class="badge badge-orange">{{child.currencyId}}
+                </span></span>
+                <span *ngIf="child.type === 'SHARE'" class="badge badge-gray">{{child.type}}</span>
+                <span *ngIf="child.type === 'BOND'" class="badge badge-purple">{{child.type}}</span>
+              </clr-stack-content>
+            </clr-stack-block>
+          </clr-stack-block>
+        </clr-stack-view>
+        <div class="row">
+          <button type="button" (click)="closeCalendar()" class="btn btn-secondary mt-1">Закрыть</button>
         </div>
-
       </div>
-    </clr-modal>-->
+    </app-ar-modal>
+
 
     <!--    МОДАЛ С ИНФОЙ ПО КУПОНАМ / ДИВАМ -->
 
-    <clr-modal [(clrModalOpen)]="isDivAndCouponModalShown">
+    <app-ar-modal id="div-modal" *ngIf="isDivAndCouponModalShown">
       <h3 class="modal-title">{{getModalFormName()}}</h3>
       <div class="modal-body">
         <clr-datagrid
@@ -325,12 +340,15 @@
             <clr-dg-cell>{{element.currencyId}}</clr-dg-cell>
           </clr-dg-row>
         </clr-datagrid>
+        <div class="row">
+          <button type="button" (click)="closeDivModal()" class="btn btn-secondary mt-1">Закрыть</button>
+        </div>
       </div>
-    </clr-modal>
+    </app-ar-modal>
 
     <!--    МОДАЛ С ИНФОЙ ПО ДОХОДАМ -->
 
-    <clr-modal [(clrModalOpen)]="isReturnsInfoShown">
+    <app-ar-modal id="returns-modal" *ngIf="isReturnsInfoShown">
       <h3 class="modal-title">Доходы</h3>
       <div class="modal-body">
 
@@ -377,34 +395,10 @@
             </clr-tab-content>
           </clr-tab>
         </clr-tabs>
+        <div class="row">
+          <button type="button" (click)="closeReturnsModal()" class="btn btn-secondary mt-1">Закрыть</button>
+        </div>
       </div>
-    </clr-modal>
-
-    <!--    МОДАЛ С КАЛЕНДАРЕМ -->
-
-    <clr-modal [(clrModalOpen)]="isCalendarShown">
-      <h3 class="modal-title">Календарь</h3>
-      <div class="modal-body">
-
-        <clr-stack-view>
-
-          <clr-stack-block *ngFor="let block of calc">
-            <clr-stack-label>{{block.monthRussianName}}</clr-stack-label>
-            <clr-stack-block *ngFor="let child of block.data">
-              <clr-stack-label>{{child.registryCloseDate}}</clr-stack-label>
-              <clr-stack-content>
-                <span class="label label-info">{{child.ticker}}</span>
-                <span class="label label-success">{{child.value | number:'2.'}}<span
-                  class="badge badge-orange">{{child.currencyId}}
-                </span></span>
-                <span *ngIf="child.type === 'SHARE'" class="badge badge-gray">{{child.type}}</span>
-                <span *ngIf="child.type === 'BOND'" class="badge badge-purple">{{child.type}}</span>
-              </clr-stack-content>
-            </clr-stack-block>
-          </clr-stack-block>
-        </clr-stack-view>
-      </div>
-    </clr-modal>
-
+    </app-ar-modal>
   </div>
 </div>

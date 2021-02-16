@@ -26,7 +26,6 @@ export class MainComponent implements OnInit {
   // --------------------------------- URL'ы -------------------------------------
 
   SERVER_URL: string = environment.serverUrl;
- // SERVER_URL = '';
   myBaseUrl = this.SERVER_URL + '/rest/wishes';
   apiUrl = this.myBaseUrl; // все желания // основная ссылка на api
   priorityWishesFilterUrl = this.myBaseUrl + '?filter=PRIOR'; // приоритетные желания
@@ -72,11 +71,11 @@ export class MainComponent implements OnInit {
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
-  isEdit = false; // режим редактирования для отображения / или чтобы спрятать модальное окно
-  isSalaryAdd = false; // режим добавления зп
+  isEdit: boolean; // режим редактирования для отображения / или чтобы спрятать модальное окно
+  isSalaryAdd: boolean; // режим добавления зп
   isEditMode = false; // редактировать или добавить
   isCsvParse = false; // отправить на парсинг csv
-  isFilterModal = false; // вывести модал фильтрации
+  isFilterModal: boolean; // вывести модал поиска
   isMonthGroupModeWishEdit = false; // вывод формы редактирования желания при помесячной группировке
   isSummInfoForm = false; // вывод формы с итоговой информацией (сумма всех желаний, время реализации)
 
@@ -151,12 +150,13 @@ export class MainComponent implements OnInit {
     ]]
   });
 
-  constructor(private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder, private datePipe: DatePipe) {
+  constructor(private commonService: CommonService, private httpService: HttpService, private fb: FormBuilder,
+              private datePipe: DatePipe) {
     this.curDateFormated = this.datePipe.transform(new Date(), 'yyyy-MM-dd');
   }
 
   ngOnInit() {
-    console.log('SERVER URL IS =>', this.SERVER_URL);
+
     this.isUserCrypto = false;
     this.getWishes(this.apiUrl);
     this.uploadForm = this.fb.group({
@@ -407,8 +407,6 @@ export class MainComponent implements OnInit {
   // Загрузить все желания в табличном режиме.
   getWishes(url: string) {
 
-    this.isCrypto();
-
     this.httpService.getData(url).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
@@ -416,12 +414,7 @@ export class MainComponent implements OnInit {
     ).subscribe(data => {
       this.wishes = data.list;
       console.log(this.wishes);
-
-      if (this.isUserCrypto) {
-        this.decryptWishes();
-      }
     });
-
 
     this.httpService.getData(this.apiGetSumm).pipe(
       catchError(err => {
@@ -433,10 +426,8 @@ export class MainComponent implements OnInit {
       this.periodAll = data.allPeriodForImplementation;
       this.periodPriority = data.priorityPeriodForImplementation;
       this.implementationPeriod = data.averageImplementationTime;
-
       this.implemetedSummAllTime = data.implemetedSummAllTime;
       this.implemetedSummMonth = data.implemetedSummMonth;
-
       this.isSalaryExists = true;
       this.lastSalary = data.lastSalary;
       this.filterTypes = ['Все', 'Приоритет', 'Очистить фильтр', 'Помесячная группировка'];
@@ -450,16 +441,15 @@ export class MainComponent implements OnInit {
   searchWishes() {
 
     const payload = new SearchRq(this.filterForm.value.wish);
+    this.closeSearchModal();
     this.httpService.searchWishes(payload, this.searchWishesUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно найти желания!');
       })
     ).subscribe(data => {
       this.wishes = data.list;
-      console.log(this.wishes);
-      console.log('SORTING:' + this.sortMode);
-      console.log('FILTERING:' + this.apiUrl);
-      this.sortMainList(this.sortMode);
+      console.log('found wishes :', this.wishes);
+      console.log('found wishes from server: ', data.list);
     });
   }
 
@@ -468,17 +458,14 @@ export class MainComponent implements OnInit {
       catchError(err => {
         return this.errorHandler(err, 'Невозможно удалить желание!');
       })
-    )
-      .subscribe(res => {
+    ).subscribe(res => {
         this.showAlert('Желание с id [' + this.form.value.id + '] успешно удалено!', 'ADD MODE', res);
       });
   }
 
   toMainTableMode() {
-
     this.monthOrdermode = false;
     this.setUserViewMode('TABLE');
-
   }
 
   errorHandler(err, message: string) {
@@ -488,6 +475,7 @@ export class MainComponent implements OnInit {
     if (err.error === 'ERR-01') {
       this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
       this.isSalaryExists = false;
+      this.wishes = null;
       this.filterTypes = ['Все', 'Приоритет', 'Очистить фильтр'];
     } else if (err.error === 'ERR-02') {
       this.error = 'У вас нет сохраненных желаний! Добавьте хотя бы одно желание!';
@@ -500,26 +488,15 @@ export class MainComponent implements OnInit {
     timer(4000).subscribe(() => {
       this.error = null;
     });
-
     return throwError(err);
   }
 
   openEditWish(event: any, item: Wish, isedit: number) {
 
-    // Если это юзер с шифрованием на фронте и при этом у него не задан ключ
-    if ((!this.cryptokey) && (this.isUserCrypto)) {
-
-      this.error = 'Задайте ключ шифрование в меню О пользователе. ' +
-        'Без этого при включенном режиме шифрования пользовательских данных мы не можем добавить желание!';
-      timer(4000).subscribe(() => {
-        this.error = null;
-      });
-    } else {
-
+      this.isEdit = true;
+   //   this.modalService.open('add-edit-wish');
       if (isedit === 1) {
-        this.isEdit = true;
         this.isEditMode = true;
-
         this.form.patchValue({
           id: item.id,
           name: item.wish,
@@ -529,11 +506,8 @@ export class MainComponent implements OnInit {
           price: item.price,
           creationDate: item.creationDate
         });
-
       } else {
-        this.isEdit = true;
         this.isEditMode = false;
-
         this.form.patchValue({
           id: 1,
           name: '',
@@ -543,9 +517,7 @@ export class MainComponent implements OnInit {
           price: 0,
           creationDate: this.curDateFormated
         });
-
       }
-    }
   }
 
   onFileSelect(event) {
@@ -576,10 +548,8 @@ export class MainComponent implements OnInit {
     this.isCsvParse = true;
   }
 
-
   // Добавить в Мультипар-форму подгруженый csv-файл
   sendCsvFile() {
-
     const reader = new FileReader();
     const file = this.csvForm.value.csvfile;
     reader.readAsArrayBuffer(file);
@@ -610,12 +580,10 @@ export class MainComponent implements OnInit {
   }
 
   addSalary() {
-    const salary = new Salary(this.salaryForm.value.salary,
-      this.salaryForm.value.residualSalary);
-
+    const salary = new Salary(this.salaryForm.value.salary, this.salaryForm.value.residualSalary);
+    this.closeSalaryModal();
     this.httpService.sendSalary(salary, this.apiSalary).pipe(
       catchError(err => {
-
         return this.errorHandler(err, 'Невозможно добавить зарплату!');
       })
     ).subscribe(hero => {
@@ -634,24 +602,12 @@ export class MainComponent implements OnInit {
       this.form.value.url,
       true
     );
-    if (!this.cryptokey) {
-      console.log('cryptokey is null. Try to fix it');
-      this.cryptokey = localStorage.getItem('cryptokey');
-    }
-
-    if (this.isUserCrypto) {
-      wish.wish = this.commonService.convertText('encrypt', wish.wish, this.cryptokey);
-      wish.description = this.commonService.convertText('encrypt', wish.description, this.cryptokey);
-      wish.url = this.commonService.convertText('encrypt', wish.url, this.cryptokey);
-      console.log('encrypted wish', wish.wish);
-    }
 
     this.httpService.updateWish(wish, this.myBaseUrl).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно обновить желание!');
       })
     ).subscribe(hero => {
-
       this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
       this.getWishes(this.apiUrl);
     });
@@ -683,13 +639,11 @@ export class MainComponent implements OnInit {
     }
 
     if (this.isEditMode) {
-
       this.httpService.updateWish(wish, this.myBaseUrl).pipe(
         catchError(err => {
           return this.errorHandler(err, 'Невозможно обновить желание!');
         })
       ).subscribe(hero => {
-
         this.showAlert('Желание с id [' + wish.id + '] успешно обновлено!', 'ADD MODE', hero);
         this.getWishes(this.apiUrl);
       });
@@ -732,17 +686,13 @@ export class MainComponent implements OnInit {
     ).subscribe(res => {
       console.log(res);
       this.showAlert('Приоритет успешно изменен! ', 'ADD MODE', res);
-
       this.getWishes(this.apiUrl);
       this.getWishesWithMonthGroupping('?sortType=all');
-
     });
   }
 
-
   // Показать окно включения/выключения фильтров
   filterWishes() {
-    console.log('filter mode = ', this.filterMode);
     if (!this.filterMode) {
       this.isFilterModal = true;
     } else {
@@ -752,14 +702,7 @@ export class MainComponent implements OnInit {
     }
   }
 
-  // Показать окно c итогами: стоимость всех желаний, время реализации и все такое
-  summInfo() {
-    this.isSummInfoForm = true;
-  }
-
-
 // ЛОГИН и АВТОРИЗАЦИЯ
-
   login(login: string, pwd: string) {
 
     const body = new HttpParams()
@@ -781,14 +724,30 @@ export class MainComponent implements OnInit {
    * Поиск желаний. Действие после нажатие кнопки Найти в модальном окне.
    */
   applyFilter() {
-
-    this.isFilterModal = false;
     this.filterMode = true; // включаем filtermode
     this.filterButtonText = 'ВЫКЛЮЧИТЬ ФИЛЬТР';
-
     this.searchWishes();
+  }
 
-    /*this.wishes = this.wishes.filter(
-      wish => wish.wish.toLowerCase().includes(this.filterForm.value.wish.toLowerCase()));*/
+  /**
+   * Закрыть модал добавления / изменения желания.
+   */
+  closeAddEditWish() {
+    this.isEdit = null;
+  }
+
+
+  /**
+   * Закрыть модал добавления зарплаты
+   */
+  closeSalaryModal() {
+    this.isSalaryAdd = false;
+  }
+
+  /**
+   * Закрыть модал поиска
+   */
+  closeSearchModal() {
+    this.isFilterModal = null;
   }
 }

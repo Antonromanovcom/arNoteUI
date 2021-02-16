@@ -18,17 +18,12 @@
   <clr-dg-action-bar>
     <div class="actions-container">
       <div class="ar-900-hide">
-        <button class="btn btn-primary" (click)="openEditWish($event, null, 2)"> Добавить</button>
-        <button class="btn btn-secondary" (click)="getWishes(apiUrl)"> Обновить</button>
-        <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)"> Задать зарплату
-        </button>
-        <button class="btn btn-secondary; hidden-md-down" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'">
-          Парсинг csv
-        </button>
+        <button class="btn btn-primary" (click)="openEditWish($event, null, 2)">Добавить</button>
+        <button class="btn btn-secondary" (click)="getWishes(apiUrl)">Обновить</button>
+        <button class="btn btn-secondary; hidden-md-down" (click)="openAddSalaryModal($event)">Задать зарплату</button>
+        <button class="btn btn-secondary; hidden-md-down" (click)="openParseCsv($event)" *ngIf="userRole==='ADMIN'">Парсинг csv</button>
         <button class="{{filterMode ? 'btn btn-danger; hidden-md-down' : 'btn btn-secondary; hidden-md-down'}}"
-                (click)="filterWishes()"> {{filterButtonText}}
-        </button>
-
+                (click)="filterWishes()"> {{filterButtonText}}</button>
         <clr-dropdown class="hidden-md-down">
           <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
             РЕЖИМ ОТОБРАЖЕНИЯ
@@ -74,7 +69,7 @@
             <clr-icon shape="search"></clr-icon>
           </button>
           <button type="button" class="{{filterMode ? 'btn btn-icon btn-danger' : 'btn btn-icon'}}"
-                  (click)="summInfo()" aria-label="Итоги">
+                  (click)="isSummInfoForm = true" aria-label="Итоги">
             <clr-icon shape="help"></clr-icon>
           </button>
 
@@ -157,7 +152,6 @@
 </clr-datagrid>
 
 <div *ngIf="monthOrdermode">
-
   <div class="ar-900-hide">
     <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
     <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=all')"> Обновить</button>
@@ -197,12 +191,13 @@
       |
       <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
     </clr-tree-node>
-
   </clr-tree-node>
-
 </div>
 
-<clr-modal [(clrModalOpen)]="isEdit">
+
+<!--    МОДАЛ С ДОБАВЛЕНИЕМ / РЕДАКТИРОВАНИЯ ЖЕЛАНИЯ -->
+
+<app-ar-modal id="add-edit-wish" *ngIf="isEdit" >
   <h3 class="modal-title">{{isEditMode ? 'Редактировать желание' : 'Добавить желание'}}</h3>
   <div class="modal-body">
     <form clrForm [formGroup]="form">
@@ -210,7 +205,6 @@
       <!--ПОЛЕ ДАТА СОЗДАНИЯ-->
 
       <clr-input-container>
-
         <label #label for="creationDate" class="input-label clr-col-12">Дата создания</label>
         <input type="text" clrInput formControlName="creationDate" id="creationDate" name="creationDate"
                autocomplete="off" readonly
@@ -220,7 +214,6 @@
       <!--ПОЛЕ ID-->
 
       <clr-input-container hidden>
-
         <label #label for="id" class="input-label clr-col-12">id</label>
         <input type="text" clrInput formControlName="id" id="id" name="id" autocomplete="off" readonly required
                size="50">
@@ -229,7 +222,6 @@
       <!--ПОЛЕ ИМЯ-->
 
       <clr-input-container>
-
         <label #label for="name" class="input-label clr-col-12">Название</label>
         <input type="text"
                clrInput
@@ -294,14 +286,16 @@
     <div class="row">
       <button type="button" (click)="addEditWish()" class="btn btn-primary mt-1">Сохранить</button>
       <button type="button" (click)="deleteWish()" *ngIf="isEditMode" class="btn btn-danger mt-1">Удалить</button>
-      <button type="button" (click)="realizeWish()" *ngIf="isEditMode" class="btn btn-success mt-1">Реализовано
-      </button>
+      <button type="button" (click)="realizeWish()" *ngIf="isEditMode" class="btn btn-success mt-1">Реализовано</button>
+      <button type="button" (click)="closeAddEditWish()" class="btn btn-secondary mt-1">Закрыть</button>
     </div>
 
   </div>
-</clr-modal>
+</app-ar-modal>
 
-<clr-modal [(clrModalOpen)]="isSalaryAdd">
+<!--    МОДАЛ ДОБАВЛЕНИЯ ЗАРПЛАТЫ -->
+
+<app-ar-modal id="add-salary" *ngIf="isSalaryAdd">
   <h3 class="modal-title">Добавить зарплату</h3>
   <div class="modal-body">
     <form clrForm [formGroup]="salaryForm">
@@ -310,7 +304,8 @@
 
       <clr-input-container>
         <label #label for="salary" class="input-label clr-col-12">Зарплата</label>
-        <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required size="100">
+        <input type="text" clrInput formControlName="salary" id="salary" name="salary" autocomplete="off" required
+               size="100">
       </clr-input-container>
 
       <!--ПОЛЕ RESIDUAL SALARY-->
@@ -325,66 +320,54 @@
     </form>
     <div class="row">
       <button type="button" (click)="addSalary()" class="btn btn-primary mt-1">Добавить</button>
+      <button type="button" (click)="closeSalaryModal()" class="btn btn-secondary mt-1">Закрыть</button>
     </div>
   </div>
-</clr-modal>
+</app-ar-modal>
+
+<!-- МОДАЛ ПОИСКА -->
+
+<app-ar-modal id="search-modal" *ngIf="isFilterModal">
+  <h3 class="modal-title">Фильтры и поиск</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="filterForm">
+
+      <!-- ПОЛЕ ПОИСКА / ФИЛЬТРАЦИИ ПО ЖЕЛАНИЮ -->
+
+      <clr-input-container>
+        <label #label for="wish" class="input-label clr-col-12">Желание</label>
+        <input type="text" clrInput formControlName="wish" id="wish" name="wish" autocomplete="off" required size="100">
+      </clr-input-container>
+    </form>
+    <div class="row">
+      <button type="button" (click)="applyFilter()" class="btn btn-primary mt-1">Фильтровать</button>
+      <button type="button" (click)="closeSearchModal()" class="btn btn-secondary mt-1">Закрыть</button>
+    </div>
+  </div>
+</app-ar-modal>
+
 
 <clr-modal [(clrModalOpen)]="isCsvParse">
   <h3 class="modal-title">Парсинг csv-файла</h3>
   <div class="modal-body">
     <form clrForm [formGroup]="csvForm">
 
-
       <!--ПОЛЕ FILE-->
 
       <clr-input-container>
-
         <label #label for="csvfile" class="input-label clr-col-12">Укажите csv-файл</label>
-        <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off"
-               required
-               size="100">
+        <input type="file" clrInput formControlName="csvfile" id="csvfile" name="csvfile" autocomplete="off" required size="100">
       </clr-input-container>
-
       <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
-
         <input type="file" name="profile" (change)="onFileSelect($event)"/>
         <div>
           <button type="submit">Upload</button>
         </div>
       </form>
-
     </form>
-
     <div class="row">
       <button type="button" (click)="sendCsvFile()" class="btn btn-primary mt-1">Парсить</button>
     </div>
-
-  </div>
-</clr-modal>
-
-<!--ФОРМА ФИЛЬТРАЦИИ -->
-
-<clr-modal [(clrModalOpen)]="isFilterModal">
-  <h3 class="modal-title">Фильтры и поиск</h3>
-  <div class="modal-body">
-    <form clrForm [formGroup]="filterForm">
-
-
-      <!-- ПОЛЕ ПОИСКА / ФИЛЬТРАЦИИ ПО ЖЕЛАНИЮ -->
-
-      <clr-input-container>
-
-        <label #label for="wish" class="input-label clr-col-12">Желание</label>
-        <input type="text" clrInput formControlName="wish" id="wish" name="wish" autocomplete="off" required
-               size="100">
-      </clr-input-container>
-
-    </form>
-
-    <div class="row">
-      <button type="button" (click)="applyFilter()" class="btn btn-primary mt-1">Фильтровать</button>
-    </div>
-
   </div>
 </clr-modal>
 

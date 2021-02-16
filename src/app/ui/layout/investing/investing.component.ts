@@ -16,6 +16,8 @@ import * as moment from 'moment';
 import {Moment} from 'moment';
 import {Returns} from '../../../dto/returns';
 import {Calendar} from '../../../dto/calendar';
+import {ModalService} from '../../../service/modal.service';
+import {consoleTestResultHandler} from 'tslint/lib/test';
 
 @Component({
   selector: 'app-invest',
@@ -86,7 +88,7 @@ export class InvestingComponent implements OnInit {
   sortModes = ['По возрастанию [A-z / 1-10]', 'По убыванию [Z-a / 10-1]'];
 
   constructor(private commonService: CommonService, private route: ActivatedRoute, private httpService: HttpService,
-              private fb: FormBuilder) {
+              private modalService: ModalService, private fb: FormBuilder) {
   }
 
   ngOnInit() {
@@ -197,7 +199,7 @@ export class InvestingComponent implements OnInit {
 
     this.result = text;
     this.selectedInstrument = null;
-    this.isAddDialogShown = false;
+    this.isAddDialogShown = null;
     this.isDivAndCouponModalShown = false;
     this.isReturnsInfoShown = false;
     this.isCalendarShown = false;
@@ -215,10 +217,10 @@ export class InvestingComponent implements OnInit {
    *
    * payload
    */
-  addInstrument() {
+  addInstrument(id: string) {
 
     let payload: NewInstrumentRq;
-    const DATE_TIME_FORMAT = 'DD/MM/YYYY';
+    const DATE_TIME_FORMAT = 'MM/DD/YYYY';
     let currentDate: Moment;
     if (!this.addInstrumentForm.value.purchaseDate) {
       currentDate = moment(new Date(), DATE_TIME_FORMAT);
@@ -226,6 +228,8 @@ export class InvestingComponent implements OnInit {
       currentDate = moment(this.addInstrumentForm.value.purchaseDate, DATE_TIME_FORMAT);
     }
     console.log('Selected date after format: ', currentDate.format('YYYY-MM-DD'));
+    console.log('currentDate: ', currentDate.toLocaleString());
+    console.log('currentDate: ', this.addInstrumentForm.value.purchaseDate);
 
     if (this.addInstrumentForm.value.isPlan) {
       payload = new NewInstrumentRq(this.addInstrumentForm.value.ticker,
@@ -244,7 +248,8 @@ export class InvestingComponent implements OnInit {
         currentDate.format('YYYY-MM-DD'),
       );
     }
-
+    this.modalService.close(id);
+    console.log('Message = ', payload);
     this.httpService.addInstrument(payload, this.BASE_URL).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно добавить бумагу!');
@@ -524,5 +529,47 @@ export class InvestingComponent implements OnInit {
     } else {
       return 'Данные по купонам / дивидендам';
     }
+  }
+
+  /**
+   * Закрыть календарь выплат.
+   */
+  closeCalendar() {
+    this.isCalendarShown = false;
+  }
+
+  /**
+   * Открыть модал с дивами / купонами.
+   */
+  openDivsModal() {
+    this.isDivAndCouponModalShown = true;
+  }
+
+  /**
+   * Закрыть модал с дивами / купонами.
+   */
+  closeDivModal() {
+    this.isDivAndCouponModalShown = false;
+  }
+
+  /**
+   * Открыть модал с доходами.
+   */
+  openReturnsModal() {
+    this.isReturnsInfoShown = true;
+  }
+
+  /**
+   * Закрыть модал с доходами.
+   */
+  closeReturnsModal() {
+    this.isReturnsInfoShown = false;
+  }
+
+  /**
+   * Закрыть модал с добавление инструмента.
+   */
+  closeAddInstrumentModal() {
+    this.isAddDialogShown = false;
   }
 }

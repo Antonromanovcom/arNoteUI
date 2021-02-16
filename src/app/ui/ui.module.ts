@@ -16,6 +16,7 @@ import {AppRoutingModule} from '../app-routing/app-routing.module';
 import {UnauthorizeComponent} from './layout/unauthorize/unauthorize.component';
 import {JwtHelperService, JWT_OPTIONS} from '@auth0/angular-jwt';
 import {SessionTimeoutModalComponent} from './layout/session-timeout-modal/session-timeout-modal.component';
+import {ArModalComponent} from './layout/new-modal/ar-modal.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {SessionTimeoutModalComponent} from './layout/session-timeout-modal/sessi
     EditComponent,
     UnauthorizeComponent,
     InvestingComponent,
+    ArModalComponent,
     SessionTimeoutModalComponent],
   imports: [
     CommonModule,
