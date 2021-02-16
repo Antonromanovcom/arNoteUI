@@ -207,7 +207,7 @@
     </clr-datagrid>
 
     <!--    МОДАЛ С ДОБАВЛЕНИЕМ НОВОГО ИНСТРУМЕНТА-->
-    <app-ar-modal id="add-instrument-modal" condition="{{isAddDialogShown}}">
+    <app-ar-modal id="add-instrument-modal" *ngIf="isAddDialogShown">
             <h3 class="modal-title">Добавить инструмент</h3>
             <div class="modal-body">
               <form clrForm [formGroup]="addInstrumentForm">
@@ -289,7 +289,7 @@
                 <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument('add-instrument-modal')"
                         class="btn btn-primary mt-1">Добавить
                 </button>
-                <button type="button" (click)="closeModal('add-instrument-modal')"
+                <button type="button" (click)="closeAddInstrumentModal()"
                         class="btn btn-secondary mt-1">Закрыть</button>
               </div>
             </div>
@@ -297,7 +297,7 @@
 
     <!--    МОДАЛ С КАЛЕНДАРЕМ -->
 
-    <app-ar-modal id="calendar-modal" condition="{{isCalendarShown}}">
+    <app-ar-modal id="calendar-modal" *ngIf="isCalendarShown">
       <h3 class="modal-title">Календарь</h3>
       <div class="modal-body">
         <clr-stack-view>
@@ -325,7 +325,7 @@
 
     <!--    МОДАЛ С ИНФОЙ ПО КУПОНАМ / ДИВАМ -->
 
-    <app-ar-modal id="div-modal" condition="{{isDivAndCouponModalShown}}">
+    <app-ar-modal id="div-modal" *ngIf="isDivAndCouponModalShown">
       <h3 class="modal-title">{{getModalFormName()}}</h3>
       <div class="modal-body">
         <clr-datagrid
@@ -348,7 +348,7 @@
 
     <!--    МОДАЛ С ИНФОЙ ПО ДОХОДАМ -->
 
-    <app-ar-modal id="returns-modal" condition="{{isReturnsInfoShown}}">
+    <app-ar-modal id="returns-modal" *ngIf="isReturnsInfoShown">
       <h3 class="modal-title">Доходы</h3>
       <div class="modal-body">
 
