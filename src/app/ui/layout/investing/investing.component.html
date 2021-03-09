@@ -37,14 +37,13 @@
                 <clr-dropdown>
                   <button type="button" clrDropdownTrigger>Тип бумаги</button>
                   <clr-dropdown-menu>
-                    <a *ngFor="let item of filtersForInstrumentType" (click)="changeTypeFilter(item)"
-                       clrDropdownItem>{{item}}</a>
+                    <a *ngFor="let item of filtersForInstrumentType" (click)="changeTypeFilter(item)" clrDropdownItem>{{item}}</a>
                   </clr-dropdown-menu>
                 </clr-dropdown>
                 <clr-dropdown>
                   <button type="button" clrDropdownTrigger>План / Факт</button>
                   <clr-dropdown-menu>
-                    <a *ngFor="let item of filtersForStatus" clrDropdownItem>{{item}}</a>
+                    <a *ngFor="let item of filtersForStatus" (click)="changeTypeFilter(item)" clrDropdownItem>{{item}}</a>
                   </clr-dropdown-menu>
                 </clr-dropdown>
                 <div class="dropdown-divider"></div>
@@ -227,7 +226,7 @@
                 </clr-input-container>
 
                 <clr-datagrid *ngIf="isFoundInstrumentsBlockShown" [(clrDgSingleSelected)]="selectedInstrument"
-                              (clrDgSingleSelectedChange)="selectionChanged($event)">
+                              (clrDgSingleSelectedChange)="selectionChanged()">
                   <clr-dg-column>Тикер</clr-dg-column>
                   <clr-dg-column>Название</clr-dg-column>
                   <clr-dg-column>Тип</clr-dg-column>

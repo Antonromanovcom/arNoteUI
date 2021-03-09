@@ -134,8 +134,13 @@ export class InvestingComponent implements OnInit {
     });
   }
 
-  selectionChanged(event: any) {
-    this.getCurrentPriceAndLot(this.selectedInstrument.ticker);
+  /**
+   * Метод, отрабатывающий при выборе одного из найденных тикеров при добавлении иснтрумента.
+   *
+   * event
+   */
+  selectionChanged() {
+    this.getCurrentPriceAndLot(this.selectedInstrument.ticker, this.selectedInstrument.stockExchange);
   }
 
   /**
@@ -263,11 +268,12 @@ export class InvestingComponent implements OnInit {
   /**
    * Запросить текущую цену бумаги и лот.
    *
-   * @param keyword - искомое слово.
+   * ticker - тикер инструмента.
+   * se - биржа.
    */
-  getCurrentPriceAndLot(keyword: string) {
+  getCurrentPriceAndLot(ticker: string, se: string) {
 
-    this.httpService.getData(this.GET_CURRENT_PRICE_BY_TICKER_URL + '?ticker=' + keyword).pipe(
+    this.httpService.getData(this.GET_CURRENT_PRICE_BY_TICKER_URL + '?ticker=' + ticker + '&stockExchange='+se).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно запросить текущую цену бумаги!');
       })
@@ -301,6 +307,7 @@ export class InvestingComponent implements OnInit {
 
   // Загрузить все бумаги
   getBonds(url: string) {
+    console.log('url = ', url);
     this.httpService.getData(url).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить бумаги!');
