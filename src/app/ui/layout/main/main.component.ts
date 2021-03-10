@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {throwError, timer} from 'rxjs';
+import {Subject, throwError, timer} from 'rxjs';
 import {Subscription} from 'rxjs/Subscription';
 import {catchError, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
@@ -82,6 +82,7 @@ export class MainComponent implements OnInit {
   // --------------------------------- ХРАНИЛИЩА -------------------------------------
 
   wishes: Wish[] = []; // контейнер желаний
+  wishes$$: Subject<Wish[]> = new Subject();
   wishGroups: WishListGroup[] = []; // контейнер желаний
   monthList = []; // контейнер месяцев
 
@@ -156,7 +157,7 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    console.log('ng-on-it');
     this.isUserCrypto = false;
     this.getWishes(this.apiUrl);
     this.uploadForm = this.fb.group({
@@ -406,13 +407,13 @@ export class MainComponent implements OnInit {
 
   // Загрузить все желания в табличном режиме.
   getWishes(url: string) {
-
     this.httpService.getData(url).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить желания!');
       })
     ).subscribe(data => {
       this.wishes = data.list;
+      this.wishes$$.next(data.list);
       console.log(this.wishes);
     });
 
@@ -464,8 +465,9 @@ export class MainComponent implements OnInit {
   }
 
   toMainTableMode() {
-    this.monthOrdermode = false;
-    this.setUserViewMode('TABLE');
+ /*   this.monthOrdermode = false;
+    this.setUserViewMode('TABLE');*/
+    this.cryptokey = 'PIZDE!';
   }
 
   errorHandler(err, message: string) {
