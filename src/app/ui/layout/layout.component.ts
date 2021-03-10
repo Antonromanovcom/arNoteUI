@@ -1,6 +1,7 @@
 import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CommonService} from '../../service/common.service';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import {AuthService} from '../../service/auth.service';
 
 @Component({
   selector: 'app-layout',
@@ -10,19 +11,12 @@ import {JwtHelperService} from '@auth0/angular-jwt';
   providers: [CommonService, JwtHelperService]
 })
 export class LayoutComponent implements OnInit {
-
-  idToken: string;
-  timeLeft = 2;
+  timeLeft = 1;
   interval;
-  jwtHelper = new JwtHelperService();
-  isExpired: boolean;
-
-  constructor() {
+  constructor(private auth: AuthService) {
   }
 
   ngOnInit() {
-    this.idToken = localStorage.getItem('token');
-    this.isExpired = this.jwtHelper.isTokenExpired(this.idToken);
     this.startTimer();
   }
 
@@ -31,9 +25,9 @@ export class LayoutComponent implements OnInit {
       if (this.timeLeft > 0) {
         this.timeLeft--;
       } else {
-        this.idToken = localStorage.getItem('token');
-        this.timeLeft = 2;
+       this.auth.refreshToken();
+       this.timeLeft = 1;
       }
-    }, 1000);
+    }, 500);
   }
 }

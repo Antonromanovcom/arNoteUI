@@ -6,13 +6,14 @@
       <span class="title">arNote Project</span>
     </a>
   </div>
-  <div class="header-nav">
-    <a *ngIf="idToken" class="active nav-link nav-icon" clrVerticalNavLink routerLink="../" routerLinkActive="active">
+  <div *ngIf="authService.isAuthenticated()" class="header-nav">
+    <a class="active nav-link nav-icon" clrVerticalNavLink routerLink="../" routerLinkActive="active">
       <clr-icon shape="home"></clr-icon>
     </a>
   </div>
-  <div class="header-actions">
-    <clr-dropdown class="dropdown bottom-right">
+
+  <!--<div class="header-actions">
+    <clr-dropdown class="dropdown bottom-right" [clrCloseMenuOnItemClick]="true">
       <button class="nav-icon" clrDropdownToggle>
         <clr-icon shape="user"></clr-icon>
         <clr-icon shape="caret down"></clr-icon>
@@ -22,6 +23,22 @@
         <label class="dropdown-header">Меню пользователя</label>
         <a *ngFor="let item of loginDropDownMenu" (click)="loginIconHandler(item)"  clrDropdownItem>{{item}}</a>
       </div>
+    </clr-dropdown>
+  </div>-->
+
+  <div class="header-actions">
+
+    <clr-dropdown [clrCloseMenuOnItemClick]="true">
+      <button class="nav-icon" clrDropdownTrigger>
+        <clr-icon shape="user"></clr-icon>
+        <clr-icon shape="caret down"></clr-icon>
+      </button>
+      <clr-dropdown-menu *clrIfOpen>
+        <label class="dropdown-header">Меню пользователя</label>
+<!--        <a *ngFor="let item of loginDropDownMenu" (click)="loginIconHandler(item)"  clrDropdownItem>{{item}}</a>-->
+        <div clrDropdownItem (click)="loginIconHandler('Регистрация')">Регистрация</div>
+        <div clrDropdownItem (click)="loginIconHandler(loginLogoutText)">{{loginLogoutText}}</div>
+      </clr-dropdown-menu>
     </clr-dropdown>
 
   </div>

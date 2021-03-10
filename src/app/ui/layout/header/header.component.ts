@@ -31,6 +31,7 @@ export class HeaderComponent implements OnInit {
   _myBaseUrl = 'http://localhost:8080/rest/wishes';
   usersUrl = this.myBaseUrl + '/users'; // основная ссылка на api
   serviceMessage: MessageCode;
+  loginLogoutText: string;
 
   isLogin = false; // вывод диалогового окна логгирования
   isRegister = false; // вывод диалогового окна регистрации
@@ -91,12 +92,15 @@ export class HeaderComponent implements OnInit {
     if (idToken) {
       if (this.authService.isAuthenticated()) {
         this.loginDropDownMenu = ['О пользователе', 'Выйти'];
+        this.loginLogoutText = 'Выйти';
       } else {
         this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
+        this.loginLogoutText = 'Войти';
       }
 
     } else {
       this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
+      this.loginLogoutText = 'Войти';
     }
 
     this.subscription = this.commonService.error$.subscribe(error => {
@@ -104,7 +108,6 @@ export class HeaderComponent implements OnInit {
       if (error != null) {
         this.serviceMessage = error;
         if (this.serviceMessage.messageType === this.serviceMessage.SESSION_EXPIRED) {
-          console.log('pizdec ->' + error);
           this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
         }
       }
@@ -163,8 +166,10 @@ string
 ) {
   if (item === 'Войти') {
     this.isLogin = true;
+    this.loginLogoutText = 'Выйти';
   } else if (item === 'Выйти') {
     this.loginDropDownMenu = ['Зарегистрироваться', 'Войти'];
+    this.loginLogoutText = 'Войти';
     localStorage.removeItem('token');
     this.router.navigate(['401']);
   } else if (item === 'Зарегистрироваться') {

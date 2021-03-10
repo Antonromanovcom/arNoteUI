@@ -45,12 +45,11 @@ export class AuthService {
   }
 
   public isAuthenticated(): boolean {
-    return !isExpired;
+    return !(helper.isTokenExpired(myRawToken));
   }
 
   public refreshToken() {
     myRawToken = localStorage.getItem('token');
     isExpired = helper.isTokenExpired(myRawToken);
-    console.log('TOKEN EXPIRE - ' + isExpired);
   }
 }
