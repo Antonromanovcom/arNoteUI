@@ -101,6 +101,7 @@
       </div>
     </div>
   </clr-dg-action-bar>
+
   <clr-dg-column>Желание</clr-dg-column>
   <clr-dg-column>Цена</clr-dg-column>
   <clr-dg-column [style.width.px]="20" class="hidden-md-down">Приоритет</clr-dg-column>
@@ -108,7 +109,7 @@
   <clr-dg-column [style.width.px]="10" class="hidden-md-down">.</clr-dg-column>
   <clr-dg-column [style.width.px]="10" class="hidden-md-down">Ред.</clr-dg-column>
 
-  <clr-dg-row *clrDgItems="let item of wishes" [clrDgItem]="item">
+  <clr-dg-row *clrDgItems="let item of asyncWishList | async" [clrDgItem]="item">
     <clr-dg-cell><a (click)="openEditWish($event, item, 1)">{{item.wish}}</a></clr-dg-cell>
     <clr-dg-cell style="text-align: center">{{item.price | number:'2.'}}</clr-dg-cell>
     <clr-dg-cell class="hidden-md-down" style="text-align: center">{{item.priority}}</clr-dg-cell>

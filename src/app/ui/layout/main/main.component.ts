@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
 import {Wish} from '../../../dto/wish';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {throwError, timer} from 'rxjs';
+import {Subject, throwError, timer} from 'rxjs';
 import {Subscription} from 'rxjs/Subscription';
 import {catchError, tap} from 'rxjs/operators';
 import {Salary} from '../../../dto/salary';
@@ -67,7 +67,6 @@ export class MainComponent implements OnInit {
   isSalaryExists = false;
   lastSalary = 0;
   curDateFormated = '';
-  sortMode = 'По имени'; // глобальный переключатель типов сортировки
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
 
@@ -81,7 +80,8 @@ export class MainComponent implements OnInit {
 
   // --------------------------------- ХРАНИЛИЩА -------------------------------------
 
-  wishes: Wish[] = []; // контейнер желаний
+  wishes: Wish[] = []; // старый контейнер желаний
+  asyncWishList: Subject<Wish[]> = new Subject(); // асинхронный контейнер желаний
   wishGroups: WishListGroup[] = []; // контейнер желаний
   monthList = []; // контейнер месяцев
 
@@ -246,7 +246,6 @@ export class MainComponent implements OnInit {
     });
   }
 
-
   getWishesWithMonthGroupping(sorting: string) {
 
     this.httpService.getData(this.groupWishesUrl + sorting).pipe(
@@ -254,16 +253,8 @@ export class MainComponent implements OnInit {
         return this.errorHandler(err, 'Невозможно получить желания!');
       })
     ).subscribe(data => {
-
       this.wishGroups = data.list;
       this.monthOrdermode = true;
-
-      this.isCrypto();
-
-      if (this.isUserCrypto) {
-        console.log('decrypt-mode');
-        this.decryptOrderedWishes();
-      }
     });
   }
 
@@ -385,25 +376,6 @@ export class MainComponent implements OnInit {
     });
   }
 
-
-  decryptWishes() {
-    console.log('decrypt method');
-    this.wishes.forEach((element) => {
-      element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
-      element.description = this.commonService.convertText('decr', element.description, this.cryptokey);
-      element.url = this.commonService.convertText('decr', element.url, this.cryptokey);
-    });
-  }
-
-  decryptOrderedWishes() {
-    console.log('decrypt method for ordered wishes');
-    this.wishGroups.forEach((month) => {
-      month.wishList.forEach((element) => {
-        element.wish = this.commonService.convertText('decr', element.wish, this.cryptokey);
-      });
-    });
-  }
-
   // Загрузить все желания в табличном режиме.
   getWishes(url: string) {
 
@@ -412,8 +384,9 @@ export class MainComponent implements OnInit {
         return this.errorHandler(err, 'Невозможно получить желания!');
       })
     ).subscribe(data => {
-      this.wishes = data.list;
-      console.log(this.wishes);
+     // this.wishes = data.list;
+      this.asyncWishList.next(data.list);
+      // console.log(this.wishes);
     });
 
     this.httpService.getData(this.apiGetSumm).pipe(
@@ -447,9 +420,8 @@ export class MainComponent implements OnInit {
         return this.errorHandler(err, 'Невозможно найти желания!');
       })
     ).subscribe(data => {
-      this.wishes = data.list;
-      console.log('found wishes :', this.wishes);
-      console.log('found wishes from server: ', data.list);
+      // this.wishes = data.list;
+      this.asyncWishList.next(data.list);
     });
   }
 
@@ -475,7 +447,8 @@ export class MainComponent implements OnInit {
     if (err.error === 'ERR-01') {
       this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
       this.isSalaryExists = false;
-      this.wishes = null;
+      // this.wishes = null;
+      this.asyncWishList = null;
       this.filterTypes = ['Все', 'Приоритет', 'Очистить фильтр'];
     } else if (err.error === 'ERR-02') {
       this.error = 'У вас нет сохраненных желаний! Добавьте хотя бы одно желание!';
@@ -494,7 +467,6 @@ export class MainComponent implements OnInit {
   openEditWish(event: any, item: Wish, isedit: number) {
 
       this.isEdit = true;
-   //   this.modalService.open('add-edit-wish');
       if (isedit === 1) {
         this.isEditMode = true;
         this.form.patchValue({
