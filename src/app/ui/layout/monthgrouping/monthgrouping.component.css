@@ -1,0 +1,105 @@
+
+::ng-deep clr-icon:hover {
+  -webkit-transform: scale(1.2);
+  -ms-transform: scale(1.2);
+  transform: scale(1.2);
+
+}
+
+.dropdown .dropdown-toggle {
+  margin: 5px;
+}
+
+.sumallrow {
+  background-color: #790909;
+  color: #ffffff;
+}
+
+::ng-deep  .main-container {
+}
+
+.sumpriorrow {
+  background-color: #299834;
+  color: #ffdb51;
+
+}
+
+@media screen and (min-width: 1447px) {
+  .ar-900-show {
+    display:none!important;
+  }
+}
+
+@media screen and (max-width: 1447px) {
+  .ar-900-hide {
+    display:none!important;
+  }
+  .ar-900-show {
+    display:initial!important;
+  }
+}
+
+@media screen and (max-width: 475px) {
+  .ar-475-hide {
+    display:none!important;
+  }
+
+  .string-truncate {
+    width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+}
+
+@media screen and (min-width: 475px) {
+  .ar-475-show {
+    display:none!important;
+  }
+}
+
+
+
+@media screen and (max-width: 360px) {
+  .ar-360-hide {
+    display:none!important;
+  }
+}
+
+@media screen and (max-width: 500px){
+
+  .table tr td:nth-child(3),
+  .table tr th:nth-child(3) {
+    display: none;
+  }
+  .table tr td:nth-child(4),
+  .table tr th:nth-child(4) {
+    display: none;
+  }
+
+  .table tr td:nth-child(5),
+  .table tr th:nth-child(5) {
+    display: none;
+  }
+
+  .table tr td:nth-child(6),
+  .table tr th:nth-child(6) {
+    display: none;
+  }
+
+}
+
+
+.fas .fa-arrow-up{
+  background: #0c5460;
+}
+
+
+
+.fa, .fas:hover {
+  background: aqua;
+}
+:host{
+
+}

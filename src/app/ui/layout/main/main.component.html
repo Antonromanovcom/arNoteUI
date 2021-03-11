@@ -152,50 +152,6 @@
   </clr-dg-footer>
 </clr-datagrid>
 
-<div *ngIf="monthOrdermode">
-  <div class="ar-900-hide">
-    <button class="btn btn-primary" (click)="toMainTableMode()"> Вернуться в табличный режим</button>
-    <button class="btn btn-secondary" (click)="getWishesWithMonthGroupping('?sortType=all')"> Обновить</button>
-    <clr-dropdown>
-      <button type="button" class="btn btn-outline-primary" clrDropdownTrigger>
-        СОРТИРОВКА
-        <clr-icon shape="caret down"></clr-icon>
-      </button>
-      <clr-dropdown-menu *clrIfOpen>
-        <label class="dropdown-header">Сортировка</label>
-        <a *ngFor="let item of groupMonthSort" (click)="sortGroupList(item)" clrDropdownItem>{{item}}</a>
-      </clr-dropdown-menu>
-    </clr-dropdown>
-  </div>
-
-  <!--КНОПКИ ДЛЯ МОБИЛКИ-->
-  <div class="ar-900-show">
-    <button type="button" class="btn btn-icon" (click)="toMainTableMode()" aria-label="Вернуться в табличный режим">
-      <clr-icon shape="undo"></clr-icon>
-    </button>
-    <button type="button" class="btn btn-icon" (click)="getWishesWithMonthGroupping('?sortType=all')"
-            aria-label="Обновить">
-      <clr-icon shape="refresh"></clr-icon>
-    </button>
-  </div>
-
-  <clr-tree-node *ngFor="let month of wishGroups" [(clrExpanded)]="month.expanded">
-    <span class="{{month.colorClass}}">{{month.monthName}} <span class="badge">{{month.sum}}</span></span>
-    <span [ngClass]="(month.balance>0)?'badge badge-success':'badge badge-danger'">{{month.balance}}</span>
-    <span *ngIf="month.overflow" class="badge badge-danger">Перебор!</span>
-
-    <clr-tree-node *ngFor="let items of month.wishList">
-      <a [routerLink]="" (click)="editMonthGroupItem(items)">
-        <div class="string-truncate">{{items.wish}}</div>
-      </a>{{'&nbsp;| ' + items.price + ' |'}}
-      <clr-icon shape="upload" (click)="changePriorityMonth(items, 'up')"></clr-icon>
-      |
-      <clr-icon shape="download" (click)="changePriorityMonth(items, 'down')"></clr-icon>
-    </clr-tree-node>
-  </clr-tree-node>
-</div>
-
-
 <!--    МОДАЛ С ДОБАВЛЕНИЕМ / РЕДАКТИРОВАНИЯ ЖЕЛАНИЯ -->
 
 <app-ar-modal id="add-edit-wish" *ngIf="isEdit" >
@@ -371,42 +327,6 @@
     </div>
   </div>
 </clr-modal>
-
-<!--ФОРМА РЕДАКТИРОВАНИЯ ЖЕЛАНИЯ ПРИ ПОМЕСЯЧНОЙ ГРУППИРОВКЕ -->
-
-<clr-modal [(clrModalOpen)]="isMonthGroupModeWishEdit">
-  <h3 class="modal-title">Изменить порядок желания</h3>
-  <div class="modal-body">
-    <form clrForm [formGroup]="MonthGroupModeWishEdit">
-
-      <!-- ПОЛЕ ЖЕЛАНИЕ -->
-
-      <clr-input-container>
-
-        <label #label for="selected_wish" class="input-label clr-col-12">Желание</label>
-        <input type="text" clrInput formControlName="wish" id="selected_wish" name="wish" autocomplete="off"
-               required readonly
-               size="100%">
-      </clr-input-container>
-
-      <div>
-        <clr-select-container>
-          <label #label for="month_field" class="input-label clr-col-12">Месяц</label>
-          <select id="month_field" formControlName="month" clrSelect>
-            <option *ngFor="let currentMonth of monthList" [value]="currentMonth">{{currentMonth}}</option>
-          </select>
-        </clr-select-container>
-      </div>
-
-    </form>
-
-    <div class="row">
-      <button type="button" (click)="applyMonthChange4Wish()" class="btn btn-primary mt-1">Принять</button>
-    </div>
-
-  </div>
-</clr-modal>
-
 
 <!--ФОРМА ВЫВОДА ИТОГОВЫХ ДАННЫХ -->
 

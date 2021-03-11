@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, Validators} from '@angular/forms';
 import {catchError, tap} from 'rxjs/operators';
 import {HttpParams} from '@angular/common/http';
 import {AuthService} from '../../../service/auth.service';
-import {throwError, timer} from 'rxjs';
+import {throwError} from 'rxjs';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
 import {Router} from '@angular/router';
@@ -79,7 +79,7 @@ export class HeaderComponent implements OnInit {
     cryptkey: ['', [Validators.required]]
   });
 
-  constructor(private commonService: CommonService, private authService: AuthService, private httpService: HttpService,
+  constructor(private commonService: CommonService, public authService: AuthService, private httpService: HttpService,
               private fb: FormBuilder, public router: Router) {
   }
 

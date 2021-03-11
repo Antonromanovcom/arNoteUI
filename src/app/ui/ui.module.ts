@@ -17,6 +17,7 @@ import {UnauthorizeComponent} from './layout/unauthorize/unauthorize.component';
 import {JwtHelperService, JWT_OPTIONS} from '@auth0/angular-jwt';
 import {SessionTimeoutModalComponent} from './layout/session-timeout-modal/session-timeout-modal.component';
 import {ArModalComponent} from './layout/new-modal/ar-modal.component';
+import {MonthsComponent} from './layout/monthgrouping/monthgrouping.component';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import {ArModalComponent} from './layout/new-modal/ar-modal.component';
     HeaderComponent,
     SidebarComponent,
     MainComponent,
+    MonthsComponent,
     EditComponent,
     UnauthorizeComponent,
     InvestingComponent,
