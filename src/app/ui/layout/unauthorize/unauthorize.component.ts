@@ -3,7 +3,7 @@ import {CommonService} from '../../../service/common.service';
 import {Subscription} from 'rxjs/Subscription';
 import {MessageCode} from '../../../service/message.code';
 import {timer} from 'rxjs';
-import {Router, ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 
 
 @Component({
@@ -50,5 +50,4 @@ export class UnauthorizeComponent implements OnInit {
       }
     });
   }
-
 }

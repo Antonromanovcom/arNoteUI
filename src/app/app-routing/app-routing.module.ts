@@ -3,9 +3,9 @@ import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from '@angular/router';
 import {MainComponent} from '../ui/layout/main/main.component';
 import {BrowserModule} from '@angular/platform-browser';
-import {UnauthorizeComponent} from '../ui/layout/unauthorize/unauthorize.component';
 import {InvestingComponent} from '../ui/layout/investing/investing.component';
 import {AuthGuardService as AuthGuard} from '../service/auth-guard.service';
+import {MonthsComponent} from '../ui/layout/monthgrouping/monthgrouping.component';
 
 const routes: Routes = [
   {
@@ -13,17 +13,19 @@ const routes: Routes = [
     component: MainComponent,
     canActivate: [AuthGuard]
   },
-  {
-    path: '401',
-    component: UnauthorizeComponent
+  { path: '401',
+    loadChildren: () => import('../ui/layout/unauthorize/unauthorize-routing.module').then(m => m.MoviesRoutingModule)
   },
   {
     path: 'investing',
     component: InvestingComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'months',
+    component: MonthsComponent,
+    canActivate: [AuthGuard]
   }
-  /*,
-  { path: '**', redirectTo: '401' }*/
 ];
 
 @NgModule({
