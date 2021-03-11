@@ -13,7 +13,7 @@ import {AuthService} from '../../service/auth.service';
 export class LayoutComponent implements OnInit {
   timeLeft = 1;
   interval;
-  constructor(private auth: AuthService) {
+  constructor(public auth: AuthService) {
   }
 
   ngOnInit() {

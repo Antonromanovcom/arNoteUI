@@ -314,9 +314,6 @@ export class InvestingComponent implements OnInit {
       })
     ).subscribe(data => {
       this.bonds = data.bonds;
-      if (this.bonds.length < 1) {
-        return this.errorHandler('Невозможно получить бумаги!', 'Невозможно получить бумаги!');
-      }
       this.getReturns(this.GET_RETURNS);
     });
   }

@@ -79,7 +79,7 @@ export class HeaderComponent implements OnInit {
     cryptkey: ['', [Validators.required]]
   });
 
-  constructor(private commonService: CommonService, private authService: AuthService, private httpService: HttpService,
+  constructor(private commonService: CommonService, public authService: AuthService, private httpService: HttpService,
               private fb: FormBuilder, public router: Router) {
   }
 
