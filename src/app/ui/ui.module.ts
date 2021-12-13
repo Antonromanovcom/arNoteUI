@@ -18,6 +18,7 @@ import {JwtHelperService, JWT_OPTIONS} from '@auth0/angular-jwt';
 import {SessionTimeoutModalComponent} from './layout/session-timeout-modal/session-timeout-modal.component';
 import {ArModalComponent} from './layout/new-modal/ar-modal.component';
 import {MonthsComponent} from './layout/monthgrouping/monthgrouping.component';
+import {FinPlanningComponent} from './layout/finplanning/finplanning.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {MonthsComponent} from './layout/monthgrouping/monthgrouping.component';
     SidebarComponent,
     MainComponent,
     MonthsComponent,
+    FinPlanningComponent,
     EditComponent,
     UnauthorizeComponent,
     InvestingComponent,

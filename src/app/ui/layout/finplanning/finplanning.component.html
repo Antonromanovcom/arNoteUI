@@ -1,0 +1,325 @@
+<clr-alert [clrAlertType]="'success'" *ngIf="result">
+  <clr-alert-item>
+        <span class="alert-text">
+            {{result}}
+        </span>
+  </clr-alert-item>
+</clr-alert>
+
+<clr-alert [clrAlertType]="'danger'" *ngIf="error">
+  <clr-alert-item>
+        <span class="alert-text">
+            {{error}}
+        </span>
+  </clr-alert-item>
+</clr-alert>
+<div>
+  <clr-datagrid>
+    <clr-dg-action-bar>
+      <div class="actions-container">
+        <div class="row">
+          <button class="btn btn-secondary" (click)="getMainDataFromCache()">Запросить из Кэша</button>
+          <button class="btn btn-primary" (click)="getMainDataFromDb()">Запросить из БД</button>
+          <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить кредит</button>
+          <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить доход</button>
+          <button class="btn btn-secondary" (click)="addCreditModalShow()">Менеджер доходов</button>
+          <button class="btn btn-secondary" (click)="addCreditModalShow()">Менеджер доходов</button>
+         <!-- <button class="btn btn-primary" (click)="getBonds(this.GET_BONDS_URL)">Запросить из БД</button>
+          <button class="btn btn-danger" [disabled]="!selectedPaper" (click)="deleteBond()">Удалить</button>
+          <button class="btn btn-success" [disabled]="!isDivsExist()" (click)="openDivsModal()">{{getDivButtonName()}}</button>
+          <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="openReturnsModal()">Доходы</button>
+          <button class="btn btn-secondary" [disabled]="bonds.length<1" (click)="openCalendarAndLoadData()">Календарь</button>-->
+
+         <!-- &lt;!&ndash;  Список фильтрации &ndash;&gt;
+          <clr-dropdown>
+            <button type="button" class="btn btn-outline-primary" clrDropdownToggle>Фильтр
+              <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <clr-dropdown-menu *clrIfOpen>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>Тип бумаги</button>
+                <clr-dropdown-menu>
+                  <a *ngFor="let item of filtersForInstrumentType" (click)="changeTypeFilter(item)" clrDropdownItem>{{item}}</a>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>План / Факт</button>
+                <clr-dropdown-menu>
+                  <a *ngFor="let item of filtersForStatus" (click)="changeTypeFilter(item)" clrDropdownItem>{{item}}</a>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-item" (click)="clearFilters()">Сбросить фильтры</button>
+            </clr-dropdown-menu>
+          </clr-dropdown>-->
+
+          <!--  Сортировка -->
+          <!--<clr-dropdown>
+            <button type="button" class="btn btn-outline-primary" clrDropdownToggle [disabled]="bonds.length<1">Сортировка
+              <clr-icon shape="caret down"></clr-icon>
+            </button>
+            <clr-dropdown-menu *clrIfOpen>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>Тикер</button>
+                <clr-dropdown-menu>
+                  <a *ngFor="let item of sortModes" (click)="changeSort(item, 'TICKER')" clrDropdownItem>{{item}}</a>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>Дивиденд</button>
+                <clr-dropdown-menu>
+                  <clr-dropdown>
+                    <button type="button" clrDropdownTrigger>В рублях</button>
+                    <clr-dropdown-menu clrPosition="left-top">
+                      <a *ngFor="let item of sortModes" (click)="changeSort(item, 'DIV-RUB')"
+                         clrDropdownItem>{{item}}</a>
+                    </clr-dropdown-menu>
+                  </clr-dropdown>
+                  <clr-dropdown>
+                    <button type="button" clrDropdownTrigger>В %</button>
+                    <clr-dropdown-menu clrPosition="left-top">
+                      <a *ngFor="let item of sortModes" (click)="changeSort(item, 'DIV-PRCNT')"
+                         clrDropdownItem>{{item}}</a>
+                    </clr-dropdown-menu>
+                  </clr-dropdown>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>Цена</button>
+                <clr-dropdown-menu>
+                  <clr-dropdown>
+                    <button type="button" clrDropdownTrigger>Текущая</button>
+                    <clr-dropdown-menu clrPosition="left-top">
+                      <a *ngFor="let item of sortModes" (click)="changeSort(item, 'CUR-PRICE')"
+                         clrDropdownItem>{{item}}</a>
+                    </clr-dropdown-menu>
+                  </clr-dropdown>
+                  <clr-dropdown>
+                    <button type="button" clrDropdownTrigger>Итоговая</button>
+                    <clr-dropdown-menu clrPosition="left-top">
+                      <a *ngFor="let item of sortModes" (click)="changeSort(item, 'FINAL-PRICE')"
+                         clrDropdownItem>{{item}}</a>
+                    </clr-dropdown-menu>
+                  </clr-dropdown>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>Рост всего</button>
+                <clr-dropdown-menu>
+                  <a *ngFor="let item of sortModes" (click)="changeSort(item, 'TOTAL-GROW')"
+                     clrDropdownItem>{{item}}</a>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <clr-dropdown>
+                <button type="button" clrDropdownTrigger>Рост сегодня</button>
+                <clr-dropdown-menu>
+                  <a *ngFor="let item of sortModes" (click)="changeSort(item, 'TODAY-GROW')"
+                     clrDropdownItem>{{item}}</a>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+              <div class="dropdown-divider"></div>
+              <button type="button" class="dropdown-item" (click)="clearSorting()">Сбросить сортировку</button>
+            </clr-dropdown-menu>
+          </clr-dropdown>-->
+        </div>
+      </div>
+    </clr-dg-action-bar>
+    <clr-dg-column>Дата</clr-dg-column>
+    <clr-dg-column>Кредит 1</clr-dg-column>
+    <clr-dg-column>Кредит 2</clr-dg-column>
+    <clr-dg-column>Кредит 3</clr-dg-column>
+    <clr-dg-column>Кредит 4</clr-dg-column>
+    <clr-dg-column>Кредит 5</clr-dg-column>
+    <clr-dg-column>Траты</clr-dg-column>
+    <clr-dg-column>Итого</clr-dg-column>
+    <clr-dg-row *clrDgItems="let item of finPlansList" [clrDgItem]="item">
+      <clr-dg-cell>{{item.month}} {{item.year}}</clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a (click)="editCreditModalShow($event, item, 1)">{{item.credit1 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a (click)="editCreditModalShow($event, item, 2)">{{item.credit2 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a (click)="editCreditModalShow($event, item, 3)">{{item.credit3 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a (click)="editCreditModalShow($event, item, 4)">{{item.credit4 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a (click)="editCreditModalShow($event, item, 5)">{{item.credit5 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center">{{item.purchasePlan.shortDescription}}</clr-dg-cell>
+      <clr-dg-cell style="text-align: center">{{item.remains | number}}</clr-dg-cell>
+     <!-- <clr-dg-cell><span *ngIf="item.type=='SHARE'" class="badge badge-success">{{item.type}}</span>
+        <span *ngIf="item.type=='BOND'" class="badge badge-gray">{{item.type}}</span></clr-dg-cell>
+      <clr-dg-cell>{{item.description}}</clr-dg-cell>
+      <clr-dg-cell>{{item.dividends.divSum}}</clr-dg-cell>
+      <clr-dg-cell>{{item.dividends.percent}}</clr-dg-cell>
+      <clr-dg-cell>{{item.stockExchange}}</clr-dg-cell>
+      <clr-dg-cell>{{item.currentPrice}}</clr-dg-cell>
+      <clr-dg-cell>{{item.minLot}}</clr-dg-cell>
+      <clr-dg-cell>{{item.finalPrice}}</clr-dg-cell>
+      <clr-dg-cell
+        [ngStyle]="{'color': item.delta.deltaInRubles > 0 ? '#2ecc71' : item.delta.deltaInRubles < 0 ? '#e70c25' : '#faf9f9'}">
+          <span *ngIf="item.type=='SHARE'">
+            <svg *ngIf="item.delta.deltaInRubles<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+            </svg>
+            <svg *ngIf="item.delta.deltaInRubles>0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                 fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+              <path fill-rule="evenodd"
+                    d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+            </svg>
+            {{item.delta.deltaInRubles}} ({{item.delta.totalPercent}})%
+          </span>
+        <span *ngIf="item.type=='BOND'">-</span>
+      </clr-dg-cell>
+      <clr-dg-cell><span *ngIf="!item.isBought" class="badge badge-info">PLAN</span><span *ngIf="item.isBought"
+                                                                                          class="badge badge-orange">FACT</span>
+      </clr-dg-cell>
+      <clr-dg-cell
+        [ngStyle]="{'color': item.delta.tinkoffDelta > 0 ? '#2ecc71' : item.delta.tinkoffDelta < 0 ? '#e70c25' : '#faf9f9'}">
+        <div *ngIf="item.type=='SHARE'">
+          <svg *ngIf="item.delta.tinkoffDelta<0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+               fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 13.293V1.5A.5.5 0 0 1 8 1z"/>
+          </svg>
+          <svg *ngIf="item.delta.tinkoffDelta>0" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+               fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+            <path fill-rule="evenodd"
+                  d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+          </svg>
+          {{item.delta.tinkoffDelta}} ({{item.delta.percent}}%)
+        </div>
+        <div *ngIf="item.type=='BOND'">-</div>
+      </clr-dg-cell>-->
+    </clr-dg-row>
+    <clr-dg-footer>
+      <clr-dg-column-toggle>
+        <clr-dg-column-toggle-title>Отобразить столбцы</clr-dg-column-toggle-title>
+      </clr-dg-column-toggle>
+    </clr-dg-footer>
+  </clr-datagrid>
+</div>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ КРЕДИТА -->
+
+<clr-modal [(clrModalOpen)]="isLoanAdd">
+  <h3 class="modal-title">Добавить новый кредит</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addCreditForm">
+
+      <!-- ПОЛЕ СТАРТОВАЯ СУММА -->
+
+      <clr-input-container>
+
+        <label #label for="startAmount" class="input-label clr-col-12">Стартовая сумма кредита</label>
+        <input type="text" clrInput formControlName="startAmount" id="startAmount" name="startAmount" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ПЛАТИШЬ ПО КРЕДИТУ ВООБЩЕ -->
+
+      <clr-input-container>
+
+        <label #label for="fullPayPerMonth" class="input-label clr-col-12">Ежемесячный платеж (полный)</label>
+        <input type="text" clrInput formControlName="fullPayPerMonth" id="fullPayPerMonth" name="fullPayPerMonth" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ИЗ ЕЖЕМЕСЯЧНОГО ПЛАТЕЖА РЕАЛЬНО УХОДИТ В ТЕЛО КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="realPayPerMonth" class="input-label clr-col-12">Уходит в тело кредита</label>
+        <input type="text" clrInput formControlName="realPayPerMonth" id="realPayPerMonth" name="realPayPerMonth" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА ОФОРМЛЕНИЯ КРЕДИТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="startDate"
+               formControlName="startDate"
+               id="startDate"
+               min="2000-01-01"/>
+      </clr-date-container>
+    </form>
+
+    <div class="row">
+      <button type="button" (click)="addLoan()" class="btn btn-primary mt-1">Создать</button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РЕДАКТИРОВАНИЯ КРЕДИТА -->
+
+<clr-modal [(clrModalOpen)]="isLoanEdit">
+  <h3 class="modal-title">Редактировать кредит</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editCreditForm">
+
+      <!-- ПОЛЕ ID КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="id" class="input-label clr-col-12">ID</label>
+        <input type="text" clrInput formControlName="id" id="id" name="id" autocomplete="off"
+               required readonly size="100%">
+      </clr-input-container>
+
+      <!-- ПОЛЕ НОМЕР КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="loanNumber" class="input-label clr-col-12">ID</label>
+        <input type="text" clrInput formControlName="loanNumber" id="loanNumber" name="loanNumber" autocomplete="off"
+               required readonly size="100%">
+      </clr-input-container>
+
+      <!-- ПОЛЕ СТАРТОВАЯ СУММА -->
+
+      <clr-input-container>
+
+        <label #label for="startAmountForEditing" class="input-label clr-col-12">Стартовая сумма кредита</label>
+        <input type="text" clrInput formControlName="startAmount" id="startAmountForEditing" name="startAmount" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ПЛАТИШЬ ПО КРЕДИТУ ВООБЩЕ -->
+
+      <clr-input-container>
+
+        <label #label for="fullPayPerMonthForEditing" class="input-label clr-col-12">Ежемесячный платеж (полный)</label>
+        <input type="text" clrInput formControlName="fullPayPerMonth" id="fullPayPerMonthForEditing" name="fullPayPerMonth" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ИЗ ЕЖЕМЕСЯЧНОГО ПЛАТЕЖА РЕАЛЬНО УХОДИТ В ТЕЛО КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="realPayPerMonthForEditing" class="input-label clr-col-12">Уходит в тело кредита</label>
+        <input type="text" clrInput formControlName="realPayPerMonth" id="realPayPerMonthForEditing" name="realPayPerMonth" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА ОФОРМЛЕНИЯ КРЕДИТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="startDate"
+               formControlName="startDate"
+               id="startDateForEditing"
+               min="2000-01-01"/>
+      </clr-date-container>
+
+      <!-- ОПИСАНИЕ -->
+
+      <clr-input-container>
+        <label #label for="desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="desc" name="desc" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+    </form>
+
+    <div class="row">
+      <button type="button" (click)="editLoan()" class="btn btn-primary mt-1">Изменить</button>
+    </div>
+  </div>
+</clr-modal>

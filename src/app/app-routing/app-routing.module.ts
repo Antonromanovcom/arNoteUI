@@ -6,6 +6,8 @@ import {BrowserModule} from '@angular/platform-browser';
 import {InvestingComponent} from '../ui/layout/investing/investing.component';
 import {AuthGuardService as AuthGuard} from '../service/auth-guard.service';
 import {MonthsComponent} from '../ui/layout/monthgrouping/monthgrouping.component';
+import {UnauthorizeComponent} from '../ui/layout/unauthorize/unauthorize.component';
+import {FinPlanningComponent} from '../ui/layout/finplanning/finplanning.component';
 
 const routes: Routes = [
   {
@@ -13,8 +15,9 @@ const routes: Routes = [
     component: MainComponent,
     canActivate: [AuthGuard]
   },
-  { path: '401',
-    loadChildren: () => import('../ui/layout/unauthorize/unauthorize-routing.module').then(m => m.MoviesRoutingModule)
+  {
+    path: '401',
+    component: UnauthorizeComponent
   },
   {
     path: 'investing',
@@ -25,7 +28,13 @@ const routes: Routes = [
     path: 'months',
     component: MonthsComponent,
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'finplanning',
+    component: FinPlanningComponent,
+    canActivate: [AuthGuard]
   }
+
 ];
 
 @NgModule({

@@ -17,7 +17,6 @@ import {Moment} from 'moment';
 import {Returns} from '../../../dto/returns';
 import {Calendar} from '../../../dto/calendar';
 import {ModalService} from '../../../service/modal.service';
-import {consoleTestResultHandler} from 'tslint/lib/test';
 
 @Component({
   selector: 'app-invest',

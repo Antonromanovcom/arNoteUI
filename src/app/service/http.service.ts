@@ -8,6 +8,8 @@ import {environment} from '../../environments/environment';
 import {NewInstrumentRq} from '../dto/NewInstrumentRq';
 import {Bond} from '../dto/bond';
 import {SearchRq} from '../dto/searchwishes';
+import {NewLoanRq} from '../dto/NewLoanRq';
+import {EditLoanRq} from '../dto/EditLoanRq';
 
 
 @Injectable()
@@ -52,6 +54,24 @@ export class HttpService {
       })
     };
     return this.http.post<Bond>(url, instrument, httpOptions);
+  }
+
+  public addLoan(loan: NewLoanRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewLoanRq>(url, loan, httpOptions);
+  }
+
+  public editLoan(loan: EditLoanRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewLoanRq>(url, loan, httpOptions);
   }
 
   public deleteInstrument(ticker: string, url: string): Observable<any> {

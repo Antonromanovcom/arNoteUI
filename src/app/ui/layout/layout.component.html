@@ -7,6 +7,7 @@
       <a clrVerticalNavLink routerLink="../401">О проекте</a>
       <a *ngIf="auth.isAuthenticated()" clrVerticalNavLink routerLink="../" >Список желаний</a>
       <a *ngIf="auth.isAuthenticated()" clrVerticalNavLink routerLink="../months" >Желания по месяцам</a>
+      <a *ngIf="auth.isAuthenticated()" clrVerticalNavLink routerLink="../finplanning" >Фин-План</a>
       <a *ngIf="auth.isAuthenticated()" clrVerticalNavLink routerLink="../investing">Инвестиции</a>
     </clr-vertical-nav>
     <div class="content-area">
