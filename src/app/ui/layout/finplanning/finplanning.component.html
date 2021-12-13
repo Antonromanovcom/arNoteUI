@@ -21,7 +21,7 @@
           <button class="btn btn-secondary" (click)="getMainDataFromCache()">Запросить из Кэша</button>
           <button class="btn btn-primary" (click)="getMainDataFromDb()">Запросить из БД</button>
           <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить кредит</button>
-          <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить доход</button>
+          <button class="btn btn-secondary" (click)="addIncomeModalShow()">Добавить доход</button>
           <button class="btn btn-secondary" (click)="addCreditModalShow()">Менеджер доходов</button>
           <button class="btn btn-secondary" (click)="addCreditModalShow()">Менеджер доходов</button>
          <!-- <button class="btn btn-primary" (click)="getBonds(this.GET_BONDS_URL)">Запросить из БД</button>
@@ -239,10 +239,17 @@
                id="startDate"
                min="2000-01-01"/>
       </clr-date-container>
+
+      <!-- ОПИСАНИЕ -->
+
+      <clr-input-container>
+        <label #label for="add_credit_desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="add_credit_desc" name="add_credit_desc" autocomplete="off" size="100%">
+      </clr-input-container>
     </form>
 
     <div class="row">
-      <button type="button" (click)="addLoan()" class="btn btn-primary mt-1">Создать</button>
+      <button type="button" [disabled]="addCreditForm.invalid" (click)="addLoan()" class="btn btn-primary mt-1">Создать</button>
     </div>
   </div>
 </clr-modal>
@@ -267,7 +274,7 @@
 
       <clr-input-container>
 
-        <label #label for="loanNumber" class="input-label clr-col-12">ID</label>
+        <label #label for="loanNumber" class="input-label clr-col-12">Номер кредита (всего 5)</label>
         <input type="text" clrInput formControlName="loanNumber" id="loanNumber" name="loanNumber" autocomplete="off"
                required readonly size="100%">
       </clr-input-container>
@@ -303,7 +310,7 @@
 
       <clr-date-container>
         <label>Дата покупки</label>
-        <input type="date" clrDate name="startDate"
+        <input type="date" clrDate name="startDateForEditing"
                formControlName="startDate"
                id="startDateForEditing"
                min="2000-01-01"/>
@@ -320,6 +327,60 @@
 
     <div class="row">
       <button type="button" (click)="editLoan()" class="btn btn-primary mt-1">Изменить</button>
+      <button type="button" (click)="deleteLoan()" class="btn btn-danger mt-1">Удалить кредит</button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ ДОХОДА -->
+
+<clr-modal [(clrModalOpen)]="isAddIncome">
+  <h3 class="modal-title">Добавить доход</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addIncomeForm">
+
+      <!-- ЗНАЧЕНИЕ ДОХОДА  -->
+
+      <clr-input-container>
+
+        <label #label for="income" class="input-label clr-col-12">Доход</label>
+        <input type="text" clrInput formControlName="income" id="income" name="income" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ЭТО БОНУС?  -->
+
+      <clr-toggle-container>
+        <clr-toggle-wrapper>
+          <input type="checkbox" clrToggle formControlName="isBonus"
+                 id="isBonus"
+                 name="isBonus"/>
+          <label>Это годовой бонус?</label>
+        </clr-toggle-wrapper>
+      </clr-toggle-container>
+
+      <!-- ПОЯСНЕНИЯ -->
+
+      <clr-input-container>
+
+        <label #label for="income_desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="income_desc" name="income_desc" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="incomeDate"
+               formControlName="incomeDate"
+               id="incomeDate"
+               min="2000-01-01"/>
+      </clr-date-container>
+    </form>
+
+    <div class="row">
+      <button type="button" (click)="addIncome()" class="btn btn-primary mt-1">Добавить</button>
     </div>
   </div>
 </clr-modal>

@@ -10,6 +10,7 @@ import {Bond} from '../dto/bond';
 import {SearchRq} from '../dto/searchwishes';
 import {NewLoanRq} from '../dto/NewLoanRq';
 import {EditLoanRq} from '../dto/EditLoanRq';
+import {NewIncomeRq} from '../dto/NewIncomeRq';
 
 
 @Injectable()
@@ -65,13 +66,22 @@ export class HttpService {
     return this.http.post<NewLoanRq>(url, loan, httpOptions);
   }
 
+  public addIncome(loan: NewIncomeRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewIncomeRq>(url, loan, httpOptions);
+  }
+
   public editLoan(loan: EditLoanRq, url: string): Observable<any> {
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json'
       })
     };
-    return this.http.post<NewLoanRq>(url, loan, httpOptions);
+    return this.http.put<NewLoanRq>(url, loan, httpOptions);
   }
 
   public deleteInstrument(ticker: string, url: string): Observable<any> {
@@ -83,6 +93,17 @@ export class HttpService {
     };
 
     return this.http.delete(url + '?ticker=' + ticker, httpOptions);
+  }
+
+  public deleteFinPlanningEntity(id: number, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.delete(url + '?id=' + id, httpOptions);
   }
 
   public sendFile(formData: FormData, url: string): Observable<any> {

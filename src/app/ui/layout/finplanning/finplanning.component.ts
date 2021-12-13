@@ -15,6 +15,7 @@ import * as moment from 'moment';
 import {NewLoanRq} from '../../../dto/NewLoanRq';
 import {Credit} from '../../../dto/Credit';
 import {EditLoanRq} from '../../../dto/EditLoanRq';
+import {NewIncomeRq} from '../../../dto/NewIncomeRq';
 
 @Component({
   selector: 'app-fin-planning',
@@ -32,25 +33,12 @@ export class FinPlanningComponent implements OnInit {
   consolidatedListFromDbUri = this.apiUri + '/consolidated/db'; // полная консолидированная таблица
   getLoanByIdUrl = this.apiUri + '/loan'; // получить кредит по id
   loanUri = this.apiUri + '/loan'; // работа с кредитами
-  priorityWishesFilterUrl = this.apiUri + '?filter=PRIOR'; // приоритетные желания
-  allWishesFilterUrl = this.apiUri + '?filter=ALL'; // все желания
-  clearWishesFilterUrl = this.apiUri + '?filter=NONE'; // очистить фильтр желаний
-  sortWishesByNameUrl = this.apiUri + '?sort=NAME'; // очистить фильтр желаний
-  sortWishesByPriceAscUrl = this.apiUri + '?sort=PRICE_ASC'; // очистить фильтр желаний
-  sortWishesByPriceDescUrl = this.apiUri + '?sort=PRICE_DESC'; // очистить фильтр желаний
-  sortWishesByPriorityUrl = this.apiUri + '?sort=PRIOR'; // очистить фильтр желаний
-  wishesWithoutSortUrl = this.apiUri + '?sort=ALL'; // очистить фильтр желаний
-  groupWishesUrl = this.apiUri + '/groups';
-  changePriorityMonthUrl = this.apiUri + '/changemonth'; // url для быстрого изменения приоритета
-  changePriorityMonthManualyUrl = this.apiUri + '/transferwish'; // url для быстрого изменения приоритета
-  searchWishesUrl = this.apiUri + '/filter'; // поиск желаний
-
+  incomeUri = this.apiUri + '/income'; // работа с доходами
 
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
 
   error: any; // отображение ошибок в алертах
   result: any; // отображение результатов в алертах
-  monthOrdermode = false; // режим отображение дерева группировки по месяцам
   isSalaryExists = false;
   lastSalary = 0;
   curDateFormated = '';
@@ -59,7 +47,7 @@ export class FinPlanningComponent implements OnInit {
 
   isLoanEdit: boolean; // режим редактирования кредита
   isLoanAdd: boolean; // режим добавления кредита
-  isEditMode = false; // редактировать или добавить
+  isAddIncome = false; // редактировать или добавить доход (отображение модала)
   isCsvParse = false; // отправить на парсинг csv
   isFilterModal: boolean; // вывести модал поиска
   isMonthGroupModeWishEdit = false; // вывод формы редактирования желания при помесячной группировке
@@ -95,7 +83,8 @@ export class FinPlanningComponent implements OnInit {
     ]],
     startDate: ['', [
       Validators.required
-    ]]
+    ]],
+    desc: ['', []]
   });
 
   editCreditForm = this.fb.group({ // форма редактирования кредита
@@ -115,6 +104,22 @@ export class FinPlanningComponent implements OnInit {
       Validators.required
     ]],
     startDate: ['', [
+      Validators.required
+    ]],
+    desc: ['', []]
+  });
+
+  addIncomeForm = this.fb.group({ // форма добавления дохода
+    income: ['', [
+      Validators.required
+    ]],
+    isBonus: ['', [
+      Validators.required
+    ]],
+    loanNumber: ['', [
+      Validators.required
+    ]],
+    incomeDate: ['', [
       Validators.required
     ]],
     desc: ['', []]
@@ -223,6 +228,20 @@ export class FinPlanningComponent implements OnInit {
   }
 
   /**
+   *  Отобразить окно "Добавить доход".
+   *
+   */
+  addIncomeModalShow() {
+    this.isAddIncome = true;
+    this.addCreditForm.patchValue({
+      startAmount: '',
+      fullPayPerMonth: '',
+      realPayPerMonth: '',
+      startDate: ''
+    });
+  }
+
+  /**
    *  Отобразить окно "Редактировать или удалить кредит".
    *
    */
@@ -233,6 +252,27 @@ export class FinPlanningComponent implements OnInit {
     loan = item.credits.find(x => x.number === creditNumber);
     console.log('Нашли кредит № = ', loan.id);
     this.getLoanById(loan.id);
+  }
+
+  /**
+   *  Удалить кредит.
+   *
+   */
+  deleteLoan() {
+
+    this.httpService.deleteFinPlanningEntity(this.editCreditForm.value.id, this.loanUri).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно удалить кредит!');
+      })
+    ).subscribe(data => {
+      if (data.status.code !== 200) {
+        this.forcedErrorAlertWithoutError(data.status.description, data.status.code);
+        this.getMainDataFromCache();
+      } else {
+        this.showAlert('Кредит успешно удален! Всего - ' + data.creditsCount);
+        this.getMainDataFromDb();
+      }
+    });
   }
 
   /**
@@ -265,7 +305,7 @@ export class FinPlanningComponent implements OnInit {
         this.forcedErrorAlertWithoutError(data.status.description, data.status.code);
         this.getMainDataFromCache();
       } else {
-        this.showAlert('Кредит успешно изменен! Номер - ' + data.creditNumber + '. Всего - ' + data.creditsCount);
+        this.showAlert('Кредит успешно изменен! Всего - ' + data.creditsCount);
         this.getMainDataFromDb();
       }
     });
@@ -288,7 +328,8 @@ export class FinPlanningComponent implements OnInit {
     payload = new NewLoanRq(this.addCreditForm.value.startAmount,
       this.addCreditForm.value.fullPayPerMonth,
       this.addCreditForm.value.realPayPerMonth,
-      currentDate.format('YYYY-MM-DD'));
+      currentDate.format('YYYY-MM-DD'),
+      this.addCreditForm.value.desc);
 
     this.httpService.addLoan(payload, this.loanUri).pipe(
       catchError(err => {
@@ -315,6 +356,7 @@ export class FinPlanningComponent implements OnInit {
   errorHandler(err, message: string) {
     this.isLoanEdit = false;
     this.isLoanAdd = false;
+    this.isAddIncome = false;
     console.log('error - ' + err.error);
     if (err.error === 'ERR-01') {
       this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
@@ -340,6 +382,8 @@ export class FinPlanningComponent implements OnInit {
    */
   forcedErrorAlertWithoutError(text: string, code: string) {
     this.isLoanAdd = false;
+    this.isLoanEdit = false;
+    this.isAddIncome = false;
     this.result = text;
     this.error = '[' + code + '] ' + text;
     timer(4000).subscribe(() => {
@@ -351,10 +395,44 @@ export class FinPlanningComponent implements OnInit {
   showAlert(text: string) {
     this.isLoanEdit = false;
     this.isLoanAdd = false;
-    this.isCsvParse = false;
+    this.isAddIncome = false;
     this.result = text;
     timer(4000).subscribe(() => {
       this.result = null;
+    });
+  }
+
+  /**
+   * Добавить доход.
+   */
+  addIncome() {
+    let payload: NewIncomeRq;
+    const DATE_TIME_FORMAT = 'MM/DD/YYYY';
+    let selectedDate: Moment;
+    if (!this.addIncomeForm.value.startDate) {
+      selectedDate = moment(new Date(), DATE_TIME_FORMAT);
+    } else {
+      selectedDate = moment(this.addCreditForm.value.startDate, DATE_TIME_FORMAT);
+    }
+
+    payload = new NewIncomeRq();
+    payload.income = this.addIncomeForm.value.income;
+    payload.isBonus = this.addIncomeForm.value.isBonus === '' ? false : this.addIncomeForm.value.isBonus;
+    payload.desc = this.addIncomeForm.value.desc;
+    payload.incomeDate = selectedDate.format('YYYY-MM-DD');
+
+    this.httpService.addIncome(payload, this.incomeUri).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно добавить доход!');
+      })
+    ).subscribe(data => {
+      if (data.status.code !== 200) {
+        this.forcedErrorAlertWithoutError(data.status.description, data.status.code);
+        this.getMainDataFromCache();
+      } else {
+        this.showAlert('Доход успешно добавлен! ID дохода - ' + data.id);
+        this.getMainDataFromDb();
+      }
     });
   }
 }
