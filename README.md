@@ -10,7 +10,7 @@ http://localhost:4200/
 
 # Запуск на локале
 - npm install
-- ng buildт
+- ng build
 - ng serve
 
 # Сборка для Прода

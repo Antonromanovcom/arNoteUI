@@ -11,6 +11,7 @@ import {SearchRq} from '../dto/searchwishes';
 import {NewLoanRq} from '../dto/NewLoanRq';
 import {EditLoanRq} from '../dto/EditLoanRq';
 import {NewIncomeRq} from '../dto/NewIncomeRq';
+import {GetDetailedBalanceRq} from '../dto/GetDetailedBalanceRq';
 
 
 @Injectable()
@@ -73,6 +74,15 @@ export class HttpService {
       })
     };
     return this.http.post<NewIncomeRq>(url, loan, httpOptions);
+  }
+
+  public getDetailedBalance(request: GetDetailedBalanceRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<GetDetailedBalanceRq>(url, request, httpOptions);
   }
 
   public editLoan(loan: EditLoanRq, url: string): Observable<any> {

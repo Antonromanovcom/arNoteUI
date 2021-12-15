@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {HttpService} from '../../../service/http.service';
-import {FormBuilder, FormControl, Validators} from '@angular/forms';
-import {Observable, Subject, throwError, timer} from 'rxjs';
+import {FormBuilder, Validators} from '@angular/forms';
+import {Subject, throwError, timer} from 'rxjs';
 import {Subscription} from 'rxjs/Subscription';
 import {CommonService} from '../../../service/common.service';
 import {MessageCode} from '../../../service/message.code';
@@ -16,6 +16,10 @@ import {NewLoanRq} from '../../../dto/NewLoanRq';
 import {Credit} from '../../../dto/Credit';
 import {EditLoanRq} from '../../../dto/EditLoanRq';
 import {NewIncomeRq} from '../../../dto/NewIncomeRq';
+import {GetDetailedBalanceRq} from '../../../dto/GetDetailedBalanceRq';
+import {BalanceDetailsRs} from '../../../dto/BalanceDetailsRs';
+import '@cds/core/icon/register.js';
+import { ClarityIcons, userIcon } from '@cds/core/icon';
 
 @Component({
   selector: 'app-fin-planning',
@@ -34,6 +38,7 @@ export class FinPlanningComponent implements OnInit {
   getLoanByIdUrl = this.apiUri + '/loan'; // получить кредит по id
   loanUri = this.apiUri + '/loan'; // работа с кредитами
   incomeUri = this.apiUri + '/income'; // работа с доходами
+  balanceDetailUri = this.apiUri + '/remains'; // деталка по балансу
 
   // --------------------------------- ПЕРЕМЕННЫЕ -------------------------------------
 
@@ -48,10 +53,8 @@ export class FinPlanningComponent implements OnInit {
   isLoanEdit: boolean; // режим редактирования кредита
   isLoanAdd: boolean; // режим добавления кредита
   isAddIncome = false; // редактировать или добавить доход (отображение модала)
-  isCsvParse = false; // отправить на парсинг csv
-  isFilterModal: boolean; // вывести модал поиска
-  isMonthGroupModeWishEdit = false; // вывод формы редактирования желания при помесячной группировке
-  isSummInfoForm = false; // вывод формы с итоговой информацией (сумма всех желаний, время реализации)
+  isRemainsDetailInfoShown = false; // отображение деталки по остаткам.
+  isIncomeDetailForm = false; // отображение деталки по доходам.
 
   // --------------------------------- ХРАНИЛИЩА -------------------------------------
 
@@ -59,6 +62,7 @@ export class FinPlanningComponent implements OnInit {
   finPlansList: FinPlan[] = []; // контейнер фин-планов
   wishGroups: WishListGroup[] = []; // контейнер желаний
   asyncWishGroups: Subject<WishListGroup[]> = new Subject(); // асинхронный контейнер желаний с помесячной группировкой
+  detailedBalanceContainer: Subject<BalanceDetailsRs> = new Subject<BalanceDetailsRs>(); // асинхронный контейнер деталки
   monthList = []; // контейнер месяцев
 
   filterTypes = ['Все', 'Приоритет', 'Очистить фильтр', 'Помесячная группировка']; // фильтры
@@ -131,6 +135,7 @@ export class FinPlanningComponent implements OnInit {
   }
 
   ngOnInit() {
+    ClarityIcons.addIcons(userIcon);
     console.log('Идем сюда - ', this.consolidatedListFromCacheUri);
     this.getMainDataFromCache();
     this.subscription = this.commonService.error$.subscribe(error => {
@@ -247,7 +252,6 @@ export class FinPlanningComponent implements OnInit {
    */
   editCreditModalShow(event: any, item: FinPlan, creditNumber: number) {
     console.log('Вы выбрали item № = ', creditNumber);
-
     let loan: Credit;
     loan = item.credits.find(x => x.number === creditNumber);
     console.log('Нашли кредит № = ', loan.id);
@@ -357,6 +361,8 @@ export class FinPlanningComponent implements OnInit {
     this.isLoanEdit = false;
     this.isLoanAdd = false;
     this.isAddIncome = false;
+    this.isRemainsDetailInfoShown = false;
+    this.isIncomeDetailForm = false;
     console.log('error - ' + err.error);
     if (err.error === 'ERR-01') {
       this.error = 'У вас нет сохраненных зарплат! Невозможно посчитать сроки реализации! Добавьте хотя бы одну зарплату!';
@@ -384,6 +390,8 @@ export class FinPlanningComponent implements OnInit {
     this.isLoanAdd = false;
     this.isLoanEdit = false;
     this.isAddIncome = false;
+    this.isRemainsDetailInfoShown = false;
+    this.isIncomeDetailForm = false;
     this.result = text;
     this.error = '[' + code + '] ' + text;
     timer(4000).subscribe(() => {
@@ -397,6 +405,9 @@ export class FinPlanningComponent implements OnInit {
     this.isLoanAdd = false;
     this.isAddIncome = false;
     this.result = text;
+    this.isRemainsDetailInfoShown = false;
+    this.isIncomeDetailForm = false;
+
     timer(4000).subscribe(() => {
       this.result = null;
     });
@@ -409,10 +420,10 @@ export class FinPlanningComponent implements OnInit {
     let payload: NewIncomeRq;
     const DATE_TIME_FORMAT = 'MM/DD/YYYY';
     let selectedDate: Moment;
-    if (!this.addIncomeForm.value.startDate) {
+    if (!this.addIncomeForm.value.incomeDate) {
       selectedDate = moment(new Date(), DATE_TIME_FORMAT);
     } else {
-      selectedDate = moment(this.addCreditForm.value.startDate, DATE_TIME_FORMAT);
+      selectedDate = moment(this.addIncomeForm.value.incomeDate, DATE_TIME_FORMAT);
     }
 
     payload = new NewIncomeRq();
@@ -433,6 +444,47 @@ export class FinPlanningComponent implements OnInit {
         this.showAlert('Доход успешно добавлен! ID дохода - ' + data.id);
         this.getMainDataFromDb();
       }
+    });
+  }
+
+  /**
+   * Отображение модала деталки по остаткам.
+   *
+   *  $event
+   *  item
+   */
+  remainsModalShow(item: FinPlan) {
+    this.getDetailedBalance(item);
+  }
+
+  /**
+   * Отображение модала деталки по доходам.
+   *
+   *  $event
+   *  item
+   */
+  detailedIncomesFormShow() {
+    this.isIncomeDetailForm = true;
+    this.isRemainsDetailInfoShown = false;
+  }
+
+
+  /**
+   * Запросить с бэка детализованый баланс.
+   *
+   * item
+   */
+  private getDetailedBalance(item: FinPlan) {
+    let request: GetDetailedBalanceRq;
+    request = new GetDetailedBalanceRq(item.monthNumber, item.year);
+
+    this.httpService.getDetailedBalance(request, this.balanceDetailUri).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно  получить детализированные данные по балансу!');
+      })
+    ).subscribe(data => {
+      this.detailedBalanceContainer.next(data);
+      this.isRemainsDetailInfoShown = true;
     });
   }
 }
