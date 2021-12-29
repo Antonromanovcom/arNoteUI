@@ -8,5 +8,8 @@ export class BalanceDetailsRs {
   loanPayments: number;
   currentIncome: number;
   date: string;
+  dateInDateFormat: string;
+  freeze: boolean;
   currentIncomeDetail: CurrentIncomeDetailRs;
+  emptyCalculations: boolean;
 }

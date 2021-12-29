@@ -3,4 +3,5 @@ export class IncomeRs {
   incomeDescription: string;
   isBonus: boolean;
   incomeDate: string;
+  amount: number;
 }

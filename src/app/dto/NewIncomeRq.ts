@@ -7,5 +7,6 @@ export class NewIncomeRq {
   isBonus: boolean;
   desc: string;
   incomeDate: string;
+  id: number;
 }
 

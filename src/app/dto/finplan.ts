@@ -13,4 +13,7 @@ export class FinPlan {
   credits: Credit[] = [];
   purchasePlan: ConsolidatedPurchase;
   remains: number;
+  freeze: boolean;
+  color: string;
+  fontColor: string;
 }
