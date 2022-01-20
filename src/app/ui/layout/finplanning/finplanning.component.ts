@@ -26,6 +26,7 @@ import {Goal} from '../../../dto/Goal';
 import {SalaryRs} from '../../../dto/SalaryRs';
 import {SalaryRq} from '../../../dto/SalaryRq';
 import { NewFreezeRq } from 'src/app/dto/NewFreezeRq';
+import {FreeLoanSlotsRs} from '../../../dto/FreeLoanSlotsRs';
 
 @Component({
   selector: 'app-fin-planning',
@@ -48,6 +49,7 @@ export class FinPlanningComponent implements OnInit {
   goalsUri = this.apiUri + '/goal'; // работа с целями
   balanceDetailUri = this.apiUri + '/remains'; // деталка по балансу
   loansByDate = this.apiUri + '/loan/bydate'; // кредиты по дате
+  freeSlotsByDate = this.apiUri + '/loan/slots'; // свободные слоты по дате
   salaryUri = this.apiUri + '/salary';
   freezeUri = this.apiUri + '/freeze';
 
@@ -63,6 +65,8 @@ export class FinPlanningComponent implements OnInit {
    * При добавлении нового расхода данное поле управляет отображением всего блока кредитов и отправки запроса к бэку на список кредитов.
    */
   isDateNotNullForAddNewGoalForm = false;
+  isDateNotNullForAddNewLoanForm = false;
+  isFreeSlotsExists = true;
   isLoanListByDateEmpty = true; // запросили список кредитов по дате - а он пустой (
 
 // --------------------------------- ВКЛЮЧЕНИЕ МОДАЛОВ -------------------------------------
@@ -92,7 +96,9 @@ export class FinPlanningComponent implements OnInit {
   detailedBalanceContainer: Subject<BalanceDetailsRs> = new Subject<BalanceDetailsRs>(); // асинхронный контейнер деталки
   loansList: FullLoanRs[] = []; // асинхронный лист кредитов для подшивки досрочного погашения.
   salaryList: SalaryRs[] = [];
+  freeLoanSlots: FreeLoanSlotsRs; // свободные слоты кредитов для получения номеров (нужно при выборе номера при добавлении)
   selectedSalary: SalaryRs;
+  selectedLoanSlot: number;
   selectedFinPlan: FinPlan;
 
 
@@ -239,7 +245,6 @@ export class FinPlanningComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Идем сюда - ', this.consolidatedListFromCacheUri);
     this.getMainDataFromCache();
     this.subscription = this.commonService.error$.subscribe(error => {
       if (error == null) {
@@ -285,6 +290,32 @@ export class FinPlanningComponent implements OnInit {
    *
    */
   getMainDataFromDb() {
+
+    this.isLoanEdit = false; // todo: это надо вынести в отдельный метод по очистке, который будем вызывать. И формы не забывать почистить.
+    this.isLoanAdd = false;
+    this.isAddIncome = false;
+    this.isRemainsDetailInfoShown = false;
+    this.isIncomeDetailForm = false;
+    this.isIncomeEditForm = false;
+    this.isDateNotNullForAddNewGoalForm = false;
+    this.isDateNotNullForAddNewLoanForm = false;
+    this.loansList.length = 0;
+    this.isLoanListByDateEmpty = true;
+    this.isGoalEditForm = false;
+    this.isGoalAddForm = false;
+    this.goalsListForEdit = null;
+    this.goalsForEditDate = null;
+    this.selectedGoal = null;
+    this.isGoalForLoan = false;
+    this.isSelectedGoalEditForm = false;
+    this.isSalaryShow = false;
+    this.isEditSalaryShow = false;
+    this.isAddNewSalaryShow = false;
+    this.isAddNewFreezeFormShow = false;
+    this.selectedFinPlan = null;
+    this.freeLoanSlots = null;
+    this.selectedLoanSlot = null;
+
     this.httpService.getData(this.consolidatedListFromDbUri).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно получить данные!');
@@ -436,7 +467,7 @@ export class FinPlanningComponent implements OnInit {
       this.addCreditForm.value.fullPayPerMonth,
       this.addCreditForm.value.realPayPerMonth,
       currentDate.format('YYYY-MM-DD'),
-      this.addCreditForm.value.desc);
+      this.addCreditForm.value.desc, this.selectedLoanSlot);
 
     this.httpService.addLoan(payload, this.loanUri).pipe(
       catchError(err => {
@@ -480,6 +511,7 @@ export class FinPlanningComponent implements OnInit {
     this.isAddNewSalaryShow = false;
     this.isEditSalaryShow = false;
     this.isAddNewFreezeFormShow = false;
+    this.isDateNotNullForAddNewLoanForm = false;
     this.selectedFinPlan = null;
 
     console.log('error - ' + err.error);
@@ -538,6 +570,7 @@ export class FinPlanningComponent implements OnInit {
     this.isIncomeDetailForm = false;
     this.isIncomeEditForm = false;
     this.isDateNotNullForAddNewGoalForm = false;
+    this.isDateNotNullForAddNewLoanForm = false;
     this.loansList.length = 0;
     this.isLoanListByDateEmpty = true;
     this.isGoalEditForm = false;
@@ -552,6 +585,8 @@ export class FinPlanningComponent implements OnInit {
     this.isAddNewSalaryShow = false;
     this.isAddNewFreezeFormShow = false;
     this.selectedFinPlan = null;
+    this.freeLoanSlots = null;
+    this.selectedLoanSlot = null;
 
     timer(4000).subscribe(() => {
       this.result = null;
@@ -796,7 +831,7 @@ export class FinPlanningComponent implements OnInit {
   }
 
   /**
-   * От
+   * Отобразить окно редактирования цели.
    *  $event
    *  item
    */
@@ -1106,5 +1141,55 @@ export class FinPlanningComponent implements OnInit {
         this.getMainDataFromDb();
       }
     });
+  }
+
+  /**
+   * Запрашиваем свободные кредитные слоты для получения номеров.
+   *
+   * event - выбранная дата.
+   */
+  getFreeLoanSlots(event: any) {
+    let currentDate: Moment;
+    if (event != null) {
+      currentDate = moment(Date.parse(event));
+      if (currentDate == null) {
+        currentDate = moment(new Date(), 'DD/MM/YYYY');
+      }
+    } else {
+      currentDate = moment(Date.parse(this.addGoalForm.value.startDate));
+      if (currentDate == null) {
+        currentDate = moment(new Date(), 'DD/MM/YYYY');
+      }
+    }
+    let payload: GetLoansByDateRq;
+    payload = new GetLoansByDateRq();
+    payload.startDate = currentDate.format('YYYY-MM-DD');
+    this.httpService.getLoansByDate(payload, this.freeSlotsByDate).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно Загрузить кредиты!');
+      })
+    ).subscribe(data => {
+      if (data.openSlots == null || data.openSlots.length === 0) {
+        this.isFreeSlotsExists = false;
+      } else {
+        this.isFreeSlotsExists = true;
+        this.freeLoanSlots = data;
+      }
+    });
+  }
+
+  /**
+   * Выбрали дату в окне добавления нового кредита.
+   *
+   * event - выбранная дата.
+   */
+  toggleDateForNewLoanNotNull($event: any) {
+    if ($event != null) {
+      this.isDateNotNullForAddNewLoanForm = true;
+      this.getFreeLoanSlots($event);
+    } else {
+      this.isDateNotNullForAddNewLoanForm = false;
+      this.isFreeSlotsExists = true;
+    }
   }
 }

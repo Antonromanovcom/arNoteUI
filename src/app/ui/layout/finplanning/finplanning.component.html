@@ -14,16 +14,22 @@
   </clr-alert-item>
 </clr-alert>
 <div>
+<!--  ТАБЛА ДЛЯ ПОЛНОГО ЭКРАНА  -->
+  <div class="ar-900-hide">
   <clr-datagrid>
     <clr-dg-action-bar>
       <div class="actions-container">
         <div class="row">
-          <button class="btn btn-secondary" (click)="getMainDataFromCache()">Запросить из Кэша</button>
-          <button class="btn btn-primary" (click)="getMainDataFromDb()">Запросить из БД</button>
-          <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить кредит</button>
-          <button class="btn btn-secondary" (click)="addIncomeModalShow()">Добавить доход</button>
-          <button class="btn btn-secondary" (click)="addGoalModalShow()">Добавить цель / покупку</button>
-          <button class="btn btn-secondary" (click)="salaryModalShow()">Зарплаты</button>
+          <div class="ar-900-hide">
+            <div class="clr-row" style="margin-left: 1%">
+              <button class="btn btn-secondary" (click)="getMainDataFromCache()">Запросить из Кэша</button>
+              <button class="btn btn-primary" (click)="getMainDataFromDb()">Запросить из БД</button>
+              <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить кредит</button>
+              <button class="btn btn-secondary" (click)="addIncomeModalShow()">Добавить доход</button>
+              <button class="btn btn-secondary" (click)="addGoalModalShow()">Добавить цель / покупку</button>
+              <button class="btn btn-secondary" (click)="salaryModalShow()">Зарплаты</button>
+            </div>
+          </div>
         </div>
       </div>
     </clr-dg-action-bar>
@@ -35,7 +41,7 @@
     <clr-dg-column>Кредит 5</clr-dg-column>
     <clr-dg-column>Траты</clr-dg-column>
     <clr-dg-column>Итого</clr-dg-column>
-    <clr-dg-row [ngStyle]="{'background-color': item.color, 'color': item.fontColor}"
+    <clr-dg-row [ngStyle]="{'background-color': item.color, 'color': item.fontColor, 'border-bottom': item.borderWidth}"
                 *clrDgItems="let item of finPlansList" [clrDgItem]="item">
       <clr-dg-cell>{{item.month}} {{item.year}}</clr-dg-cell>
       <clr-dg-cell style="text-align: center"><a
@@ -64,6 +70,89 @@
       </clr-dg-column-toggle>
     </clr-dg-footer>
   </clr-datagrid>
+</div>
+  <!-- ТАБЛА ДЛЯ МОБИЛЫ -->
+  <div class="ar-900-show">
+    <clr-datagrid>
+      <clr-dg-action-bar>
+        <div class="actions-container">
+          <div class="ar-900-show">
+            <div class="clr-row" style="margin-left: 1%">
+              <button type="button" class="btn btn-icon" (click)="getMainDataFromDb()" aria-label="Обновить">
+                <clr-icon shape="refresh"></clr-icon>
+              </button>
+              <button type="button" class="btn btn-icon" (click)="addCreditModalShow()" aria-label="Добавить кредит">
+                <clr-icon shape="bank"></clr-icon>
+              </button>
+              <button type="button" (click)="addIncomeModalShow()" class="btn btn-icon" aria-label="Задать доход">
+                <clr-icon shape="coin-bag"></clr-icon>
+              </button>
+              <button type="button" (click)="addGoalModalShow()" class="btn btn-icon" aria-label="Добавить цель">
+                <clr-icon shape="shopping-cart"></clr-icon>
+              </button>
+              <button type="button" (click)="salaryModalShow()" class="btn btn-icon" aria-label="Зарплаты">
+                <clr-icon shape="wallet"></clr-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </clr-dg-action-bar>
+
+      <clr-dg-column>Дата</clr-dg-column>
+      <clr-dg-column>Кредиты</clr-dg-column>
+      <clr-dg-column>Траты</clr-dg-column>
+      <clr-dg-column>Итого</clr-dg-column>
+      <clr-dg-row [ngStyle]="{'background-color': item.color, 'color': item.fontColor, 'border-bottom': item.borderWidth}"
+                  *clrDgItems="let item of finPlansList" [clrDgItem]="item">
+        <clr-dg-cell>{{item.monthNumber}} / {{item.year}}</clr-dg-cell>
+        <clr-dg-cell style="text-align: center">{{item.allCredits | number}}</clr-dg-cell>
+        <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length > 0" style="text-align: center"><a
+          (click)="showEditGoalsListModal($event, item)">{{item.purchasePlan.price}}</a></clr-dg-cell>
+        <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length == 0" style="text-align: center">
+          <clr-icon shape="minus"></clr-icon>
+        </clr-dg-cell>
+        <clr-dg-cell style="text-align: center"><a (click)="remainsModalShow(item)">{{item.remains | number}}
+          <clr-icon [ngStyle]="{'color': '#e00c0c'}" *ngIf="item.freeze" shape="lock" class="is-solid"></clr-icon>
+        </a>
+        </clr-dg-cell>
+         <clr-dg-row-detail *clrIfExpanded>
+           <table>
+             <tr>
+               <td>Кредит 1</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 1)">{{item.credit1 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 2</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 2)">{{item.credit2 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 3</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 3)">{{item.credit3 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 4</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 4)">{{item.credit4 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 5</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 5)">{{item.credit5 | number}}</a></td>
+             </tr>
+           </table>
+         </clr-dg-row-detail>
+      </clr-dg-row>
+      <!--    </div>-->
+      <clr-dg-footer>
+        <clr-dg-column-toggle>
+          <clr-dg-column-toggle-title>Отобразить столбцы</clr-dg-column-toggle-title>
+        </clr-dg-column-toggle>
+      </clr-dg-footer>
+    </clr-datagrid>
+  </div>
 </div>
 
 <!-- ФОРМА ДОБАВЛЕНИЯ КРЕДИТА -->
@@ -109,8 +198,22 @@
         <input type="date" clrDate name="startDate"
                formControlName="startDate"
                id="startDate"
-               min="2000-01-01"/>
+               min="2000-01-01" (clrDateChange)="toggleDateForNewLoanNotNull($event)"/>
       </clr-date-container>
+
+      <!-- ВЫБОР НОМЕРА КРЕДИТА -->
+      <clr-alert *ngIf="!isFreeSlotsExists" [clrAlertClosable]=false
+                 clrAlertType="danger">Нет свободных слотов!
+      </clr-alert>
+      <div *ngIf="isDateNotNullForAddNewLoanForm && isFreeSlotsExists">
+        <clr-datagrid [(clrDgSingleSelected)]="selectedLoanSlot">
+          <clr-dg-column>Номер кредита</clr-dg-column>
+          <clr-dg-row *ngFor="let element of freeLoanSlots.openSlots" [clrDgItem]="element">
+            <clr-dg-cell>{{element}}</clr-dg-cell>
+          </clr-dg-row>
+        </clr-datagrid>
+      </div>
+
 
       <!-- ОПИСАНИЕ -->
 
@@ -122,7 +225,8 @@
     </form>
 
     <div class="row">
-      <button type="button" [disabled]="addCreditForm.invalid" (click)="addLoan()" class="btn btn-primary mt-1">
+      <button type="button" [disabled]="addCreditForm.invalid || !selectedLoanSlot" (click)="addLoan()"
+              class="btn btn-primary mt-1">
         Создать
       </button>
     </div>
@@ -282,46 +386,48 @@
         </tr>
         </thead>
         <tbody>
-        <clr-alert *ngIf="(detailedBalanceContainer | async)?.emptyCalculations" [clrAlertClosable] = false
+        <clr-alert *ngIf="(detailedBalanceContainer | async)?.emptyCalculations" [clrAlertClosable]=false
                    clrAlertType="danger">У вас не заведено ни доходов, ни кредитов, ни целей. Деталка показана
-          не будет!</clr-alert>
+          не будет!
+        </clr-alert>
         <div *ngIf="!(detailedBalanceContainer | async)?.emptyCalculations">
-        <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
-          <td><span class="label label-info" style="margin-left: 1%">Предыдущий доход<span
-            class="badge badge-orange">{{(detailedBalanceContainer | async)?.previousIncome}}</span></span></td>
-          <td><span class="label label-danger">-</span></td>
-        </tr>
-        <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
-          <td><span class="label label-info" style="margin-left: 1%">Предыдущий расход<span
-            class="badge badge-orange">{{(detailedBalanceContainer | async)?.previousExpense}}</span></span></td>
-          <td><span class="label label-danger">-</span></td>
-        </tr>
-        <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
-          <td> <span class="label label-info" style="margin-left: 1%">Среднемесячный расход<span
-            class="badge badge-orange">{{(detailedBalanceContainer | async)?.monthlySpending}}</span></span></td>
-          <td><span class="label label-danger">-</span></td>
-        </tr>
-        <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
-          <td><span class="label label-info" style="margin-left: 1%">Покрытие кредитов<span
-            class="badge badge-orange">{{(detailedBalanceContainer | async)?.loanPayments}}</span></span></td>
-          <td><span class="label label-success">+</span></td>
-        </tr>
-        <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
-          <td> <span (click)="detailedIncomesFormShow()" class="label label-info" style="margin-left: 1%">Зарплата + Доход<span
-            class="badge badge-orange">{{(detailedBalanceContainer | async)?.currentIncome}}</span></span></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td> <span class="label label-danger" style="margin-left: 1%">ИТОГО<span
-            class="badge badge-success">{{(detailedBalanceContainer | async)?.balance}}</span></span></td>
-          <td></td>
-        </tr>
-          </div>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td><span class="label label-info" style="margin-left: 1%">Предыдущий доход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.previousIncome}}</span></span></td>
+            <td><span class="label label-danger">-</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td><span class="label label-info" style="margin-left: 1%">Предыдущий расход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.previousExpense}}</span></span></td>
+            <td><span class="label label-danger">-</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td> <span class="label label-info" style="margin-left: 1%">Среднемесячный расход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.monthlySpending}}</span></span></td>
+            <td><span class="label label-danger">-</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td><span class="label label-info" style="margin-left: 1%">Покрытие кредитов<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.loanPayments}}</span></span></td>
+            <td><span class="label label-success">+</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td> <span (click)="detailedIncomesFormShow()" class="label label-info" style="margin-left: 1%">Зарплата + Доход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.currentIncome}}</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td> <span class="label label-danger" style="margin-left: 1%">ИТОГО<span
+              class="badge badge-success">{{(detailedBalanceContainer | async)?.balance}}</span></span></td>
+            <td></td>
+          </tr>
+        </div>
         </tbody>
       </table>
     </div>
     <div class="row">
-      <button *ngIf="!(detailedBalanceContainer | async)?.freeze" [disabled]="(detailedBalanceContainer | async)?.emptyCalculations"
+      <button *ngIf="!(detailedBalanceContainer | async)?.freeze"
+              [disabled]="(detailedBalanceContainer | async)?.emptyCalculations"
               type="button" (click)="detailedIncomesFormShow()" class="btn btn-primary mt-1">Детализация доходов
       </button>
       <button *ngIf="!(detailedBalanceContainer | async)?.freeze" type="button" (click)="addFreezeModalShow()"
@@ -360,8 +466,8 @@
           <clr-dg-cell [ngStyle]="{'color': element.isBonus ? '#eaba09' :  '#f1f5f6'}">{{element.amount}}</clr-dg-cell>
         </clr-dg-row>
       </clr-datagrid>
-
     </div>
+
     <div class="row">
       <button type="button" [disabled]="selectedIncomes.length != 1" (click)="showEditIncomeForm()"
               class="btn btn-success">Редактирование

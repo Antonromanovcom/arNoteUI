@@ -10,10 +10,12 @@ export class FinPlan {
   credit3: number;
   credit4: number;
   credit5: number;
+  allCredits: number;
   credits: Credit[] = [];
   purchasePlan: ConsolidatedPurchase;
   remains: number;
   freeze: boolean;
   color: string;
   fontColor: string;
+  borderWidth: string;
 }

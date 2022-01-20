@@ -6,22 +6,18 @@
 
 }
 
+
+
 .dropdown .dropdown-toggle {
   margin: 5px;
 }
 
-.sumallrow {
+.sumallrow td{
   background-color: #790909;
   color: #ffffff;
 }
 
 ::ng-deep  .main-container {
-}
-
-.sumpriorrow {
-  background-color: #299834;
-  color: #ffdb51;
-
 }
 
 @media screen and (min-width: 1447px) {

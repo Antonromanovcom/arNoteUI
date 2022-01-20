@@ -3,7 +3,9 @@
   <div class="branding">
     <a class="nav-link">
       <clr-icon shape="shield"></clr-icon>
+      <div class="ar-900-hide">
       <span class="title">arNote Project</span>
+      </div>
     </a>
   </div>
   <div *ngIf="authService.isAuthenticated()" class="header-nav">
@@ -11,20 +13,6 @@
       <clr-icon shape="home"></clr-icon>
     </a>
   </div>
-
-  <!--<div class="header-actions">
-    <clr-dropdown class="dropdown bottom-right" [clrCloseMenuOnItemClick]="true">
-      <button class="nav-icon" clrDropdownToggle>
-        <clr-icon shape="user"></clr-icon>
-        <clr-icon shape="caret down"></clr-icon>
-      </button>
-
-      <div class="dropdown-menu">
-        <label class="dropdown-header">Меню пользователя</label>
-        <a *ngFor="let item of loginDropDownMenu" (click)="loginIconHandler(item)"  clrDropdownItem>{{item}}</a>
-      </div>
-    </clr-dropdown>
-  </div>-->
 
   <div class="header-actions">
 
@@ -35,7 +23,6 @@
       </button>
       <clr-dropdown-menu *clrIfOpen>
         <label class="dropdown-header">Меню пользователя</label>
-<!--        <a *ngFor="let item of loginDropDownMenu" (click)="loginIconHandler(item)"  clrDropdownItem>{{item}}</a>-->
         <div clrDropdownItem (click)="loginIconHandler('Регистрация')">Регистрация</div>
         <div clrDropdownItem (click)="loginIconHandler(loginLogoutText)">{{loginLogoutText}}</div>
       </clr-dropdown-menu>
