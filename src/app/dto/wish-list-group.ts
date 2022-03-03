@@ -1,6 +1,5 @@
 import {WishGroupItem} from './wish-group-item';
 
-
 export class WishListGroup {
 
   wishList: WishGroupItem[] = [];

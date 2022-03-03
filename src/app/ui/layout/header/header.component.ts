@@ -17,7 +17,7 @@ import {Subscription} from 'rxjs/Subscription';
   selector: 'app-header',
   templateUrl: 'header.component.html',
   providers: [AuthService, HttpService],
-  styles: []
+  styleUrls: ['./header.component.css']
 })
 export class HeaderComponent implements OnInit {
 
@@ -28,7 +28,6 @@ export class HeaderComponent implements OnInit {
   private subscription: Subscription;
   cryptokey = '';
   myBaseUrl = this.SERVER_URL + '/rest/wishes';
-  _myBaseUrl = 'http://localhost:8080/rest/wishes';
   usersUrl = this.myBaseUrl + '/users'; // основная ссылка на api
   serviceMessage: MessageCode;
   loginLogoutText: string;

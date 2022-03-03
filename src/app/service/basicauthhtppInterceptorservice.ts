@@ -10,7 +10,6 @@ export class BasicAuthHtppInterceptorService implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
 
     const idToken = localStorage.getItem('token');
-    // console.log('token', idToken);
     if (idToken) {
       const cloned = req.clone({
         headers: req.headers.set('Authorization', idToken)

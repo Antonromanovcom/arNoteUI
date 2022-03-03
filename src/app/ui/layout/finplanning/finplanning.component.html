@@ -1,0 +1,877 @@
+<clr-alert [clrAlertType]="'success'" *ngIf="result">
+  <clr-alert-item>
+        <span class="alert-text">
+            {{result}}
+        </span>
+  </clr-alert-item>
+</clr-alert>
+
+<clr-alert [clrAlertType]="'danger'" *ngIf="error">
+  <clr-alert-item>
+        <span class="alert-text">
+            {{error}}
+        </span>
+  </clr-alert-item>
+</clr-alert>
+<div>
+<!--  ТАБЛА ДЛЯ ПОЛНОГО ЭКРАНА  -->
+  <div class="ar-900-hide">
+  <clr-datagrid>
+    <clr-dg-action-bar>
+      <div class="actions-container">
+        <div class="row">
+          <div class="ar-900-hide">
+            <div class="clr-row" style="margin-left: 1%">
+              <button class="btn btn-secondary" (click)="getMainDataFromCache()">Запросить из Кэша</button>
+              <button class="btn btn-primary" (click)="getMainDataFromDb()">Запросить из БД</button>
+              <button class="btn btn-secondary" (click)="addCreditModalShow()">Добавить кредит</button>
+              <button class="btn btn-secondary" (click)="addIncomeModalShow()">Добавить доход</button>
+              <button class="btn btn-secondary" (click)="addGoalModalShow()">Добавить цель / покупку</button>
+              <button class="btn btn-secondary" (click)="salaryModalShow()">Зарплаты</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </clr-dg-action-bar>
+    <clr-dg-column>Дата</clr-dg-column>
+    <clr-dg-column>Кредит 1</clr-dg-column>
+    <clr-dg-column>Кредит 2</clr-dg-column>
+    <clr-dg-column>Кредит 3</clr-dg-column>
+    <clr-dg-column>Кредит 4</clr-dg-column>
+    <clr-dg-column>Кредит 5</clr-dg-column>
+    <clr-dg-column>Траты</clr-dg-column>
+    <clr-dg-column>Итого</clr-dg-column>
+    <clr-dg-row [ngStyle]="{'background-color': item.color, 'color': item.fontColor, 'border-bottom': item.borderWidth}"
+                *clrDgItems="let item of finPlansList" [clrDgItem]="item">
+      <clr-dg-cell>{{item.month}} {{item.year}}</clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a
+        (click)="editCreditModalShow($event, item, 1)">{{item.credit1 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a
+        (click)="editCreditModalShow($event, item, 2)">{{item.credit2 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a
+        (click)="editCreditModalShow($event, item, 3)">{{item.credit3 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a
+        (click)="editCreditModalShow($event, item, 4)">{{item.credit4 | number}}</a></clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a
+        (click)="editCreditModalShow($event, item, 5)">{{item.credit5 | number}}</a></clr-dg-cell>
+      <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length > 0" style="text-align: center"><a
+        (click)="showEditGoalsListModal($event, item)">{{item.purchasePlan.shortDescription}}</a></clr-dg-cell>
+      <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length == 0" style="text-align: center">
+        <clr-icon shape="minus"></clr-icon>
+      </clr-dg-cell>
+      <clr-dg-cell style="text-align: center"><a (click)="remainsModalShow(item)">{{item.remains | number}}
+        <clr-icon [ngStyle]="{'color': '#e00c0c'}" *ngIf="item.freeze" shape="lock" class="is-solid"></clr-icon>
+      </a>
+      </clr-dg-cell>
+    </clr-dg-row>
+    <clr-dg-footer>
+      <clr-dg-column-toggle>
+        <clr-dg-column-toggle-title>Отобразить столбцы</clr-dg-column-toggle-title>
+      </clr-dg-column-toggle>
+    </clr-dg-footer>
+  </clr-datagrid>
+</div>
+  <!-- ТАБЛА ДЛЯ МОБИЛЫ -->
+  <div class="ar-900-show">
+    <clr-datagrid>
+      <clr-dg-action-bar>
+        <div class="actions-container">
+          <div class="ar-900-show">
+            <div class="clr-row" style="margin-left: 1%">
+              <button type="button" class="btn btn-icon" (click)="getMainDataFromDb()" aria-label="Обновить">
+                <clr-icon shape="refresh"></clr-icon>
+              </button>
+              <button type="button" class="btn btn-icon" (click)="addCreditModalShow()" aria-label="Добавить кредит">
+                <clr-icon shape="bank"></clr-icon>
+              </button>
+              <button type="button" (click)="addIncomeModalShow()" class="btn btn-icon" aria-label="Задать доход">
+                <clr-icon shape="coin-bag"></clr-icon>
+              </button>
+              <button type="button" (click)="addGoalModalShow()" class="btn btn-icon" aria-label="Добавить цель">
+                <clr-icon shape="shopping-cart"></clr-icon>
+              </button>
+              <button type="button" (click)="salaryModalShow()" class="btn btn-icon" aria-label="Зарплаты">
+                <clr-icon shape="wallet"></clr-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </clr-dg-action-bar>
+
+      <clr-dg-column>Дата</clr-dg-column>
+      <clr-dg-column>Кредиты</clr-dg-column>
+      <clr-dg-column>Итого</clr-dg-column>
+      <clr-dg-row [ngStyle]="{'background-color': item.color, 'color': item.fontColor, 'border-bottom': item.borderWidth}"
+                  *clrDgItems="let item of finPlansList" [clrDgItem]="item">
+        <clr-dg-cell>{{item.monthNumber}} / {{item.year}}</clr-dg-cell>
+        <clr-dg-cell style="text-align: center">{{item.allCredits | number}}</clr-dg-cell>
+        <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length == 0" style="text-align: center">
+          <clr-icon shape="minus"></clr-icon>
+        </clr-dg-cell>
+        <clr-dg-cell style="text-align: center"><a (click)="remainsModalShow(item)">{{item.remains | number}}
+          <clr-icon [ngStyle]="{'color': '#e00c0c'}" *ngIf="item.freeze" shape="lock" class="is-solid"></clr-icon>
+        </a>
+        </clr-dg-cell>
+         <clr-dg-row-detail *clrIfExpanded>
+           <table>
+             <tr>
+               <td>Кредит 1</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 1)">{{item.credit1 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 2</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 2)">{{item.credit2 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 3</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 3)">{{item.credit3 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 4</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 4)">{{item.credit4 | number}}</a></td>
+             </tr>
+             <tr>
+               <td>Кредит 5</td>
+               <td> - </td>
+               <td><a (click)="editCreditModalShow($event, item, 5)">{{item.credit5 | number}}</a></td>
+             </tr>
+             <tr *ngIf="item.purchasePlan.purchasePlan.length > 0">
+               <td>Траты</td>
+               <td> - </td>
+               <td><a
+                 (click)="showEditGoalsListModal($event, item)">{{item.purchasePlan.price}}</a></td>
+             </tr>
+           </table>
+         </clr-dg-row-detail>
+      </clr-dg-row>
+      <!--    </div>-->
+      <clr-dg-footer>
+        <clr-dg-column-toggle>
+          <clr-dg-column-toggle-title>Отобразить столбцы</clr-dg-column-toggle-title>
+        </clr-dg-column-toggle>
+      </clr-dg-footer>
+    </clr-datagrid>
+  </div>
+</div>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ КРЕДИТА -->
+
+<clr-modal [(clrModalOpen)]="isLoanAdd">
+  <h3 class="modal-title">Добавить новый кредит</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addCreditForm">
+
+      <!-- ПОЛЕ СТАРТОВАЯ СУММА -->
+
+      <clr-input-container>
+
+        <label #label for="startAmount" class="input-label clr-col-12">Стартовая сумма кредита</label>
+        <input type="text" clrInput formControlName="startAmount" id="startAmount" name="startAmount" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ПЛАТИШЬ ПО КРЕДИТУ ВООБЩЕ -->
+
+      <clr-input-container>
+
+        <label #label for="fullPayPerMonth" class="input-label clr-col-12">Ежемесячный платеж (полный)</label>
+        <input type="text" clrInput formControlName="fullPayPerMonth" id="fullPayPerMonth" name="fullPayPerMonth"
+               autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ИЗ ЕЖЕМЕСЯЧНОГО ПЛАТЕЖА РЕАЛЬНО УХОДИТ В ТЕЛО КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="realPayPerMonth" class="input-label clr-col-12">Уходит в тело кредита</label>
+        <input type="text" clrInput formControlName="realPayPerMonth" id="realPayPerMonth" name="realPayPerMonth"
+               autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА ОФОРМЛЕНИЯ КРЕДИТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="startDate"
+               formControlName="startDate"
+               id="startDate"
+               min="2000-01-01" (clrDateChange)="toggleDateForNewLoanNotNull($event)"/>
+      </clr-date-container>
+
+      <!-- ВЫБОР НОМЕРА КРЕДИТА -->
+      <clr-alert *ngIf="!isFreeSlotsExists" [clrAlertClosable]=false
+                 clrAlertType="danger">Нет свободных слотов!
+      </clr-alert>
+      <div *ngIf="isDateNotNullForAddNewLoanForm && isFreeSlotsExists">
+        <clr-datagrid [(clrDgSingleSelected)]="selectedLoanSlot">
+          <clr-dg-column>Номер кредита</clr-dg-column>
+          <clr-dg-row *ngFor="let element of freeLoanSlots.openSlots" [clrDgItem]="element">
+            <clr-dg-cell>{{element}}</clr-dg-cell>
+          </clr-dg-row>
+        </clr-datagrid>
+      </div>
+
+
+      <!-- ОПИСАНИЕ -->
+
+      <clr-input-container>
+        <label #label for="add_credit_desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="add_credit_desc" name="add_credit_desc"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="addCreditForm.invalid || !selectedLoanSlot" (click)="addLoan()"
+              class="btn btn-primary mt-1">
+        Создать
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РЕДАКТИРОВАНИЯ КРЕДИТА -->
+
+<clr-modal [(clrModalOpen)]="isLoanEdit">
+  <h3 class="modal-title">Редактировать кредит</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editCreditForm">
+
+      <!-- ПОЛЕ ID КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="id" class="input-label clr-col-12">ID</label>
+        <input type="text" clrInput formControlName="id" id="id" name="id" autocomplete="off"
+               required readonly size="100%">
+      </clr-input-container>
+
+      <!-- ПОЛЕ НОМЕР КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="loanNumber" class="input-label clr-col-12">Номер кредита (всего 5)</label>
+        <input type="text" clrInput formControlName="loanNumber" id="loanNumber" name="loanNumber" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ПОЛЕ СТАРТОВАЯ СУММА -->
+
+      <clr-input-container>
+
+        <label #label for="startAmountForEditing" class="input-label clr-col-12">Стартовая сумма кредита</label>
+        <input type="text" clrInput formControlName="startAmount" id="startAmountForEditing" name="startAmount"
+               autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ПЛАТИШЬ ПО КРЕДИТУ ВООБЩЕ -->
+
+      <clr-input-container>
+
+        <label #label for="fullPayPerMonthForEditing" class="input-label clr-col-12">Ежемесячный платеж (полный)</label>
+        <input type="text" clrInput formControlName="fullPayPerMonth" id="fullPayPerMonthForEditing"
+               name="fullPayPerMonth" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- СКОЛЬКО ИЗ ЕЖЕМЕСЯЧНОГО ПЛАТЕЖА РЕАЛЬНО УХОДИТ В ТЕЛО КРЕДИТА -->
+
+      <clr-input-container>
+
+        <label #label for="realPayPerMonthForEditing" class="input-label clr-col-12">Уходит в тело кредита</label>
+        <input type="text" clrInput formControlName="realPayPerMonth" id="realPayPerMonthForEditing"
+               name="realPayPerMonth" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА ОФОРМЛЕНИЯ КРЕДИТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="startDateForEditing"
+               formControlName="startDate"
+               id="startDateForEditing"
+               min="2000-01-01"/>
+      </clr-date-container>
+
+      <!-- ОПИСАНИЕ -->
+
+      <clr-input-container>
+        <label #label for="desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="desc" name="desc" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+    </form>
+
+    <div class="row">
+      <button type="button" (click)="editLoan()" class="btn btn-primary mt-1">Изменить</button>
+      <button type="button" (click)="deleteLoan()" class="btn btn-danger mt-1">Удалить кредит</button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ ДОХОДА -->
+
+<clr-modal [(clrModalOpen)]="isAddIncome">
+  <h3 class="modal-title">Добавить доход</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addIncomeForm">
+
+      <!-- ЗНАЧЕНИЕ ДОХОДА  -->
+
+      <clr-input-container>
+
+        <label #label for="income" class="input-label clr-col-12">Доход</label>
+        <input type="text" clrInput formControlName="income" id="income" name="income" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ЭТО БОНУС?  -->
+
+      <clr-toggle-container>
+        <clr-toggle-wrapper>
+          <input type="checkbox" clrToggle formControlName="isBonus"
+                 id="isBonus"
+                 name="isBonus"/>
+          <label>Это годовой бонус?</label>
+        </clr-toggle-wrapper>
+      </clr-toggle-container>
+
+      <!-- ПОЯСНЕНИЯ -->
+
+      <clr-input-container>
+
+        <label #label for="income_desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="income_desc" name="income_desc" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="incomeDate"
+               formControlName="incomeDate"
+               id="incomeDate"
+               min="2000-01-01"/>
+      </clr-date-container>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="addIncomeForm.invalid" (click)="addIncome()" class="btn btn-primary mt-1">
+        Добавить
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДЕТАЛКИ ПО ОСТАТКАМ -->
+
+<clr-modal [(clrModalOpen)]="isRemainsDetailInfoShown">
+  <h3 class="modal-title">Детальная информация по остаткам</h3>
+  <div class="modal-body">
+
+    <div>
+      <table class="table table-noborder">
+        <thead>
+        <tr>
+          <th class="left">
+            <span class="badge badge-orange">{{(detailedBalanceContainer | async)?.date}}</span>
+          </th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <clr-alert *ngIf="(detailedBalanceContainer | async)?.emptyCalculations" [clrAlertClosable]=false
+                   clrAlertType="danger">У вас не заведено ни доходов, ни кредитов, ни целей. Деталка показана
+          не будет!
+        </clr-alert>
+        <div *ngIf="!(detailedBalanceContainer | async)?.emptyCalculations">
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td><span class="label label-info" style="margin-left: 1%">Предыдущий доход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.previousIncome}}</span></span></td>
+            <td><span class="label label-danger">-</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td><span class="label label-info" style="margin-left: 1%">Предыдущий расход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.previousExpense}}</span></span></td>
+            <td><span class="label label-danger">-</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td> <span class="label label-info" style="margin-left: 1%">Среднемесячный расход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.monthlySpending}}</span></span></td>
+            <td><span class="label label-danger">-</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td><span class="label label-info" style="margin-left: 1%">Покрытие кредитов<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.loanPayments}}</span></span></td>
+            <td><span class="label label-success">+</span></td>
+          </tr>
+          <tr *ngIf="!(detailedBalanceContainer | async)?.freeze">
+            <td> <span (click)="detailedIncomesFormShow()" class="label label-info" style="margin-left: 1%">Зарплата + Доход<span
+              class="badge badge-orange">{{(detailedBalanceContainer | async)?.currentIncome}}</span></span></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td> <span class="label label-danger" style="margin-left: 1%">ИТОГО<span
+              class="badge badge-success">{{(detailedBalanceContainer | async)?.balance}}</span></span></td>
+            <td></td>
+          </tr>
+        </div>
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <button *ngIf="!(detailedBalanceContainer | async)?.freeze"
+              [disabled]="(detailedBalanceContainer | async)?.emptyCalculations"
+              type="button" (click)="detailedIncomesFormShow()" class="btn btn-primary mt-1">Детализация доходов
+      </button>
+      <button *ngIf="!(detailedBalanceContainer | async)?.freeze" type="button" (click)="addFreezeModalShow()"
+              class="btn btn-secondary mt-1">Фриз
+      </button>
+      <button *ngIf="(detailedBalanceContainer | async)?.freeze" type="button" (click)="deleteFreeze()"
+              class="btn btn-danger mt-1">Удалить фриз
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДЕТАЛКИ ПО ДОХОДАМ -->
+
+<clr-modal [(clrModalOpen)]="isIncomeDetailForm">
+  <h3 class="modal-title">Детальная информация по доходам</h3>
+  <div class="modal-body">
+
+    <div>
+      <span class="badge badge-orange">{{(detailedBalanceContainer | async)?.date}} </span>
+      <clr-datagrid [(clrDgSelected)]="selectedIncomes">
+        <clr-dg-column>ID</clr-dg-column>
+        <clr-dg-column>Дата</clr-dg-column>
+        <clr-dg-column>Описание</clr-dg-column>
+        <clr-dg-column>Доход</clr-dg-column>
+
+        <clr-dg-row *ngFor="let element of (detailedBalanceContainer | async)?.currentIncomeDetail.incomeList"
+                    [clrDgItem]="element">
+          <clr-dg-cell [ngStyle]="{'color': element.isBonus ? '#eaba09' :  '#f1f5f6'}">
+            <clr-icon *ngIf="element.isBonus" shape="coin-bag" class="is-solid"></clr-icon>
+            {{element.id}}</clr-dg-cell>
+          <clr-dg-cell
+            [ngStyle]="{'color': element.isBonus ? '#eaba09' :  '#f1f5f6'}">{{element.incomeDate}}</clr-dg-cell>
+          <clr-dg-cell
+            [ngStyle]="{'color': element.isBonus ? '#eaba09' :  '#f1f5f6'}">{{element.incomeDescription}}</clr-dg-cell>
+          <clr-dg-cell [ngStyle]="{'color': element.isBonus ? '#eaba09' :  '#f1f5f6'}">{{element.amount}}</clr-dg-cell>
+        </clr-dg-row>
+      </clr-datagrid>
+    </div>
+
+    <div class="row">
+      <button type="button" [disabled]="selectedIncomes.length != 1" (click)="showEditIncomeForm()"
+              class="btn btn-success">Редактирование
+      </button>
+      <button type="button" [disabled]="selectedIncomes.length < 1" (click)="deleteIncomes()" class="btn btn-danger">
+        Удаление
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РЕДАКТИРОВАНИЯ ДОХОДА -->
+
+<clr-modal [(clrModalOpen)]="isIncomeEditForm">
+  <h3 class="modal-title">Редактировать доход</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editIncomeForm">
+
+      <!-- ЗНАЧЕНИЕ ДОХОДА  -->
+
+      <clr-input-container>
+
+        <label #label for="edit_income_id" class="input-label clr-col-12">ID</label>
+        <input type="text" clrInput formControlName="id" id="edit_income_id" name="edit_income_id" autocomplete="off"
+               required readonly size="100%">
+      </clr-input-container>
+
+      <clr-input-container>
+
+        <label #label for="edit_income_amount" class="input-label clr-col-12">Доход</label>
+        <input type="text" clrInput formControlName="income" id="edit_income_amount" name="edit_income_amount"
+               autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ЭТО БОНУС?  -->
+
+      <clr-toggle-container>
+        <clr-toggle-wrapper>
+          <input type="checkbox" clrToggle formControlName="isBonus"
+                 id="edit_income_is_bonus"
+                 name="edit_income_is_bonus"/>
+          <label>Это годовой бонус?</label>
+        </clr-toggle-wrapper>
+      </clr-toggle-container>
+
+      <!-- ПОЯСНЕНИЯ -->
+
+      <clr-input-container>
+
+        <label #label for="edit_income_desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="desc" id="edit_income_desc" name="edit_income_desc"
+               autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+      <!-- ДАТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="edit_income_income_date"
+               formControlName="incomeDate"
+               id="edit_income_income_date"
+               min="2000-01-01"/>
+      </clr-date-container>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="editIncomeForm.invalid" (click)="editIncome()" class="btn btn-primary mt-1">
+        Редактировать
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ ТРАТЫ -->
+
+<clr-modal [(clrModalOpen)]="isGoalAddForm">
+  <h3 class="modal-title">Добавить цель / трату</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addGoalForm">
+
+      <!-- ОПИСАНИЕ  -->
+
+      <clr-input-container>
+        <label #label for="add_goal_description" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="description" id="add_goal_description" name="add_goal_description"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- ЗНАЧЕНИЕ РАСХОДА  -->
+
+      <clr-input-container>
+
+        <label #label for="add_goal_price" class="input-label clr-col-12">Цена</label>
+        <input type="text" clrInput formControlName="price" id="add_goal_price" name="add_goal_price" autocomplete="off"
+               required size="100%">
+      </clr-input-container>
+
+
+      <!-- ДАТА -->
+
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="add_goal_start_date"
+               formControlName="startDate"
+               id="add_goal_start_date"
+               min="2000-01-01" (clrDateChange)="toggleDateNotNull($event)"/>
+      </clr-date-container>
+
+      <!-- ЭТО ПОГАШЕНИЕ КРЕДИТА?  -->
+
+      <clr-toggle-container *ngIf="isDateNotNullForAddNewGoalForm">
+        <clr-toggle-wrapper>
+          <input type="checkbox" clrToggle formControlName="isRepayment"
+                 id="add_goal_is_repayment"
+                 name="add_goal_is_repayment" (change)="repaymentToggle(null)"/>
+          <label>Это досрочное погашение кредита?</label>
+        </clr-toggle-wrapper>
+      </clr-toggle-container>
+
+      <div *ngIf="addGoalForm.value.isRepayment">
+        <clr-datagrid [(clrDgSingleSelected)]="selectedLoan">
+          <clr-dg-column>Номер</clr-dg-column>
+          <clr-dg-column>Описание</clr-dg-column>
+          <clr-dg-column>Сумма</clr-dg-column>
+          <clr-dg-column>Дата взятия</clr-dg-column>
+          <clr-dg-placeholder>Нет кредитов на эту дату!</clr-dg-placeholder>
+          <clr-dg-row *ngFor="let element of loansList" [clrDgItem]="element">
+            <clr-dg-cell>{{element.number}}</clr-dg-cell>
+            <clr-dg-cell>{{element.description}}</clr-dg-cell>
+            <clr-dg-cell>{{element.startAmount}}</clr-dg-cell>
+            <clr-dg-cell>{{element.startDate}}</clr-dg-cell>
+          </clr-dg-row>
+        </clr-datagrid>
+      </div>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="addGoalForm.invalid" (click)="addGoal()" class="btn btn-primary mt-1">Добавить
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РЕДАКТИРОВАНИЯ ТРАТЫ -->
+
+<clr-modal [(clrModalOpen)]="isGoalEditForm">
+  <h3 class="modal-title">Редактировать цели / траты</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addGoalForm">
+      <span class="badge badge-orange">{{goalsForEditDate}}</span>
+
+      <!-- ТАБЛИЦА С РАНЕЕ ДОБАВЛЕННЫМИ ЦЕЛЯМИ  -->
+
+      <clr-datagrid [(clrDgSingleSelected)]="selectedGoal">
+        <clr-dg-column>Описание</clr-dg-column>
+        <clr-dg-column>Сумма</clr-dg-column>
+        <clr-dg-row *ngFor="let element of goalsListForEdit" [clrDgItem]="element">
+          <clr-dg-cell>{{element.description}}</clr-dg-cell>
+          <clr-dg-cell>{{element.price}}
+            <clr-icon [ngStyle]="{'color': '#e00c0c'}" *ngIf="element.loanId" shape="bank"
+                      class="is-solid"></clr-icon>
+          </clr-dg-cell>
+        </clr-dg-row>
+      </clr-datagrid>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="!selectedGoal" (click)="showEditSelectedIncomeForm()"
+              class="btn btn-success">Редактирование
+      </button>
+      <button type="button" [disabled]="!selectedGoal" (click)="deleteSelectedGoal()"
+              class="btn btn-danger">Удалить
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РЕДАКТИРОВАНИЯ КОНКРЕТНОЙ ВЫБРАННОЙ ТРАТЫ / ЦЕЛИ -->
+
+<clr-modal [(clrModalOpen)]="isSelectedGoalEditForm">
+  <h3 class="modal-title">Редактировать цель</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editGoalForm">
+
+      <!-- ТАБЛИЦА С РАНЕЕ ДОБАВЛЕННЫМИ ЦЕЛЯМИ  -->
+      <clr-input-container>
+        <label #label for="edit_goal_id" class="input-label clr-col-12">ID</label>
+        <input type="text" clrInput formControlName="id" id="edit_goal_id" name="edit_goal_id"
+               readonly autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- ЦЕННИК  -->
+      <clr-input-container>
+        <label #label for="edit_goal_price" class="input-label clr-col-12">Стоимость</label>
+        <input type="text" clrInput formControlName="price" id="edit_goal_price" name="edit_goal_price"
+               required="" autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- ОПИСАНИЕ  -->
+      <clr-input-container>
+        <label #label for="edit_goal_desc" class="input-label clr-col-12">Описание</label>
+        <input type="text" clrInput formControlName="description" id="edit_goal_desc" name="edit_goal_desc"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- Дата  -->
+      <clr-date-container>
+        <label>Дата покупки</label>
+        <input type="date" clrDate name="edit_goal_date"
+               formControlName="startDate"
+               id="edit_goal_date"
+               min="2000-01-01"/>
+      </clr-date-container>
+
+      <!-- Погашение кредита  -->
+      <clr-input-container *ngIf="isGoalForLoan">
+        <label #label for="edit_goal_repayment" class="input-label clr-col-12">ID кредита при досрочном
+          погашении</label>
+        <input type="text" clrInput formControlName="repaymentId" id="edit_goal_repayment" name="edit_goal_repayment"
+               readonly autocomplete="off" size="100%">
+      </clr-input-container>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="editGoalForm.invalid" (click)="editGoal()" class="btn btn-success">
+        Редактировать
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РАБОТЫ С ЗАРПЛАТАМИ -->
+
+<clr-modal [(clrModalOpen)]="isSalaryShow">
+  <h3 class="modal-title">Зарплаты</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editGoalForm">
+
+      <!-- ТАБЛИЦА С ЗАРПЛАТАМИ -->
+
+      <clr-datagrid [(clrDgSingleSelected)]="selectedSalary">
+        <clr-dg-column>Дата</clr-dg-column>
+        <clr-dg-column>Полная зарплата</clr-dg-column>
+        <clr-dg-column>Месячные траты</clr-dg-column>
+        <clr-dg-row *ngFor="let element of salaryList" [clrDgItem]="element">
+          <clr-dg-cell>{{element.salaryDate}}</clr-dg-cell>
+          <clr-dg-cell>{{element.fullSalary}}</clr-dg-cell>
+          <clr-dg-cell>{{element.livingExpenses}}</clr-dg-cell>
+        </clr-dg-row>
+      </clr-datagrid>
+
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="!selectedSalary" (click)="showEditSalaryModal()" class="btn btn-success">
+        Редактировать
+      </button>
+      <button type="button" [disabled]="!selectedSalary" (click)="deleteSelectedSalary()" class="btn btn-danger">
+        Удалить
+      </button>
+      <button type="button" (click)="showAddSalaryModal()" class="btn btn-primary">Добавить</button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА РЕДАКТИРОВАНИЯ ЗП -->
+
+<clr-modal [(clrModalOpen)]="isEditSalaryShow">
+  <h3 class="modal-title">Редактирование зарплаты</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="editSalaryForm">
+
+      <!-- ID  -->
+      <clr-input-container>
+        <label #label for="edit_salary_id" class="input-label clr-col-12">ID</label>
+        <input type="text" clrInput formControlName="id" id="edit_salary_id" name="edit_salary_id"
+               readonly autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- ПОЛНАЯ ЗП  -->
+      <clr-input-container>
+        <label #label for="edit_salary_full_salary" class="input-label clr-col-12">Полная ЗП</label>
+        <input type="text" clrInput formControlName="fullSalary" id="edit_salary_full_salary"
+               name="edit_salary_full_salary"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- ОСТАТОЧНАЯ ЗП  -->
+      <clr-input-container>
+        <label #label for="edit_salary_residual_salary" class="input-label clr-col-12">Остаточная ЗП</label>
+        <input type="text" clrInput formControlName="residualSalary" id="edit_salary_residual_salary"
+               name="edit_salary_residual_salary"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+
+      <!-- МЕСЯЧНЫЕ ТРАТЫ  -->
+      <clr-input-container>
+        <label #label for="edit_salary_livingExpenses" class="input-label clr-col-12">Месячные траты</label>
+        <input type="text" clrInput formControlName="livingExpenses" id="edit_salary_livingExpenses"
+               name="edit_salary_livingExpenses"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- Дата  -->
+      <clr-date-container>
+        <label>Дата</label>
+        <input type="date" clrDate name="edit_salary_salary_date"
+               formControlName="salaryDate"
+               id="edit_salary_salary_date"
+               min="2000-01-01"/>
+      </clr-date-container>
+
+
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="editSalaryForm.invalid" (click)="editSalary()" class="btn btn-success">
+        Редактировать
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ НОВОЙ ЗП -->
+
+<clr-modal [(clrModalOpen)]="isAddNewSalaryShow">
+  <h3 class="modal-title">Добавление новой зарплаты</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addNewSalaryForm">
+
+      <!-- ПОЛНАЯ ЗП  -->
+      <clr-input-container>
+        <label #label for="add_salary_full_salary" class="input-label clr-col-12">Полная ЗП</label>
+        <input type="text" clrInput formControlName="fullSalary" id="add_salary_full_salary"
+               name="add_salary_full_salary"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- ОСТАТОЧНАЯ ЗП  -->
+      <clr-input-container>
+        <label #label for="add_salary_residual_salary" class="input-label clr-col-12">Остаточная ЗП</label>
+        <input type="text" clrInput formControlName="residualSalary" id="add_salary_residual_salary"
+               name="add_salary_residual_salary"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+
+      <!-- МЕСЯЧНЫЕ ТРАТЫ  -->
+      <clr-input-container>
+        <label #label for="add_salary_livingExpenses" class="input-label clr-col-12">Месячные траты</label>
+        <input type="text" clrInput formControlName="livingExpenses" id="add_salary_livingExpenses"
+               name="add_salary_livingExpenses"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+
+      <!-- Дата  -->
+      <clr-date-container>
+        <label>Дата</label>
+        <input type="date" clrDate name="add_salary_salary_date"
+               formControlName="salaryDate"
+               id="add_salary_salary_date"
+               min="2000-01-01"/>
+      </clr-date-container>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="addNewSalaryForm.invalid" (click)="addSalary()" class="btn btn-success">
+        Добавить
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+<!-- ФОРМА ДОБАВЛЕНИЯ ФРИЗА -->
+
+<clr-modal [(clrModalOpen)]="isAddNewFreezeFormShow">
+  <h3 class="modal-title">Добавление фриза</h3>
+  <div class="modal-body">
+    <form clrForm [formGroup]="addNewFreezeForm">
+
+      <div>
+        <span class="badge badge-orange"
+              *ngIf="selectedFinPlan">{{selectedFinPlan.month}} {{selectedFinPlan.year}}</span>
+      </div>
+      <!-- Значение  -->
+      <clr-input-container>
+        <label #label for="add_new_freeze_amount" class="input-label clr-col-12">Значение</label>
+        <input type="text" clrInput formControlName="amount" id="add_new_freeze_amount" name="add_new_freeze_amount"
+               autocomplete="off" size="100%">
+      </clr-input-container>
+    </form>
+
+    <div class="row">
+      <button type="button" [disabled]="addNewFreezeForm.invalid" (click)="addFreeze()" class="btn btn-success">
+        Добавить
+      </button>
+    </div>
+  </div>
+</clr-modal>
+
+

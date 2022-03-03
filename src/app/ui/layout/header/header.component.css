@@ -1,0 +1,17 @@
+@media screen and (min-width: 1447px) {
+  .ar-900-show {
+    display:none!important;
+  }
+}
+
+@media screen and (max-width: 1447px) {
+  .ar-900-hide {
+    display:none!important;
+  }
+  .ar-900-show {
+    display:initial!important;
+  }
+}
+:host{
+
+}

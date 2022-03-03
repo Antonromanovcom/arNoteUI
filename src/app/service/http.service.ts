@@ -8,6 +8,16 @@ import {environment} from '../../environments/environment';
 import {NewInstrumentRq} from '../dto/NewInstrumentRq';
 import {Bond} from '../dto/bond';
 import {SearchRq} from '../dto/searchwishes';
+import {NewLoanRq} from '../dto/NewLoanRq';
+import {EditLoanRq} from '../dto/EditLoanRq';
+import {NewIncomeRq} from '../dto/NewIncomeRq';
+import {GetDetailedBalanceRq} from '../dto/GetDetailedBalanceRq';
+import {GetLoansByDateRq} from '../dto/GetLoansByDateRq';
+import {NewGoalRq} from '../dto/NewGoalRq';
+import {DeleteIncomesRq} from '../dto/DeleteIncomesRq';
+import {SalaryRq} from '../dto/SalaryRq';
+import {NewFreezeRq} from '../dto/NewFreezeRq';
+import {FinPlan} from '../dto/finplan';
 
 
 @Injectable()
@@ -54,6 +64,107 @@ export class HttpService {
     return this.http.post<Bond>(url, instrument, httpOptions);
   }
 
+  public addLoan(loan: NewLoanRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewLoanRq>(url, loan, httpOptions);
+  }
+
+  public addGoal(loan: NewGoalRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewGoalRq>(url, loan, httpOptions);
+  }
+
+  public editGoal(loan: NewGoalRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.put<NewGoalRq>(url, loan, httpOptions);
+  }
+
+  public editSalary(loan: SalaryRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.put<SalaryRq>(url, loan, httpOptions);
+  }
+
+  public addIncome(loan: NewIncomeRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewIncomeRq>(url, loan, httpOptions);
+  }
+
+  public addFreeze(loan: NewFreezeRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<NewFreezeRq>(url, loan, httpOptions);
+  }
+
+  public getDetailedBalance(request: GetDetailedBalanceRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<GetDetailedBalanceRq>(url, request, httpOptions);
+  }
+
+  public getLoansByDate(request: GetLoansByDateRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<GetLoansByDateRq>(url, request, httpOptions);
+  }
+
+  public editLoan(loan: EditLoanRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.put<NewLoanRq>(url, loan, httpOptions);
+  }
+
+  public editIncome(loan: NewIncomeRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.put<NewIncomeRq>(url, loan, httpOptions);
+  }
+
+  public deleteIncomes(incomes: DeleteIncomesRq, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.post(url, incomes, httpOptions);
+  }
+
   public deleteInstrument(ticker: string, url: string): Observable<any> {
 
     const httpOptions = {
@@ -63,6 +174,17 @@ export class HttpService {
     };
 
     return this.http.delete(url + '?ticker=' + ticker, httpOptions);
+  }
+
+  public deleteFinPlanningEntity(id: number, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.delete(url + '?id=' + id, httpOptions);
   }
 
   public sendFile(formData: FormData, url: string): Observable<any> {
@@ -127,5 +249,25 @@ export class HttpService {
     };
 
     return this.http.put<User>(url, user, httpOptions);
+  }
+
+  public addSalary(loan: SalaryRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<SalaryRq>(url, loan, httpOptions);
+  }
+
+  public deleteFreeze(selectedFinPlan: FinPlan, url: string): Observable<any> {
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+
+    return this.http.delete(url + '?year=' + selectedFinPlan.year + '&month=' + selectedFinPlan.monthNumber, httpOptions);
   }
 }
