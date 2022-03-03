@@ -432,7 +432,9 @@ export class FinPlanningComponent implements OnInit {
       this.editCreditForm.value.startAmount,
       this.editCreditForm.value.fullPayPerMonth,
       this.editCreditForm.value.realPayPerMonth,
-      currentDate.format('YYYY-MM-DD'));
+      currentDate.format('YYYY-MM-DD'),
+      this.editCreditForm.value.loanNumber,
+      );
 
     this.httpService.editLoan(payload, this.loanUri).pipe(
       catchError(err => {

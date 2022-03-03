@@ -100,14 +100,11 @@
 
       <clr-dg-column>Дата</clr-dg-column>
       <clr-dg-column>Кредиты</clr-dg-column>
-      <clr-dg-column>Траты</clr-dg-column>
       <clr-dg-column>Итого</clr-dg-column>
       <clr-dg-row [ngStyle]="{'background-color': item.color, 'color': item.fontColor, 'border-bottom': item.borderWidth}"
                   *clrDgItems="let item of finPlansList" [clrDgItem]="item">
         <clr-dg-cell>{{item.monthNumber}} / {{item.year}}</clr-dg-cell>
         <clr-dg-cell style="text-align: center">{{item.allCredits | number}}</clr-dg-cell>
-        <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length > 0" style="text-align: center"><a
-          (click)="showEditGoalsListModal($event, item)">{{item.purchasePlan.price}}</a></clr-dg-cell>
         <clr-dg-cell *ngIf="item.purchasePlan.purchasePlan.length == 0" style="text-align: center">
           <clr-icon shape="minus"></clr-icon>
         </clr-dg-cell>
@@ -141,6 +138,12 @@
                <td>Кредит 5</td>
                <td> - </td>
                <td><a (click)="editCreditModalShow($event, item, 5)">{{item.credit5 | number}}</a></td>
+             </tr>
+             <tr *ngIf="item.purchasePlan.purchasePlan.length > 0">
+               <td>Траты</td>
+               <td> - </td>
+               <td><a
+                 (click)="showEditGoalsListModal($event, item)">{{item.purchasePlan.price}}</a></td>
              </tr>
            </table>
          </clr-dg-row-detail>
@@ -255,7 +258,7 @@
 
         <label #label for="loanNumber" class="input-label clr-col-12">Номер кредита (всего 5)</label>
         <input type="text" clrInput formControlName="loanNumber" id="loanNumber" name="loanNumber" autocomplete="off"
-               required readonly size="100%">
+               required size="100%">
       </clr-input-container>
 
       <!-- ПОЛЕ СТАРТОВАЯ СУММА -->
