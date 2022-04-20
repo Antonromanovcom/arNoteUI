@@ -48,24 +48,5 @@ export class CommonService {
   }
 
 
-// The get method is use for decrypt the value.
-  decrypt(keys, value) {
-    var key = CryptoJS.enc.Utf8.parse(keys);
-    console.log('key - ' + key);
-    var iv = CryptoJS.enc.Utf8.parse(keys);
-    console.log('iv - ' + iv);
-    var decrypted = CryptoJS.AES.decrypt(value, key, {
-      keySize: 128 / 8,
-      iv: iv,
-      mode: CryptoJS.mode.CBC,
-      padding: CryptoJS.pad.Pkcs7
-    });
-
-    console.log('decr - ' + decrypted);
-
-    return decrypted.toString(CryptoJS.enc.Utf8);
-  }
-
-
 
 }

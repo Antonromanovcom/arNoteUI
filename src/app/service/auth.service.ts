@@ -7,7 +7,6 @@ import {User} from '../dto/user';
 
 const helper = new JwtHelperService();
 let myRawToken = localStorage.getItem('token');
-const decodedToken = helper.decodeToken(myRawToken);
 let isExpired = helper.isTokenExpired(myRawToken);
 
 

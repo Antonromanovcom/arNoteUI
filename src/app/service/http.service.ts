@@ -18,6 +18,7 @@ import {DeleteIncomesRq} from '../dto/DeleteIncomesRq';
 import {SalaryRq} from '../dto/SalaryRq';
 import {NewFreezeRq} from '../dto/NewFreezeRq';
 import {FinPlan} from '../dto/finplan';
+import {ToggleDeltaRq} from '../dto/ToggleDeltaRq';
 
 
 @Injectable()
@@ -258,6 +259,15 @@ export class HttpService {
       })
     };
     return this.http.post<SalaryRq>(url, loan, httpOptions);
+  }
+
+  public toggleDelta(loan: ToggleDeltaRq, url: string): Observable<any> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    };
+    return this.http.post<ToggleDeltaRq>(url, loan, httpOptions);
   }
 
   public deleteFreeze(selectedFinPlan: FinPlan, url: string): Observable<any> {

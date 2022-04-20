@@ -17,6 +17,7 @@ import {Moment} from 'moment';
 import {Returns} from '../../../dto/returns';
 import {Calendar} from '../../../dto/calendar';
 import {ModalService} from '../../../service/modal.service';
+import {ToggleDeltaRq} from '../../../dto/ToggleDeltaRq';
 
 @Component({
   selector: 'app-invest',
@@ -38,6 +39,7 @@ export class InvestingComponent implements OnInit {
   GET_PRICE_BY_TICKER_AND_DATE_URL = this.BASE_URL + '/price-by-date'; // текущая цена по тикеру
   GET_RETURNS = this.BASE_URL + '/returns'; // доходы
   CALENDAR = this.BASE_URL + '/calendar'; // календарь
+  TOGGLE_DELTA_MODE_URL = this.BASE_URL + '/toggledelta'; // переключить режим подсчета дельты
 
   // --------------------------------- ХРАНИЛИЩА ------------------------------------
 
@@ -82,9 +84,11 @@ export class InvestingComponent implements OnInit {
 
   // ---------------------------------- ФИЛЬТРЫ ----------------------------------------
 
-  filtersForInstrumentType = ['Акция', 'Облигация'];
+  filtersForInstrumentType = ['Акция', 'Облигация', 'ETF'];
   filtersForStatus = ['План', 'Факт']; // фильтры
   sortModes = ['По возрастанию [A-z / 1-10]', 'По убыванию [Z-a / 10-1]'];
+  deltaToggle = false;
+  deltaCaption = 'Тип Дельты: мой';
 
   constructor(private commonService: CommonService, private route: ActivatedRoute, private httpService: HttpService,
               private modalService: ModalService, private fb: FormBuilder) {
@@ -272,7 +276,7 @@ export class InvestingComponent implements OnInit {
    */
   getCurrentPriceAndLot(ticker: string, se: string) {
 
-    this.httpService.getData(this.GET_CURRENT_PRICE_BY_TICKER_URL + '?ticker=' + ticker + '&stockExchange='+se).pipe(
+    this.httpService.getData(this.GET_CURRENT_PRICE_BY_TICKER_URL + '?ticker=' + ticker + '&stockExchange=' + se).pipe(
       catchError(err => {
         return this.errorHandler(err, 'Невозможно запросить текущую цену бумаги!');
       })
@@ -314,6 +318,7 @@ export class InvestingComponent implements OnInit {
     ).subscribe(data => {
       this.bonds = data.bonds;
       this.getReturns(this.GET_RETURNS);
+      this.loadUserData();
     });
   }
 
@@ -372,6 +377,10 @@ export class InvestingComponent implements OnInit {
       }
       case 'Облигация': {
         this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'TYPE_BOND');
+        break;
+      }
+      case 'ETF': {
+        this.getBonds(this.GET_BONDS_URL_WITH_FILTERING + 'TYPE_ETF');
         break;
       }
       case 'План': {
@@ -574,5 +583,37 @@ export class InvestingComponent implements OnInit {
    */
   closeAddInstrumentModal() {
     this.isAddDialogShown = false;
+  }
+
+  /**
+   * Переключаем режим подсчета Дельты.
+   */
+  onDeltaToggleChange() {
+    let payload: ToggleDeltaRq;
+    this.deltaCaption = this.deltaToggle ? 'Тип Дельты: Свечи' : 'Тип Дельты: Тинькофф';
+
+    payload = new ToggleDeltaRq(this.deltaToggle ? 'CANDLE_DELTA' : 'TINKOFF_DELTA');
+    this.httpService.toggleDelta(payload, this.TOGGLE_DELTA_MODE_URL).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно переключить режим подсчета дельты!');
+      })
+    ).subscribe(res => {
+      this.showAlert('Переключили дельту на успешно добавлен!', 'ADD MODE', res);
+      this.getBonds(this.GET_BONDS_URL);
+    });
+  }
+
+  /**
+   * Загрузить данные пользователя. Например Фильтры.
+   */
+  loadUserData() {
+
+    this.httpService.isCryptoUser().pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно загрузить данные  пользователя!');
+      })
+    ).subscribe(data => {
+      this.deltaToggle = 'CANDLE_DELTA' === data.deltaMode;
+    });
   }
 }

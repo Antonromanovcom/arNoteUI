@@ -185,10 +185,7 @@ string
   }
 }
 
-errorHandler(err, message
-:
-string
-) {
+errorHandler(err, message: string) {
 
   this.isLogin = false;
   this.isUserDataEdit = false;
@@ -246,10 +243,7 @@ changeUserData() {
   }
 }
 
-sendMessagePush(message
-:
-string
-) {
+sendMessagePush(message: string) {
   const errorType = new MessageCode();
 
   errorType.messageType = message;

@@ -11,4 +11,6 @@ export class RelativeStockReturns {
   tinkoffDelta: number;
   percent: number;
   deltaPeriod: number;
+  candleDayDelta: number;
+  candleDayDeltaPercent: number;
 }
