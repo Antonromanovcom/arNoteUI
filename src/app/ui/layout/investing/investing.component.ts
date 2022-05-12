@@ -90,6 +90,8 @@ export class InvestingComponent implements OnInit {
   deltaToggle = false;
   deltaCaption = 'Тип Дельты: мой';
 
+  isAddNewInstrumentPossible = false;
+
   constructor(private commonService: CommonService, private route: ActivatedRoute, private httpService: HttpService,
               private modalService: ModalService, private fb: FormBuilder) {
   }
@@ -153,31 +155,37 @@ export class InvestingComponent implements OnInit {
    */
   getPriceForCurrentDate(event: any) {
     let currentDate: Moment;
-    if (event == null) {
-      currentDate = moment(new Date(), 'DD/MM/YYYY');
-    } else {
-      currentDate = moment(Date.parse(event));
-      if (currentDate == null) {
-        currentDate = moment(new Date(), 'DD/MM/YYYY');
-      }
-      console.log('Converted date after format: ', currentDate.format('YYYY-MM-DD'));
 
-      this.httpService.getData(this.GET_PRICE_BY_TICKER_AND_DATE_URL
-        + '?ticker='
-        + this.selectedInstrument.ticker
-        + '&purchaseDate='
-        + currentDate.format('YYYY-MM-DD')).pipe(
-        catchError(err => {
-          return this.errorHandler(err, 'Невозможно запросить текущую цену бумаги!');
-        })
-      ).subscribe(data => {
-        this.currentPrice = data;
-        console.log('Получили текущую цену на конкретную дату: ', this.currentPrice.currentPrice);
-        this.addInstrumentForm.patchValue({
-          price: this.currentPrice.currentPrice
-        });
-      });
+    currentDate = moment(Date.parse(event));
+    if (currentDate == null) {
+      currentDate = moment(new Date(), 'DD/MM/YYYY');
     }
+
+    console.log('Converted date after format: ', currentDate.format('YYYY-MM-DD'));
+
+    this.httpService.getData(this.GET_PRICE_BY_TICKER_AND_DATE_URL
+      + '?ticker='
+      + this.selectedInstrument.ticker
+      + '&purchaseDate='
+      + currentDate.format('YYYY-MM-DD')).pipe(
+      catchError(err => {
+        return this.errorHandler(err, 'Невозможно запросить текущую цену бумаги!');
+      })
+    ).subscribe(data => {
+      this.currentPrice = data;
+      if (this.currentPrice != null && this.currentPrice.status === 'OK') {
+        console.log('Получили текущую цену на конкретную дату: ', this.currentPrice.currentPrice);
+        this.isAddNewInstrumentPossible = true;
+        this.addInstrumentForm.patchValue({
+         price: this.currentPrice.currentPrice
+        });
+      } else {
+        this.isAddNewInstrumentPossible = false;
+        this.addInstrumentForm.patchValue({
+          price: 'Нет торгов на эту дату'
+        });
+      }
+    });
   }
 
   /**

@@ -311,11 +311,11 @@
         </form>
 
         <div class="row">
-          <button type="button" [disabled]="addInstrumentForm.invalid" (click)="addInstrument('add-instrument-modal')"
+          <button type="button" [disabled]="addInstrumentForm.invalid || !isAddNewInstrumentPossible"
+                  (click)="addInstrument('add-instrument-modal')"
                   class="btn btn-primary mt-1">Добавить
           </button>
-          <button type="button" (click)="closeAddInstrumentModal()"
-                  class="btn btn-secondary mt-1">Закрыть
+          <button type="button" (click)="closeAddInstrumentModal()" class="btn btn-secondary mt-1">Закрыть
           </button>
         </div>
       </div>
@@ -397,7 +397,6 @@
                   <clr-dg-cell>{{returns.sum}}</clr-dg-cell>
                 </clr-dg-row>
               </clr-datagrid>
-
             </clr-tab-content>
           </clr-tab>
           <clr-tab>
